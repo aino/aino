@@ -15,6 +15,12 @@
       1280,
       1600,
       1920
+    ],
+    "remotePatterns": [
+      {
+        "protocol": "https",
+        "hostname": "aino.agency"
+      }
     ]
   },
   "routes": [

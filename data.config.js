@@ -1,4 +1,4 @@
-import work from './data/work'
+import work from './data/work.js'
 
 export const locales = ['en', 'sv']
 
