@@ -9,7 +9,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint .",
-    "vercel:config": "node ./lib/vercelConfig.js"
+    "vercel:config": "node ./bin/config.js"
   },
   "devDependencies": {
     "eslint": "^9.16.0",

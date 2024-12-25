@@ -18,6 +18,14 @@ export default [
     slug: 'samsoe-samsoe',
   },
   {
+    name: 'Molo',
+    year: '2024-',
+  },
+  {
+    name: 'Envii',
+    year: '2023-',
+  },
+  {
     name: 'All Blues',
     slug: 'all-blues',
     year: '2020-',
@@ -28,6 +36,10 @@ export default [
     year: '2018-',
   },
   {
+    name: 'Icebug',
+    year: '2022-',
+  },
+  {
     name: 'Hyper Island',
     year: '2022',
   },
@@ -35,10 +47,6 @@ export default [
     name: 'Tinted',
     year: '2022-',
     slug: 'tinted',
-  },
-  {
-    name: 'Icebug',
-    year: '2022-',
   },
   {
     name: 'Eton Shirts',
