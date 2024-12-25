@@ -1,14 +1,4 @@
 {{#> layout bodyclass="case" }}
 <section>{{ title }}</section>
-<div {{ data sections }}>
-  {{# each sections }}
-  <section>
-    {{# each columns }} {{# if html }}
-    <div contenteditable>{{{ html }}}</div>
-    {{/ if }} {{# if image }}
-    <img {{ img image }} />
-    {{/ if }} {{/ each }}
-  </section>
-  {{/each}}
-</div>
+<div class="sections">{{> sections}}</div>
 {{/layout}}

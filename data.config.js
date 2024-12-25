@@ -22,19 +22,7 @@ export const routes = {
       const { name: title, year } = work.find((w) => w.slug === slug) || {}
       const sections = [
         {
-          columns: [
-            {
-              html: `<h2>${title}</h2><p>${year}</p>`,
-            },
-            {
-              image: '/images/karpov.jpg',
-              caption: 'Caption',
-            },
-            {
-              image:
-                'https://aino.agency/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fv21.c5cce366.jpg&w=3840&q=75',
-            },
-          ],
+          columns: [],
         },
       ]
       return {

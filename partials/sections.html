@@ -1,0 +1,11 @@
+{{# each sections }}
+<section>
+  {{# each columns }} {{# if html }}
+  <div class="html">{{{ html }}}</div>
+  {{/ if }} {{# if image }}
+  <div class="image">
+    <img {{ img image }} />
+  </div>
+  {{/ if }} {{/ each }}
+</section>
+{{/each}}
