@@ -1,0 +1,8 @@
+.list {
+  max-width: 30rem;
+  text-align: justify;
+}
+
+.grid {
+  height: calc((var(--rows) * 2rem) - 8rem);
+}

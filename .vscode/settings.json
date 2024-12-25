@@ -1,0 +1,4 @@
+{
+  "eslint.format.enable": true,
+  "typescript.preferences.importModuleSpecifier": "non-relative"
+}

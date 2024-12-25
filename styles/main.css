@@ -1,0 +1,71 @@
+@import 'reset.css';
+@import 'partials/worktable.css';
+
+@font-face {
+  font-family: 'mono';
+  src: url('fonts/ABCDiatypeMono-Medium.woff') format('woff');
+  src: url('fonts/ABCDiatypeMono-Medium.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light dark;
+
+  --white-rgb: 245, 245, 240;
+  --black-rgb: 24, 24, 24;
+
+  --black: rgb(var(--black-rgb));
+  --white: rgb(var(--white-rgb));
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --white: rgb(var(--black-rgb));
+    --black: rgb(var(--white-rgb));
+  }
+}
+
+html {
+  font-size: calc(var(--rem) / 16 * 100%);
+  font-variation-settings: 'MONO' 1;
+  text-transform: uppercase;
+  font-family: mono, monospace;
+  color: var(--black);
+  background: var(--white);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-size: calc(var(--font-size) * 1px);
+  line-height: 2rem;
+  letter-spacing: calc(var(--letter-spacing) * 1px);
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+hr {
+  height: 3rem;
+  margin: 0;
+  position: relative;
+  border: none;
+  &:after {
+    content: ' ';
+    height: 1px;
+    position: absolute;
+    left: 0;
+    top: 45%;
+    width: 100%;
+    display: block;
+    background: var(--black);
+  }
+}
+
+#app {
+  background: var(--white);
+  min-height: 100vh;
+  padding: 6rem 2rem;
+}

@@ -1,0 +1,45 @@
+<script type="text/javascript">
+  ;((html) => {
+    html.classList.add('js')
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+    const setVariables = () => {
+      const width = innerWidth
+      let rem = 8.5
+      let cols = Math.floor(width / rem)
+      let col = cols - 4
+      if (width > 767) {
+        const charsColumns = cols - 18
+        const evenCharsColumns = charsColumns - (charsColumns % 8)
+        cols = evenCharsColumns + 14
+        rem = width / (cols + 4)
+        col = Math.floor((width / rem - 10) / 4)
+      } else {
+        cols = Math.floor(cols / 2) * 2
+        rem = width / cols
+        col = (cols - 4) / 2
+      }
+      let fontSize = rem / 0.6 - 0.9
+      let letterSpacing = (rem / 0.6 - fontSize) * 0.6
+      if (isSafari) {
+        const fontSizeRounded = Math.floor(rem / 0.6 - 0.3)
+        letterSpacing = (rem / 0.6 - fontSizeRounded) * 0.6
+        fontSize = fontSizeRounded
+      }
+      html.style = Object.entries({
+        rem,
+        cols,
+        col,
+        rows: Math.floor(innerHeight / (rem * 2)),
+        'letter-spacing': letterSpacing,
+        'font-size': fontSize,
+        'screen-height': screen.availHeight,
+      })
+        .map(([key, value]) => `--${key}:${value}`)
+        .join(';')
+    }
+    setVariables()
+    const resizeEvent =
+      'ontouchstart' in window ? 'orientationchange' : 'resize'
+    addEventListener(resizeEvent, setVariables)
+  })(document.documentElement)
+</script>

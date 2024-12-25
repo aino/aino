@@ -1,0 +1,39 @@
+{
+  "images": {
+    "domains": [],
+    "minimumCacheTTL": 60,
+    "formats": [
+      "image/avif",
+      "image/webp"
+    ],
+    "dangerouslyAllowSVG": true,
+    "sizes": [
+      160,
+      320,
+      640,
+      960,
+      1280,
+      1600,
+      1920
+    ]
+  },
+  "routes": [
+    {
+      "src": "/.*",
+      "middlewarePath": "middleware"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "^/(sv)(/|/.*)?$",
+      "status": 404,
+      "dest": "/$1/404/index.html"
+    },
+    {
+      "src": "/.*",
+      "status": 404,
+      "dest": "/404/index.html"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+.worktable {
+  position: relative;
+  top: -0.1rem;
+  li {
+    height: 2rem;
+    overflow: hidden;
+    .line {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      padding: 0.05rem 0 0 calc(var(--col) * 1rem + 4rem);
+      strong {
+        display: block;
+        width: calc(var(--col) * 1rem + 2rem);
+      }
+      &.inactive {
+        opacity: 0.2;
+      }
+    }
+    a:hover {
+      background: var(--black);
+      color: var(--white);
+    }
+  }
+}

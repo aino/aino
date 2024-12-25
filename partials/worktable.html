@@ -1,0 +1,17 @@
+<ul class="worktable">
+  {{# each work }}
+  <li>
+    {{# if slug }}
+    <a href="/work/{{slug}}" class="line nocursor">
+      <strong>{{name}}</strong>
+      <span>{{year}}</span>
+    </a>
+    {{else}}
+    <span class="line inactive">
+      <strong>{{name}}</strong>
+      <span>{{year}}</span>
+    </span>
+    {{/if}}
+  </li>
+  {{/each}}
+</ul>
