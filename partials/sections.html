@@ -1,11 +1,13 @@
-{{# each sections }}
-<section>
-  {{# each columns }} {{# if html }}
-  <div class="html">{{{ html }}}</div>
-  {{/ if }} {{# if image }}
-  <div class="image">
-    <img {{ img image }} />
-  </div>
-  {{/ if }} {{/ each }}
-</section>
-{{/each}}
+<div class="sections" data-slug="{{ slug }}" data-type="{{ type }}">
+  {{# each sections }}
+  <section>
+    {{# each columns }} {{# if html }}
+    <div class="html">{{{ html }}}</div>
+    {{/ if }} {{# if image }}
+    <div class="image">
+      <img {{ img image }} />
+    </div>
+    {{/ if }} {{/ each }}
+  </section>
+  {{/each}}
+</div>

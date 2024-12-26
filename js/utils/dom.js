@@ -30,7 +30,13 @@ export function create(tag, attributes, parent) {
   const element = document.createElement(tag)
   if (attributes) {
     for (const key in attributes) {
-      element.setAttribute(key, attributes[key])
+      if (key in element) {
+        // If it's a property of the element, set it directly
+        element[key] = attributes[key]
+      } else {
+        // Otherwise, set it as an attribute
+        element.setAttribute(key, attributes[key])
+      }
     }
   }
   if (parent) {
@@ -47,7 +53,7 @@ export function create(tag, attributes, parent) {
  */
 export function createFromString(html, parent) {
   const template = document.createElement('template')
-  template.innerHTML = html
+  template.innerHTML = html.trim()
   const element = template.content.firstChild
   if (parent) {
     parent.appendChild(element)

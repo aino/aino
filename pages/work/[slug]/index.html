@@ -1,4 +1,3 @@
 {{#> layout bodyclass="case" }}
 <section>{{ title }}</section>
-<div class="sections">{{> sections}}</div>
-{{/layout}}
+{{> sections slug=slug type="work" sections=data.sections}} {{/layout}}

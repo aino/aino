@@ -1,3 +1,4 @@
+import { readFileSync } from 'fs'
 import work from './data/work.js'
 
 export const locales = ['en', 'sv']
@@ -19,17 +20,15 @@ export const routes = {
   '/work/[slug]': {
     slugs: () => work.map((w) => w.slug).filter(Boolean),
     data: async ({ lang, slug }) => {
-      const { name: title, year } = work.find((w) => w.slug === slug) || {}
-      const sections = [
-        {
-          columns: [],
-        },
-      ]
+      let data = null
+      try {
+        data = JSON.parse(readFileSync(`data/work/${slug}.json`, 'utf-8'))
+      } catch (error) {
+        console.error(`Failed to load file: work/${slug}.json`)
+      }
       return {
-        title,
-        year,
+        data,
         slug,
-        sections,
       }
     },
   },
