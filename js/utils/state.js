@@ -1,4 +1,4 @@
-import { clone, isObject } from './object'
+import { clone, isObject, equals } from './object'
 
 export default function state(value, onChange) {
   const callbacks = new Set(onChange ? [onChange] : [])
@@ -15,8 +15,10 @@ export default function state(value, onChange) {
       const oldValue = clone(this.value)
       this.value =
         typeof newValue === 'function' ? newValue(oldValue) : newValue
-      for (const callback of callbacks) {
-        callback(this.value, oldValue)
+      if (!equals(this.value, oldValue)) {
+        for (const callback of callbacks) {
+          callback(this.value, oldValue)
+        }
       }
     },
 

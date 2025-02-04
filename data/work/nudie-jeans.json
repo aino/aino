@@ -6,7 +6,16 @@
     {
       "columns": [
         {
-          "html": "<h2>This is a h2</h2><p>While this is another paragraph</p><p>Its done, ok!</p>"
+          "html": "<br>"
+        },
+        {
+          "html": "Goa grejer enaSSSS"
+        },
+        {
+          "image": "placeholder"
+        },
+        {
+          "html": "test"
         }
       ]
     }

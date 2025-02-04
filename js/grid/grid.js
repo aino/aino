@@ -1,34 +1,49 @@
 import { getCssVariable } from '@/js/utils/dom'
 import { insertEvery } from '@/js/utils/array'
+import animate, { lerp } from '@/js/utils/animate'
+import { getCharacterForGrayScale, grayRamp } from '../ascii'
+import { linear } from '@/js/utils/easing'
 
-/** Gravity constant affecting point movement. */
-const gravity = 0.0002
-/** Damping constant to simulate friction. */
-const damping = 0.85
-/** Diffusion constant for random motion. */
-const diffusion = 0.000001
+// Diffusion constant for random motion.
+const diffusion = 0.001
 
-/**
- * @typedef {Object} GridAPI
- * @property {function(Object): void} createPoint - Adds a point to the grid.
- * @property {function(number, number, string): void} setText - Sets text at a specific position in the grid.
- * @property {function(): string} getText - Retrieves the current grid as a string.
- * @property {function(): void} resize - Recalculates the grid's dimensions.
- * @property {number} cols - The number of columns in the grid.
- * @property {number} rows - The number of rows in the grid.
- * @property {string[]} textArr - The grid's text array representation.
- * @property {function(): void} update - Updates the grid by applying physics.
- */
+// The character set for ASCII rendering.
+const chars = `- ABCDEFGHIJKLMNOØÖÄÅPQRSTUVWXYZ0123456789&/@+?,.`
 
 /**
- * Creates and manages a grid with dynamic points.
- * @param {HTMLElement} node - The DOM node to attach the grid to.
- * @returns {GridAPI} An API to interact with the grid.
+ * Find the closest point (or a fallback) in `toPoints` matching a given point.
  */
+function findClosestPoint(target, points) {
+  let minDist = Infinity
+  let closest = null
 
+  // Loop over each candidate point.
+  for (let i = 0; i < points.length; i++) {
+    const p = points[i]
+
+    // Skip points that have been marked or already used.
+    if (p.used || p.marked) continue
+
+    // Calculate the squared distance (no need for the square root).
+    const dx = target.x - p.x
+    const dy = target.y - p.y
+    const dist = dx * dx + dy * dy
+
+    // Update the closest point if this one is nearer.
+    if (dist < minDist) {
+      minDist = dist
+      closest = p
+    }
+  }
+
+  return closest
+}
+
+/**
+ * The main grid module.
+ */
 export default function grid(node) {
-  let points = [],
-    width,
+  let width,
     height,
     rem,
     line,
@@ -36,180 +51,262 @@ export default function grid(node) {
     rows,
     textArr = []
 
-  /**
-   * Initializes or recalculates grid variables based on the DOM node dimensions.
-   */
-  const setVariables = () => {
-    rem = getCssVariable('rem')
-    line = rem * 2
-    const rect = node.getBoundingClientRect()
-    width = rect.width
-    height = rect.height
-    cols = Math.round(width / rem)
-    rows = Math.round(height / line)
-    const length = rows * cols
-    if (length != textArr.length) {
-      textArr = Array.from({ length: rows * cols }).fill(' ')
-    }
-  }
-  setVariables()
+  // Create an offscreen canvas (used by drawCanvas)
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
 
   /**
-   * Creates a point in the grid.
-   * @param {Object} options - Point configuration options.
-   * @param {number} options.x - X-coordinate (normalized between 0 and 1).
-   * @param {number} options.y - Y-coordinate (normalized between 0 and 1).
-   * @param {string} options.value - The value associated with the point.
-   * @param {boolean} [options.fixed=false] - Whether the point is fixed in position.
+   * Render the current frame’s points into the node.
    */
-  const createPoint = ({ x, y, value, fixed = false }) => {
-    points.push({
-      x,
-      y,
-      value,
-      fixed,
-      vx: 0,
-      vy: 0,
-      mass: 1,
+  const render = (frame) => {
+    textArr.fill(' ')
+    // Render non‑fixed points first, then fixed points (so fixed ones are on top)
+    const processPoints = (filterCondition) => {
+      for (let i = 0; i < frame.points.length; i++) {
+        const point = frame.points[i]
+        if (filterCondition(point)) {
+          const col = Math.round(point.x * cols)
+          const row = Math.round(point.y * rows)
+          let value = point.value
+          if (/^\s$/.test(value)) {
+            value = ' '
+          }
+          if (row < rows && col < cols) {
+            textArr[cols * row + col] = value
+          }
+        }
+      }
+    }
+    processPoints((p) => !p.fixed)
+    processPoints((p) => p.fixed)
+    node.textContent = insertEvery(textArr, '\n', cols).join('')
+  }
+
+  /**
+   * Give all points an explosion-like kick.
+   */
+  const explode = (points, { spread = 0.3 } = {}) => {
+    let minX = Infinity,
+      maxX = -Infinity
+    for (let i = 0; i < points.length; i++) {
+      const p = points[i]
+      if (p.x < minX) minX = p.x
+      if (p.x > maxX) maxX = p.x
+    }
+    // Avoid division by zero.
+    if (minX === maxX) {
+      minX = 0
+      maxX = 1
+    }
+    for (let i = 0; i < points.length; i++) {
+      const p = points[i]
+      // Normalize x position to [0, 1] within the frame.
+      const norm = (p.x - minX) / (maxX - minX)
+      p.vx = lerp(-spread, spread, norm) + (Math.random() - 0.5) * spread * 0.5
+      p.vy = lerp(-0.5, -1, Math.random())
+      p.fixed = false
+    }
+  }
+
+  let loopFunction = null
+  let raf
+
+  const startLoop = () => {
+    let now = Date.now()
+    raf = requestAnimationFrame(function loop() {
+      if (loopFunction) {
+        const then = Date.now()
+        loopFunction(then - now)
+        now = then
+        raf = requestAnimationFrame(loop)
+      } else {
+        console.log('END')
+      }
     })
   }
 
   /**
-   * Generates the grid's textual representation based on point values.
-   * @returns {string} The textual representation of the grid.
+   * Update point positions with gravity, boundaries, and collisions.
+   *
+   * This version uses a preallocated spatial grid (with numeric indices)
+   * and plain for‑loops to reduce overhead.
    */
-  const getText = () => {
-    textArr.fill(' ')
+  const gravitate = (frame, { gravity = 3, damping = 0.85 } = {}) => {
+    let spring = 1.2 // stiffness: how strongly the point is pulled to its destination
+    let friction = 0.8
+    loopFunction = (delta) => {
+      // Use a fixed time step (in seconds) for stability.
+      const dt = Math.min(0.1, delta / 1000)
+      const floor = (rows - 1) / rows
+      const radiusX = 0.05 / cols
+      const radiusY = 0.1 / rows
+      const combinedRadius = 8
+      const combinedRadiusSqr = combinedRadius * combinedRadius
 
-    const processPoints = (filterCondition) => {
-      points.filter(filterCondition).forEach(({ x, y, value }) => {
-        const col = Math.round(x * cols)
-        const row = Math.round(y * rows)
-        if (row < rows && col < cols) {
-          textArr[cols * row + col] = value
+      // Update velocities and positions.
+      let log = false
+      for (let i = 0; i < frame.points.length; i++) {
+        const p = frame.points[i]
+        if (p.fixed) continue
+
+        if (p.morph) {
+          // Calculate the differences to the target.
+          const dx = p.morph.toX - p.x
+          const dy = p.morph.toY - p.y
+
+          // If not close enough, keep animating.
+          if (Math.abs(dx) > 0.01 || Math.abs(dy) > 0.01) {
+            // Compute the spring-like acceleration.
+            const ax = dx * spring
+            const ay = dy * spring
+
+            // Update velocities (with damping).
+            p._vx = (p.vx + ax) * friction
+            p._vy = (p.vy + ay) * friction
+
+            // --- Compute the progress of the morph ---
+            // Linear distance left to travel.
+            const currentDistance = Math.sqrt(dx * dx + dy * dy)
+            // Total distance from starting point to target.
+            const totalDistance = Math.sqrt(
+              Math.pow(p.morph.toX - p.morph.fromX, 2) +
+                Math.pow(p.morph.toY - p.morph.fromY, 2)
+            )
+
+            // progress = 0 at the start, 1 at the finish.
+            let progress = 1 - currentDistance / totalDistance
+            progress = Math.max(0, Math.min(1, progress)) // clamp to [0, 1]
+
+            p.vx += (p._vx - p.vx) / lerp(1, 20, 1 - progress)
+            p.vy += (p._vy - p.vy) / lerp(1, 20, 1 - progress)
+
+            // Update positions.
+            p.x += p.vx * dt
+            p.y += p.vy * dt
+
+            // --- Fade the character ---
+            // Make sure that both the from and to values are in grayRamp.
+            const fromIndex = grayRamp.indexOf(p.morph.fromValue)
+            const toIndex = grayRamp.indexOf(p.morph.toValue)
+            if (fromIndex === -1 || toIndex === -1) {
+              // Fallback if one of the characters isn’t found.
+              p.value = p.morph.toValue
+            } else {
+              // Interpolate between fromIndex and toIndex.
+              const charIndex = Math.floor(lerp(fromIndex, toIndex, progress))
+              p.value = grayRamp[charIndex]
+            }
+          } else {
+            // Once the point is close enough to its destination, snap it in place.
+            p.x = p.morph.toX
+            p.y = p.morph.toY
+            p.value = p.morph.toValue // ensure the final character is the target value
+          }
+          continue // Skip the rest of the update for morphed points.
         }
-      })
-    }
 
-    processPoints(({ fixed }) => !fixed)
-    processPoints(({ fixed }) => fixed)
+        p.vy += gravity * dt
+        p.x += p.vx * dt
+        p.y += p.vy * dt
 
-    return insertEvery(textArr, '\n', cols).join('')
-  }
-
-  /**
-   * Sets text at a specific position in the grid.
-   * @param {number} row - The row index.
-   * @param {number} col - The column index.
-   * @param {string} value - The text to set at the position.
-   */
-  const setText = ({ row = 0, col = 0, value, fixed = false }) => {
-    if (!value) {
-      return
-    }
-    const startIndex = row * cols + col
-    for (let i = 0; i < value.length; i++) {
-      const index = startIndex + i,
-        r = Math.floor(index / cols),
-        c = index % cols
-      if (r >= rows) break
-      const x = c / cols,
-        y = r / rows
-      const existing = points.findIndex(
-        (p) => Math.round(p.x * cols) === c && Math.round(p.y * rows) === r
-      )
-      existing !== -1
-        ? (points[existing].value = value[i])
-        : points.push({
-            x,
-            y,
-            value: value[i],
-            vx: 0,
-            vy: 0,
-            fixed,
-            mass: 1,
-          })
-      textArr[index] = value[i]
-    }
-  }
-
-  const update = () => {
-    const radiusX = 0.1 / cols // Horizontal radius based on grid width
-    const radiusY = 0.2 / rows // Vertical radius is twice the horizontal radius
-
-    for (let i = 0; i < points.length; i++) {
-      const p = points[i]
-
-      // Skip fixed points for position updates
-      if (p.fixed) continue
-
-      // Apply gravity and diffusion
-      p.vy += gravity
-      p.vx += (Math.random() - 0.5) * diffusion
-      p.vy += (Math.random() - 0.5) * diffusion
-
-      // Update position
-      p.x += p.vx
-      p.y += p.vy
-
-      // Boundary collisions
-      if (p.x <= 0 || p.x >= 1) {
-        p.vx *= -damping
-        p.x = Math.max(0, Math.min(1, p.x))
+        if (p.x <= 0 || p.x >= 1) {
+          p.vx *= -damping
+          p.x = Math.max(0, Math.min(1, p.x))
+        }
+        if (p.y >= floor) {
+          p.vy *= -damping
+          p.y = floor
+        }
+        if (p.y <= 0) {
+          p.vy *= -damping
+          p.y = 0
+        }
+        // Ground friction: if at the bottom and nearly stopped, dampen horizontal velocity.
+        if (p.y === floor && Math.abs(p.vy) < 0.001) {
+          p.vy = 0
+          p.vx *= 0.95
+          if (Math.abs(p.vx) < 0.001) {
+            p.vx = 0
+          }
+        }
       }
-      if (p.y >= 1) {
-        p.vy *= -damping
-        p.y = 1
+      // --- Spatial Partitioning ---
+      // Choose cell sizes based on the radii.
+      const cellSizeX = 2 * radiusX
+      const cellSizeY = 2 * radiusY
+      const gridCols = Math.ceil(1 / cellSizeX)
+      const gridRows = Math.ceil(1 / cellSizeY)
+      const gridCells = new Array(gridCols * gridRows)
+      // Preinitialize each grid cell as an empty array.
+      for (let i = 0; i < gridCells.length; i++) {
+        gridCells[i] = []
       }
-      if (p.y <= 0) {
-        p.vy *= -damping
-        p.y = 0
+      // Place each point into its cell.
+      for (let i = 0; i < frame.points.length; i++) {
+        const p = frame.points[i]
+        const cellX = Math.floor(p.x / cellSizeX)
+        const cellY = Math.floor(p.y / cellSizeY)
+        const index = cellX + cellY * gridCols
+        if (gridCells[index]) {
+          gridCells[index].push(p)
+        }
       }
 
-      // Check collisions with other points
-      for (let j = 0; j < points.length; j++) {
-        if (i === j) continue
+      // Collision resolution helper.
+      const processCollision = (p, q) => {
+        const tol = 0.001
+        // Special handling for points on the floor.
+        if (Math.abs(p.y - floor) < tol && Math.abs(q.y - floor) < tol) {
+          const minSeparation = 0.1
+          const dx = p.x - q.x
+          if (Math.abs(dx) < minSeparation) {
+            const overlap = minSeparation - Math.abs(dx)
+            if (!p.fixed && !q.fixed) {
+              p.x += dx >= 0 ? overlap / 2 : -overlap / 2
+              q.x += dx >= 0 ? -overlap / 2 : overlap / 2
+            } else if (!p.fixed) {
+              p.x += dx >= 0 ? overlap : -overlap
+            } else if (!q.fixed) {
+              q.x += dx >= 0 ? -overlap : overlap
+            }
+            p.vx = 0
+            q.vx = 0
+            return
+          }
+        }
 
-        const q = points[j]
-        const dx = p.x - q.x
-        const dy = p.y - q.y
-
-        // Adjust distance calculation to account for anisotropic radius
+        let dx = p.x - q.x
+        let dy = p.y - q.y
         const scaledDx = dx / radiusX
         const scaledDy = dy / radiusY
-        const dist = Math.sqrt(scaledDx * scaledDx + scaledDy * scaledDy)
+        const sqrDist = scaledDx * scaledDx + scaledDy * scaledDy
 
-        // Collision detection using anisotropic combined radius
-        const combinedRadius = 2 // Scaled radii sum as normalized to 1
-        if (dist < combinedRadius) {
+        if (sqrDist < combinedRadiusSqr) {
+          const dist = Math.sqrt(sqrDist)
+          if (dist === 0) return
           const overlap = combinedRadius - dist
           const nx = scaledDx / dist
           const ny = scaledDy / dist
 
           if (q.fixed) {
-            // Bounce off the static point, no changes to `q` position
-            p.x += nx * overlap * radiusX
-            p.y += ny * overlap * radiusY
+            p.x += nx * overlap * (radiusX * 2)
+            p.y += ny * overlap * (radiusY * 2)
             const relVel = p.vx * nx + p.vy * ny
             const impulse = -2 * relVel
-            p.vx += impulse * nx * damping // Reflect with damping
+            p.vx += impulse * nx * (damping / 1.5)
             p.vy += impulse * ny * damping
+          } else if (p.fixed) {
+            q.x -= nx * overlap * (radiusX * 2)
+            q.y -= ny * overlap * (radiusY * 2)
+            const relVel = q.vx * nx + q.vy * ny
+            const impulse = -2 * relVel
+            q.vx += impulse * nx * (damping / 1.5)
+            q.vy += impulse * ny * damping
           } else {
-            // Handle regular collision between movable points
-            const qXBefore = q.x // Save q.x before changes
-            const qYBefore = q.y // Save q.y before changes
-
             p.x += nx * overlap * 0.5 * radiusX
             p.y += ny * overlap * 0.5 * radiusY
             q.x -= nx * overlap * 0.5 * radiusX
             q.y -= ny * overlap * 0.5 * radiusY
-
-            // Revert q position if fixed
-            if (q.fixed) {
-              q.x = qXBefore
-              q.y = qYBefore
-            }
-
             const relVel = (p.vx - q.vx) * nx + (p.vy - q.vy) * ny
             const impulse = (1.2 * relVel) / (p.mass + q.mass)
             p.vx -= impulse * nx * q.mass
@@ -219,84 +316,425 @@ export default function grid(node) {
           }
         }
       }
-    }
 
-    // Update grid text
-    node.textContent = getText()
+      // Process collisions within each cell and with neighboring cells.
+      for (let cellY = 0; cellY < gridRows; cellY++) {
+        for (let cellX = 0; cellX < gridCols; cellX++) {
+          const index = cellX + cellY * gridCols
+          const cellPoints = gridCells[index]
+          // Check collisions within the same cell.
+          for (let i = 0; i < cellPoints.length; i++) {
+            for (let j = i + 1; j < cellPoints.length; j++) {
+              processCollision(cellPoints[i], cellPoints[j])
+            }
+          }
+          // Check collisions with neighboring cells.
+          for (let offsetY = 0; offsetY <= 1; offsetY++) {
+            for (
+              let offsetX = offsetY === 0 ? 1 : -1;
+              offsetX <= 1;
+              offsetX++
+            ) {
+              const nX = cellX + offsetX
+              const nY = cellY + offsetY
+              if (nX < 0 || nX >= gridCols || nY < 0 || nY >= gridRows) continue
+              const neighborIndex = nX + nY * gridCols
+              const neighborPoints = gridCells[neighborIndex]
+              for (let i = 0; i < cellPoints.length; i++) {
+                for (let j = 0; j < neighborPoints.length; j++) {
+                  processCollision(cellPoints[i], neighborPoints[j])
+                }
+              }
+            }
+          }
+        }
+      }
+      render(frame)
+    }
+    startLoop()
+    return {
+      stop: () => {
+        loopFunction = null
+      },
+    }
   }
 
   /**
-   * Formats and sets a paragraph of text into the grid.
-   * @param {string} text - The text to format into the grid.
-   * @param {number} width - The fixed width of each line in columns.
-   * @param {string} alignment - Alignment of the text ('left' or 'justify').
+   * Morph (interpolate) one frame into another.
    */
-  const setFormattedParagraph = ({
-    text,
-    width = 100,
-    alignment = 'left',
-    x = 0,
-    y = 0,
-    fixed = false,
-  }) => {
-    const words = text.split(/\s+/)
-    const lines = []
-    let currentLine = []
-
-    // Break text into lines based on the width
-    words.forEach((word) => {
-      const lineLength = currentLine.join(' ').length
-      if (lineLength + word.length + (lineLength > 0 ? 1 : 0) <= width) {
-        currentLine.push(word)
-      } else {
-        lines.push(currentLine.join(' '))
-        currentLine = [word]
+  const morph = ({ from, to, duration = 1000, easing = linear }) =>
+    new Promise((resolve) => {
+      ;[to, from].forEach((frame) => {
+        if (!frame.points.length) {
+          console.warn('Empty frame, creating default points')
+          frame.createPoint({
+            x: 0.5,
+            y: 0.5,
+            value: ' ',
+          })
+        }
+      })
+      for (let i = 0; i < from.points.length; i++) {
+        const point = from.points[i]
+        const closest = findClosestPoint(point, to.points)
+        closest.marked = true
+        Object.assign(point, {
+          morph: {
+            toX: closest.x,
+            toY: closest.y,
+            fromY: point.y,
+            fromX: point.x,
+            fromValue: point.value,
+            toValue: closest.value,
+          },
+        })
       }
-    })
-    if (currentLine.length > 0) {
-      lines.push(currentLine.join(' '))
-    }
+      to.points
+        .filter((p) => !p.marked)
+        .forEach((p) => {
+          // Find the closest available point from the 'from' set.
+          const closest = findClosestPoint(p, from.points)
 
-    // Apply alignment to each line
-    const alignedLines = lines.map((line) => {
-      if (alignment === 'justify' && line.length < width) {
-        const gaps = line.split(' ').length - 1
-        if (gaps > 0) {
-          const extraSpaces = width - line.length
-          const spaceArray = Array(gaps).fill(
-            1 + Math.floor(extraSpaces / gaps)
-          )
-          let remainder = extraSpaces % gaps
-          for (let i = 0; i < remainder; i++) {
-            spaceArray[i]++
+          if (closest) {
+            // Mark the chosen 'from' point as used so it won't be reused.
+            closest.used = true
+            // Optionally, mark the 'to' point as processed if you don't need it later.
+            // p.marked = true
+
+            // Create a new point that holds the morphing information.
+            // We use the coordinates from the closest 'from' point, but record both the original
+            // (from the 'closest' candidate) and target (from the 'to' point) values.
+            const newPoint = {
+              ...p, // copy properties from the 'to' point
+              x: closest.x, // starting x (from the matched 'from' point)
+              y: closest.y, // starting y (from the matched 'from' point)
+              morph: {
+                toX: p.x, // target x (from the 'to' point)
+                toY: p.y, // target y (from the 'to' point)
+                fromX: closest.x, // starting x (from the 'from' point)
+                fromY: closest.y, // starting y (from the 'from' point)
+                fromValue: ' ',
+                toValue: p.value,
+              },
+            }
+
+            // Add the newly created morphed point into the 'from.points' array.
+            from.points.push(newPoint)
+          } else {
+            console.warn('No available closest point found for to point:', p)
           }
-          const words = line.split(' ')
-          return words
-            .map((word, i) =>
-              i < gaps ? word + ' '.repeat(spaceArray[i]) : word
-            )
-            .join('')
+        })
+      /*
+          
+      let spring = 0.5 // stiffness: how strongly the point is pulled to its destination
+      let friction = 0.9 // damping: reduces the velocity each frame
+      loopFunction = (delta) => {
+        const dt = Math.min(0.1, delta / 1000) // dt in seconds
+        let allReached = true
+        for (let i = 0; i < clone.points.length; i++) {
+          const p = clone.points[i]
+          // Calculate the difference to the destination.
+          const dx = p.toX - p.x
+          const dy = p.toY - p.y
+          // Compute acceleration proportional to the distance (a spring-like force)
+          const ax = dx * spring
+          const ay = dy * spring
+          // Update velocities with acceleration and then apply damping.
+          p.vx = (p.vx + ax) * friction
+          p.vy = (p.vy + ay) * friction
+          // Update positions using the velocity.
+          p.x += p.vx * dt
+          p.y += p.vy * dt
+          // If the point is still a little away from its destination, keep animating.
+          if (Math.abs(dx) > 0.001 || Math.abs(dy) > 0.001) {
+            allReached = false
+          } else {
+            // Snap to the destination when close enough.
+            p.x = p.toX
+            p.y = p.toY
+          }
+        }
+        render(clone)
+        // Stop the animation when all points have reached their destination.
+        if (allReached) {
+          loopFunction = null
+          resolve()
         }
       }
-      return line.padEnd(width, ' ') // Left align by default
+      return {
+        stop: () => {
+          cancelAnimationFrame(raf)
+        },
+      }
+      /*
+      animate({
+        duration,
+        easing,
+        onFrame: (n) => {
+          for (let i = 0; i < clone.points.length; i++) {
+            const point = clone.points[i]
+            point.x = lerp(point.fromX, point.toX, n)
+            point.y = lerp(point.fromY, point.toY, n)
+            const ch = point.context === 'canvas' ? grayRamp : chars
+            const charIndex = Math.max(
+              0,
+              Math.round(
+                lerp(ch.indexOf(point.fromValue), ch.indexOf(point.toValue), n)
+              )
+            )
+            point.value = ch[charIndex]
+          }
+          render(clone)
+        },
+        onComplete: () => {
+          render(to)
+          resolve()
+        },
+      })
+        */
     })
 
-    // Set the formatted lines into the grid
-    alignedLines.forEach((line, row) => {
-      setText(row + y, x, line, fixed) // Use `setText` to set each line in the grid
-    })
+  /**
+   * Create a frame of points.
+   */
+  const createFrame = () => {
+    let points = []
+
+    const createPoint = ({ x, y, value, fixed = false, context = '' }) => {
+      if (value === ' ') return
+      if (x < 0 || x > 1 || y < 0 || y > 1) {
+        console.warn('Point out of bounds', { x, y })
+        return
+      }
+      points.push({
+        x: x + (Math.random() - 0.5) * diffusion,
+        y,
+        value,
+        fixed,
+        vx: 0,
+        vy: 0,
+        mass: 1,
+        context,
+      })
+    }
+
+    const mergeWith = (frame) => {
+      for (let i = 0; i < frame.points.length; i++) {
+        points.push(frame.points[i])
+      }
+    }
+
+    const setText = ({
+      row = 0,
+      col = 0,
+      text,
+      context = '',
+      fixed = false,
+      align = 'left',
+    }) => {
+      if (!text) return
+      if (align === 'center') {
+        col = Math.floor((cols - text.length) / 2)
+      }
+      for (let i = 0; i < text.length; i++) {
+        const value = text[i]
+        const index = col + i
+        const x = index / cols
+        const y = row / rows
+        createPoint({ x, y, value, fixed, context })
+      }
+    }
+
+    const setFormattedParagraph = ({
+      text,
+      width = cols,
+      align = 'left',
+      col = 0,
+      row = 0,
+      context = '',
+    }) => {
+      if (!text || !cols || !rows) return
+
+      const words = text.split(/\s+/)
+      const lines = []
+      let currentLine = []
+
+      for (let i = 0; i < words.length; i++) {
+        const word = words[i]
+        const lineLength = currentLine.join(' ').length
+        if (lineLength + word.length + (lineLength > 0 ? 1 : 0) <= width) {
+          currentLine.push(word)
+        } else {
+          lines.push(currentLine.join(' '))
+          currentLine = [word]
+        }
+      }
+
+      if (currentLine.length > 0) {
+        lines.push(currentLine.join(' '))
+      }
+
+      const alignedLines = lines.map((line) => {
+        if (align === 'center') {
+          const padding = Math.max(0, Math.floor((width - line.length) / 2))
+          return ' '.repeat(padding) + line
+        } else if (align === 'right') {
+          return line.padStart(width, ' ')
+        } else if (align === 'justified') {
+          const wordsArray = line.split(' ')
+          if (wordsArray.length === 1) {
+            return line.padEnd(width, ' ')
+          } else {
+            const totalChars = wordsArray.reduce(
+              (sum, word) => sum + word.length,
+              0
+            )
+            const totalSpaces = width - totalChars
+            const slots = wordsArray.length - 1
+            const spaceWidth = Math.floor(totalSpaces / slots)
+            const extraSpaces = totalSpaces % slots
+            let justifiedLine = ''
+            for (let i = 0; i < wordsArray.length; i++) {
+              justifiedLine += wordsArray[i]
+              if (i < slots) {
+                let spacesToAdd = spaceWidth + (i < extraSpaces ? 1 : 0)
+                justifiedLine += ' '.repeat(spacesToAdd)
+              }
+            }
+            return justifiedLine
+          }
+        } else {
+          return line.padEnd(width, ' ')
+        }
+      })
+
+      for (let r = 0; r < alignedLines.length; r++) {
+        if (r + row >= rows) return
+        setText({
+          row: row + r,
+          col,
+          text: alignedLines[r].slice(0, cols - col),
+          context,
+        })
+      }
+    }
+
+    const drawCanvas = () => {
+      // Remove any previous canvas points
+      points = points.filter((p) => p.context !== 'canvas')
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+
+      // Because you're iterating y in steps of 2,
+      // the effective image height in grid coordinates is (canvas.height / 2) divided by rows.
+      // (In your grid, canvas.height is set to rows.)
+      const effectiveHeight = canvas.height / 2 / rows // normally 0.5
+      // Compute the vertical offset needed to center the effective image in [0, 1].
+      const verticalOffset = (1 - effectiveHeight) / 2 // normally (1 - 0.5)/2 = 0.25
+
+      // Iterate over y in steps of 2
+      for (let y = 0; y < canvas.height; y += 2) {
+        // For each row, iterate over all columns
+        for (let x = 0; x < canvas.width; x++) {
+          const i = (y * canvas.width + x) * 4
+          const r = imageData.data[i]
+          const g = imageData.data[i + 1]
+          const b = imageData.data[i + 2]
+          const l = Math.round((r + g + b) / 3)
+          const char = getCharacterForGrayScale(l)
+
+          if (char.trim() && l !== 255) {
+            createPoint({
+              x: x / cols,
+              // Adjust the y coordinate by adding the vertical offset
+              y: y / 2 / rows + verticalOffset,
+              value: char,
+              context: 'canvas',
+            })
+          }
+        }
+      }
+    }
+
+    const randomize = (spread = 1) => {
+      for (let i = 0; i < points.length; i++) {
+        let p = points[i]
+        p.x = lerp(p.x, Math.random(), spread)
+        p.y = lerp(p.y, Math.random(), spread)
+      }
+    }
+
+    return {
+      createPoint,
+      drawCanvas,
+      setText,
+      setFormattedParagraph,
+      mergeWith,
+      clear: () => {
+        points = []
+      },
+      get points() {
+        return points
+      },
+      set points(p) {
+        points = p
+      },
+      randomize,
+    }
   }
 
+  /**
+   * Clone a frame (deep-copy all its points).
+   */
+  const cloneFrame = (frame) => {
+    const newFrame = createFrame()
+    newFrame.points = frame.points.map((p) => ({ ...p }))
+    return newFrame
+  }
+
+  /**
+   * Set up or recalculate grid variables based on the node’s dimensions.
+   */
+  const setVariables = () => {
+    rem = getCssVariable('rem')
+    line = rem * 2
+    const rect = node.getBoundingClientRect()
+    width = rect.width
+    height = rect.height
+    cols = Math.round(width / rem)
+    rows = Math.round(height / line)
+    canvas.width = cols
+    canvas.height = rows
+    const length = rows * cols
+    if (length !== textArr.length) {
+      textArr = Array.from({ length: rows * cols }).fill(' ')
+    }
+  }
+
+  new ResizeObserver(() => setVariables()).observe(node)
+  setVariables()
+
   return {
-    createPoint,
-    setText,
-    setFormattedParagraph,
-    getText,
-    resize: setVariables,
-    cols,
-    rows,
+    render,
+    morph,
+    createFrame,
+    cloneFrame,
+    gravitate,
+    explode,
+    canvas,
+    dimensions: {
+      get width() {
+        return width
+      },
+      get height() {
+        return height
+      },
+      get rows() {
+        return rows
+      },
+      get cols() {
+        return cols
+      },
+    },
     textArr,
-    update,
-    points,
   }
 }

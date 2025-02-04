@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     try {
       const { type, slug, data } = req.body
-
+      console.log({ type, slug, data })
       if (!type || !slug || !data) {
         return res
           .status(400)

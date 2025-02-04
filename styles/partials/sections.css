@@ -1,0 +1,66 @@
+.sections {
+  position: relative;
+  section {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    > div {
+      outline: 1px dashed rgb(var(--white-rgb), 0.2);
+      flex: 1;
+      min-height: 22rem;
+    }
+    &.col-2 > div {
+      width: 50%;
+    }
+    &.col-4 > div {
+      width: 25%;
+    }
+  }
+  .placeholder {
+    background: rgb(var(--white-rgb), 0.1);
+    width: 100%;
+  }
+
+  .move-column,
+  .delete-section {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: black;
+    border-radius: 2px;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    white-space: nowrap;
+    opacity: 0.6;
+    cursor: pointer;
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .delete-section {
+    position: absolute;
+    width: auto;
+    padding: 0 0.6rem;
+  }
+  section {
+    &.dragging {
+      opacity: 0.5;
+    }
+    &.drop-target {
+      outline: 1px dashed var(--black);
+    }
+    .col {
+      &.drop-target {
+        outline: 1px dashed var(--black);
+      }
+      .image {
+        cursor: pointer;
+      }
+    }
+  }
+}

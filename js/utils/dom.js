@@ -10,22 +10,10 @@ export function q(query, parent) {
   return Array.from((parent || document).querySelectorAll(query))
 }
 
-/**
- * Gets an element by its ID.
- * @param {string} id - The ID of the element to retrieve.
- * @returns {HTMLElement|null} The matching element, or `null` if not found.
- */
 export function id(id) {
   return document.getElementById(id)
 }
 
-/**
- * Creates a new DOM element with optional attributes and appends it to a parent.
- * @param {string} tag - The tag name of the element to create.
- * @param {Object} [attributes] - Attributes to set on the element.
- * @param {HTMLElement} [parent] - The parent element to append the created element to.
- * @returns {HTMLElement} The created element.
- */
 export function create(tag, attributes, parent) {
   const element = document.createElement(tag)
   if (attributes) {
@@ -45,57 +33,30 @@ export function create(tag, attributes, parent) {
   return element
 }
 
-/**
- * Creates a DOM element from an HTML string and appends it to a parent.
- * @param {string} html - The HTML string to create the element from.
- * @param {HTMLElement} [parent] - The parent element to append the created element to.
- * @returns {ChildNode} The created element.
- */
 export function createFromString(html, parent) {
   const template = document.createElement('template')
-  template.innerHTML = html.trim()
-  const element = template.content.firstChild
+  template.innerHTML = html
+  const element = template.content.children[0]
   if (parent) {
     parent.appendChild(element)
   }
   return element
 }
 
-/**
- * Gets the computed style property of an element.
- * @param {HTMLElement} element - The element to retrieve the style from.
- * @param {string} property - The CSS property to retrieve.
- * @returns {string} The value of the property.
- */
 export function getStyle(element, property) {
   return getComputedStyle(element).getPropertyValue(property)
 }
 
-/**
- * Applies a set of inline styles to an element.
- * @param {HTMLElement} element - The element to style.
- * @param {Object} styles - An object containing CSS properties and values.
- */
 export function style(element, styles) {
   for (const key in styles) {
     element.style[key] = styles[key].toString()
   }
 }
 
-/**
- * Gets the value of a CSS variable.
- * @param {string} variable - The name of the CSS variable (without the `--` prefix).
- * @returns {number} The numeric value of the CSS variable.
- */
 export function getCssVariable(variable) {
   return parseFloat(getStyle(document.documentElement, `--${variable}`))
 }
 
-/**
- * Attaches a resize or orientation change listener to the window.
- * @param {Function} onResize - The callback function to run on resize.
- * @returns {Function} A function to remove the event listener.
- */
 export function resize(onResize) {
   const resizeEvent = 'ontouchstart' in window ? 'orientationchange' : 'resize'
   addEventListener(resizeEvent, onResize)
@@ -105,10 +66,6 @@ export function resize(onResize) {
   }
 }
 
-/**
- * IntersectionObserver instance to handle visibility and in-view state of elements.
- * Adds 'io-show' class when the element becomes visible and toggles 'io-inview' class.
- */
 export const observer = new IntersectionObserver(
   (entries) => {
     entries.forEach((entry) => {

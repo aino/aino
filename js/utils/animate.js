@@ -1,24 +1,12 @@
 import { outQuad } from './easing'
 
-/**
- * Linearly interpolates between two values.
- * @param {number} v0 - The starting value.
- * @param {number} v1 - The ending value.
- * @param {number} t - The interpolation factor (0 to 1).
- * @returns {number} The interpolated value.
- */
 export const lerp = (v0, v1, t) => v0 * (1 - t) + v1 * t
 
-/**
- * Animates a value over time using a specified easing function.
- * @param {Object} options - The animation options.
- * @param {number} [options.duration=400] - The duration of the animation in milliseconds.
- * @param {Function} [options.easing=outQuad] - The easing function to apply (default is `outQuad`).
- * @param {Function} [options.onFrame] - Callback function called on each frame with the eased progress value (0 to 1).
- * @param {Function} [options.onComplete] - Callback function called when the animation is complete.
- * @param {Function} [options.onStart] - Callback function called at the start of the animation.
- * @returns {Object} An object with a `stop` method to halt the animation.
- */
+export const reverseLerp = (v0, v1, value) => {
+  if (v0 === v1) return 0 // Avoid division by zero
+  return (value - v0) / (v1 - v0)
+}
+
 const animate = ({
   duration = 400,
   easing = outQuad,

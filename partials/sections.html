@@ -1,13 +1,15 @@
 <div class="sections" data-slug="{{ slug }}" data-type="{{ type }}">
   {{# each sections }}
-  <section>
-    {{# each columns }} {{# if html }}
-    <div class="html">{{{ html }}}</div>
-    {{/ if }} {{# if image }}
-    <div class="image">
-      <img {{ img image }} />
+  <section class="{{ colclass columns }}">
+    {{# each columns }}
+    <div class="col">
+      {{# if html }}
+      <div class="html">{{{ html }}}</div>
+      {{ else if image }}
+      <div class="image"><img {{ img image }} /></div>
+      {{/ if }}
     </div>
-    {{/ if }} {{/ each }}
+    {{/ each }}
   </section>
   {{/each}}
 </div>
