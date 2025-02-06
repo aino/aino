@@ -1,6 +1,7 @@
 import '@/styles/pages/home.css'
-import grid from '@/js/grid/grid2'
-import { q } from '@/js/utils/dom'
+import grid from '@/js/grid/grid'
+import { q, resize, create } from '@/js/utils/dom'
+import { style } from '../utils/dom'
 import { getCharacterForGrayScale, grayRamp } from '../ascii'
 import { outQuad, inQuad, inCirc, outCirc, inOutCirc } from '@/js/utils/easing'
 import wait from '@/js/utils/wait'
@@ -11,36 +12,53 @@ import loadimage from '@/js/utils/loadimage'
 
 export const path = /^\/$/
 
-export default async function home(app) {
+export default async function homeold(app) {
   const [gridNode] = q('.grid')
 
   const {
+    createFrame,
     canvas,
-    createPoint,
-    addText,
-    blend,
-    addParagraph,
-    addCanvas,
+    cloneFrame,
     gravitate,
+    mergeFrame,
     explode,
     render,
     morph,
-    applyPhysics,
     dimensions,
   } = grid(gridNode)
 
   const ctx = canvas.getContext('2d')
+
+  let frame = createFrame()
   let raf
+  let row = 0
+
+  const getValue = (timestamp, duration) => {
+    const t = (timestamp % duration) / duration
+    return (1 - Math.cos(2 * Math.PI * t)) / 2
+  }
+
+  const aboutFrame = createFrame()
+
+  // Track the current mouse X position.
+  // (Initialize to the center of the window.)
+  let mouseX = 0
+  let nextMouseX = mouseX
+  window.addEventListener('mousemove', (event) => {
+    nextMouseX = event.clientX
+  })
+
+  let fadeIndex = 0
 
   const svg = await loadimage('/aino.svg')
   const scale =
     Math.min(canvas.width / svg.width, canvas.height / svg.height) / 1.5
   const logoWidth = svg.width * scale
-  const logoHeight = svg.height * scale * 0.5
+  const logoHeight = svg.height * scale
 
   ctx.fillStyle = '#fff'
   ctx.fillRect(0, 0, canvas.width, canvas.height)
-  ctx.globalAlpha = 0.2
+
   ctx.drawImage(
     svg,
     canvas.width / 2 - logoWidth / 2,
@@ -49,21 +67,9 @@ export default async function home(app) {
     logoHeight
   )
 
+  aboutFrame.drawCanvas()
+
   document.body.appendChild(canvas)
-
-  const logo = addCanvas({
-    context: 'logo',
-  })
-
-  let intro = []
-
-  let mouseX = 0
-  let nextMouseX = mouseX
-  window.addEventListener('mousemove', (event) => {
-    nextMouseX = event.clientX
-  })
-
-  let fadeIndex = 0
 
   animate({
     duration: 3000,
@@ -73,22 +79,8 @@ export default async function home(app) {
     },
   })
 
-  let row = 0
-  const getValue = (timestamp, duration) => {
-    const t = (timestamp % duration) / duration
-    return (1 - Math.cos(2 * Math.PI * t)) / 2
-  }
-
-  let then = Date.now()
-
-  let clicked = false
-
-  let main = []
-
-  let forceWidth = null
-
   function loop(timestamp) {
-    intro = []
+    frame.clear()
     mouseX += (nextMouseX - mouseX) * 0.01
     for (let r = 0; r < dimensions.rows; r++) {
       const timeValue = getValue(timestamp, 4000)
@@ -96,7 +88,7 @@ export default async function home(app) {
       const mainValue = getValue(ms, 3000)
       const widthValue = getValue(timestamp, 8000)
 
-      const width = forceWidth || lerp(30, dimensions.cols - 2, widthValue)
+      const width = lerp(30, dimensions.cols - 2, widthValue)
       const len = lerp(0, width, mainValue)
       const col = Math.floor(dimensions.cols / 2)
 
@@ -126,95 +118,83 @@ export default async function home(app) {
                 lerp(0, grayRamp.length - (fadeIndex < 0.95 ? 1 : 2), modulated)
               )
             : grayRamp.length - 2
-          const value = grayRamp[charIndex]
-          if (value.trim()) {
-            intro.push(
-              createPoint({
-                x: (col + i) / dimensions.cols,
-                y: (row + r) / dimensions.rows,
-                context: 'animation',
-                value: grayRamp[charIndex],
-              })
-            )
-          }
+
+          frame.createPoint({
+            x: (col + i) / dimensions.cols,
+            y: (row + r) / dimensions.rows,
+            context: 'animation',
+            value: grayRamp[charIndex],
+          })
         }
       }
     }
-
-    const now = Date.now()
-
-    if (!clicked) {
-      main = [...intro]
-    }
-    applyPhysics(main, now - then)
-    render(main)
-    then = now
+    render(frame)
     raf = requestAnimationFrame(loop)
   }
 
   raf = requestAnimationFrame(loop)
 
-  logo.push(
-    ...addText({
-      col: Math.floor(dimensions.cols / 2),
-      row: Math.floor(dimensions.rows / 2) + 7,
-      align: 'center',
-      context: 'text',
-      text: 'Digital first creative design agency'.toUpperCase(),
-    })
-  )
+  let stop
+
+  aboutFrame.setFormattedParagraph({
+    text: 'Digital first creative design agency\nBorn in Sweden, based in Scandinavia'.toUpperCase(),
+    col: Math.floor(dimensions.cols / 2) - 40,
+    row: Math.floor(dimensions.rows / 2) + 7,
+    width: 80,
+    align: 'center',
+    fixed: true,
+    context: 'text',
+  })
 
   document.body.addEventListener(
     'click',
-    async () => {
-      clicked = true
-      gravitate(main, {
-        gravity: 1.4,
-        damping: 0.9,
-      })
-      explode(main, { spread: 0.4 })
-      await wait(800)
-      morph(main, logo)
-      await wait(2400)
-      morph(
-        main,
-        addText({
-          col: Math.floor(dimensions.cols / 2),
-          row: Math.floor(dimensions.rows / 2) + 7,
-          align: 'center',
-          context: 'text',
-          text: 'Born in Sweden · based in Scandinavia · Operating worldwide'.toUpperCase(),
-        }),
-        {
-          contextFilter: 'text',
-        }
+    () => {
+      cancelAnimationFrame(raf)
+      explode(
+        frame.points.filter((p) => p.context === 'animation'),
+        { spread: 0.2 }
       )
-      await wait(2400)
-      morph(
-        main,
-        [
-          createPoint({
-            x: 0.5,
-            y: (Math.floor(dimensions.rows / 2) + 7) / dimensions.rows,
-            context: 'text',
-            value: ' ',
-          }),
-        ],
-        {
-          contextFilter: 'text',
-        }
-      )
-      await wait(1000)
-      explode(main, {
-        spread: 1,
-      })
-      gravitate(main, {
+      let g = gravitate(frame, {
         gravity: 1,
-        damping: 0.9,
       })
-      await wait(400)
-      console.log(main)
-      // gravitate(main)
+      stop = g.stop
+      setTimeout(() => {
+        morph({
+          from: frame,
+          to: aboutFrame,
+          duration: 2000,
+          easing: inCirc,
+        })
+        document.body.addEventListener(
+          'click',
+          () => {
+            const newFrame = createFrame()
+            newFrame.setText({
+              text: 'This is it'.toUpperCase(),
+              col: Math.floor(dimensions.cols / 2),
+              align: 'center',
+              row: Math.floor(dimensions.rows / 2),
+              fixed: true,
+              context: 'text',
+            })
+
+            for (const p of frame.points) {
+              p.fixed = false
+              delete p.morph
+            }
+            // explode(frame.points, { spread: 0.1 })
+            // setTimeout(() => {
+            morph({
+              from: frame,
+              to: newFrame,
+              duration: 2000,
+              easing: inCirc,
+            })
+            // }, 2000)
+          },
+          { once: true }
+        )
+      }, 1000)
     },
     { once: true }
   )

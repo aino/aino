@@ -8,21 +8,35 @@ import { linear } from '@/js/utils/easing'
 const diffusion = 0.001
 
 // The character set for ASCII rendering.
-const chars = `- ABCDEFGHIJKLMNOØÖÄÅPQRSTUVWXYZ0123456789&/@+?,.`
-
+const chars = `$MBNQW@&R8GD6S9OH#E5UK0A2XP34ZC%VIF17YTJL[]?}{()<>|=+\\/^!";*_:~,'-.·\` `
 /**
  * Find the closest point (or a fallback) in `toPoints` matching a given point.
  */
 function findClosestPoint(target, points) {
   let minDist = Infinity
   let closest = null
+  let allUsed = true
+  let allMarked = true
+  for (let i = 0; i < points.length; i++) {
+    const p = points[i]
+    if (p.marked) {
+      allMarked = false
+      break
+    }
+    if (p.used) {
+      allUsed = false
+      break
+    }
+  }
 
   // Loop over each candidate point.
   for (let i = 0; i < points.length; i++) {
     const p = points[i]
 
     // Skip points that have been marked or already used.
-    if (p.used || p.marked) continue
+    if ((p.used && !allUsed) || (p.marked && !allMarked)) {
+      continue
+    }
 
     // Calculate the squared distance (no need for the square root).
     const dx = target.x - p.x
@@ -59,12 +73,16 @@ export default function grid(node) {
    * Render the current frame’s points into the node.
    */
   const render = (frame) => {
+    window._frame = frame
     textArr.fill(' ')
     // Render non‑fixed points first, then fixed points (so fixed ones are on top)
     const processPoints = (filterCondition) => {
       for (let i = 0; i < frame.points.length; i++) {
         const point = frame.points[i]
         if (filterCondition(point)) {
+          if (point.context === 'text') {
+            // console.log(point.value, point.y)
+          }
           const col = Math.round(point.x * cols)
           const row = Math.round(point.y * rows)
           let value = point.value
@@ -81,6 +99,8 @@ export default function grid(node) {
     processPoints((p) => p.fixed)
     node.textContent = insertEvery(textArr, '\n', cols).join('')
   }
+
+  window._render = render
 
   /**
    * Give all points an explosion-like kick.
@@ -147,7 +167,6 @@ export default function grid(node) {
       let log = false
       for (let i = 0; i < frame.points.length; i++) {
         const p = frame.points[i]
-        if (p.fixed) continue
 
         if (p.morph) {
           // Calculate the differences to the target.
@@ -185,25 +204,36 @@ export default function grid(node) {
             p.y += p.vy * dt
 
             // --- Fade the character ---
-            // Make sure that both the from and to values are in grayRamp.
-            const fromIndex = grayRamp.indexOf(p.morph.fromValue)
-            const toIndex = grayRamp.indexOf(p.morph.toValue)
+            // Make sure that both the from and to values are in chars.
+            const fromIndex = chars.indexOf(p.morph.fromValue)
+            const toIndex = chars.indexOf(p.morph.toValue)
             if (fromIndex === -1 || toIndex === -1) {
               // Fallback if one of the characters isn’t found.
               p.value = p.morph.toValue
             } else {
               // Interpolate between fromIndex and toIndex.
               const charIndex = Math.floor(lerp(fromIndex, toIndex, progress))
-              p.value = grayRamp[charIndex]
+              p.value = chars[charIndex]
             }
           } else {
             // Once the point is close enough to its destination, snap it in place.
             p.x = p.morph.toX
             p.y = p.morph.toY
+            const ty = p.y
+            p.vx = 0
+            p.vy = 0
             p.value = p.morph.toValue // ensure the final character is the target value
+            p.fixed = true
+            delete p.morph
           }
           continue // Skip the rest of the update for morphed points.
         }
+
+        if (Math.abs(p.vy) < 0.0001 && p.y >= 0.95) {
+          frame.points.splice(i, 1)
+        }
+
+        if (p.fixed) continue
 
         p.vy += gravity * dt
         p.x += p.vx * dt
@@ -230,6 +260,7 @@ export default function grid(node) {
           }
         }
       }
+
       // --- Spatial Partitioning ---
       // Choose cell sizes based on the radii.
       const cellSizeX = 2 * radiusX
@@ -377,17 +408,20 @@ export default function grid(node) {
       for (let i = 0; i < from.points.length; i++) {
         const point = from.points[i]
         const closest = findClosestPoint(point, to.points)
-        closest.marked = true
-        Object.assign(point, {
-          morph: {
-            toX: closest.x,
-            toY: closest.y,
-            fromY: point.y,
-            fromX: point.x,
-            fromValue: point.value,
-            toValue: closest.value,
-          },
-        })
+        if (closest) {
+          closest.marked = true
+          Object.assign(point, {
+            fixed: false,
+            morph: {
+              toX: closest.x,
+              toY: closest.y,
+              fromY: point.y,
+              fromX: point.x,
+              fromValue: point.value,
+              toValue: closest.value,
+            },
+          })
+        }
       }
       to.points
         .filter((p) => !p.marked)
@@ -397,7 +431,7 @@ export default function grid(node) {
 
           if (closest) {
             // Mark the chosen 'from' point as used so it won't be reused.
-            closest.used = true
+            // closest.used = true
             // Optionally, mark the 'to' point as processed if you don't need it later.
             // p.marked = true
 
@@ -408,6 +442,8 @@ export default function grid(node) {
               ...p, // copy properties from the 'to' point
               x: closest.x, // starting x (from the matched 'from' point)
               y: closest.y, // starting y (from the matched 'from' point)
+              fixed: false,
+              value: ' ',
               morph: {
                 toX: p.x, // target x (from the 'to' point)
                 toY: p.y, // target y (from the 'to' point)
@@ -420,6 +456,7 @@ export default function grid(node) {
 
             // Add the newly created morphed point into the 'from.points' array.
             from.points.push(newPoint)
+            window._points = from.points.filter((p) => p.context === 'text')
           } else {
             console.warn('No available closest point found for to point:', p)
           }
@@ -552,28 +589,43 @@ export default function grid(node) {
       col = 0,
       row = 0,
       context = '',
+      fixed,
     }) => {
       if (!text || !cols || !rows) return
 
-      const words = text.split(/\s+/)
+      // Split text into tokens. Newlines are captured as separate tokens.
+      const tokens = text.split(/(\n)/)
       const lines = []
       let currentLine = []
 
-      for (let i = 0; i < words.length; i++) {
-        const word = words[i]
-        const lineLength = currentLine.join(' ').length
-        if (lineLength + word.length + (lineLength > 0 ? 1 : 0) <= width) {
-          currentLine.push(word)
-        } else {
+      tokens.forEach((token) => {
+        if (token === '\n') {
+          // Force a new line when a newline token is encountered.
           lines.push(currentLine.join(' '))
-          currentLine = [word]
+          currentLine = []
+        } else {
+          // Process token that is not a newline. It might contain extra spaces,
+          // so we split it into words.
+          const words = token.split(/\s+/).filter((w) => w.length > 0)
+          words.forEach((word) => {
+            const lineLength = currentLine.join(' ').length
+            // +1 accounts for the space if currentLine is not empty.
+            if (lineLength + word.length + (lineLength > 0 ? 1 : 0) <= width) {
+              currentLine.push(word)
+            } else {
+              lines.push(currentLine.join(' '))
+              currentLine = [word]
+            }
+          })
         }
-      }
+      })
 
+      // Flush any remaining text.
       if (currentLine.length > 0) {
         lines.push(currentLine.join(' '))
       }
 
+      // Apply alignment.
       const alignedLines = lines.map((line) => {
         if (align === 'center') {
           const padding = Math.max(0, Math.floor((width - line.length) / 2))
@@ -604,17 +656,20 @@ export default function grid(node) {
             return justifiedLine
           }
         } else {
+          // Default is left-aligned.
           return line.padEnd(width, ' ')
         }
       })
 
+      // Output each aligned line using setText.
       for (let r = 0; r < alignedLines.length; r++) {
-        if (r + row >= rows) return
+        if (r + row >= rows) break // Stop if we exceed the available rows.
         setText({
           row: row + r,
           col,
           text: alignedLines[r].slice(0, cols - col),
           context,
+          fixed,
         })
       }
     }
@@ -646,7 +701,7 @@ export default function grid(node) {
             createPoint({
               x: x / cols,
               // Adjust the y coordinate by adding the vertical offset
-              y: y / 2 / rows + verticalOffset,
+              y: y / 2 / rows + verticalOffset * 0.99,
               value: char,
               context: 'canvas',
             })

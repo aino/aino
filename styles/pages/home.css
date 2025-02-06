@@ -4,7 +4,7 @@
 }
 
 .grid {
-  height: calc((var(--rows) * 2rem));
+  height: calc((var(--rows) * 2rem) + 4rem);
   text-transform: none;
   margin-top: -6rem;
 }
