@@ -4,7 +4,12 @@
 }
 
 .grid {
-  height: calc((var(--rows) * 2rem) + 4rem);
+  height: 100vh;
   text-transform: none;
   margin-top: -6rem;
+  width: 100vw;
+  margin-left: -2rem;
+  overflow: hidden;
+  white-space: pre;
+  cursor: default;
 }

@@ -1,18 +1,19 @@
 import '@/styles/pages/home.css'
 import grid from '@/js/grid/grid2'
-import { q } from '@/js/utils/dom'
-import { getCharacterForGrayScale, grayRamp } from '../ascii'
+import { q, id } from '@/js/utils/dom'
 import { outQuad, inQuad, inCirc, outCirc, inOutCirc } from '@/js/utils/easing'
 import wait from '@/js/utils/wait'
-import { clone } from '../utils/object'
 import animate, { lerp, reverseLerp } from '@/js/utils/animate'
 import work from '@/data/work.js'
 import loadimage from '@/js/utils/loadimage'
+import { grayRamp } from '../ascii'
 
 export const path = /^\/$/
 
 export default async function home(app) {
   const [gridNode] = q('.grid')
+  const nav = id('nav')
+  nav.style.opacity = '0'
 
   const {
     canvas,
@@ -33,7 +34,7 @@ export default async function home(app) {
   let raf
 
   const svg = await loadimage('/aino.svg')
-  const scale =
+  let scale =
     Math.min(canvas.width / svg.width, canvas.height / svg.height) / 1.5
   const logoWidth = svg.width * scale
   const logoHeight = svg.height * scale * 0.5
@@ -55,12 +56,36 @@ export default async function home(app) {
     context: 'logo',
   })
 
+  const office = await loadimage('/images/office.jpg')
+  ctx.globalAlpha = 1
+  ctx.fillStyle = '#fff'
+  ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+  scale = Math.max(
+    (canvas.width - 4) / 2 / office.width,
+    (canvas.height - 4) / office.height
+  )
+  ctx.drawImage(office, 2, 3, office.width * scale, (office.height * scale) / 2)
+
+  const officePoints = addCanvas()
+
   let intro = []
 
   let mouseX = 0
-  let nextMouseX = mouseX
+  let dirX = 0
+  let nextMouseX = null
+  let mouseY = 0
+  let nextMouseY = null
+
   window.addEventListener('mousemove', (event) => {
     nextMouseX = event.clientX
+    nextMouseY = event.clientY
+    if (!mouseX) {
+      mouseX = nextMouseX
+    }
+    if (!mouseY) {
+      mouseY = nextMouseY
+    }
   })
 
   let fadeIndex = 0
@@ -73,7 +98,7 @@ export default async function home(app) {
     },
   })
 
-  let row = 0
+  let textRow = Math.floor(dimensions.rows / 2 + logoHeight / 2)
   const getValue = (timestamp, duration) => {
     const t = (timestamp % duration) / duration
     return (1 - Math.cos(2 * Math.PI * t)) / 2
@@ -89,7 +114,9 @@ export default async function home(app) {
 
   function loop(timestamp) {
     intro = []
-    mouseX += (nextMouseX - mouseX) * 0.01
+    mouseX += (nextMouseX - mouseX) * 0.03
+    mouseY += (nextMouseY - mouseY) * 0.03
+    dirX += (nextMouseX - dirX) * 0.01
     for (let r = 0; r < dimensions.rows; r++) {
       const timeValue = getValue(timestamp, 4000)
       const ms = timestamp + r * lerp(50, 150, timeValue)
@@ -106,10 +133,10 @@ export default async function home(app) {
           // `base` runs from 0 (left edge) to 1 (right edge) along the drawn segment.
           const base = (i + halfLen) / (2 * halfLen)
           // The time-based phase is preserved.
-          const phase = (timestamp + (r / 5) * lerp(10, 20, timeValue)) * 0.003
+          const phase = (timestamp + (r / 6) * lerp(10, 20, timeValue)) * 0.003
 
           // Compute the new dome center from the mouse.
-          const mouseTarget = mouseX / window.innerWidth
+          const mouseTarget = dirX / window.innerWidth
 
           const modulated = Math.min(
             1,
@@ -131,7 +158,7 @@ export default async function home(app) {
             intro.push(
               createPoint({
                 x: (col + i) / dimensions.cols,
-                y: (row + r) / dimensions.rows,
+                y: r / dimensions.rows,
                 context: 'animation',
                 value: grayRamp[charIndex],
               })
@@ -144,7 +171,18 @@ export default async function home(app) {
     const now = Date.now()
 
     if (!clicked) {
-      main = [...intro]
+      main = [
+        ...intro,
+        ...(nextMouseX !== null && nextMouseY !== null
+          ? addText({
+              col:
+                Math.floor((mouseX / dimensions.width) * dimensions.cols) - 2,
+              row: Math.floor((mouseY / dimensions.height) * dimensions.rows),
+              context: 'text',
+              text: 'Click'.toUpperCase(),
+            })
+          : []),
+      ]
     }
     applyPhysics(main, now - then)
     render(main)
@@ -157,7 +195,7 @@ export default async function home(app) {
   logo.push(
     ...addText({
       col: Math.floor(dimensions.cols / 2),
-      row: Math.floor(dimensions.rows / 2) + 7,
+      row: textRow,
       align: 'center',
       context: 'text',
       text: 'Digital first creative design agency'.toUpperCase(),
@@ -169,18 +207,18 @@ export default async function home(app) {
     async () => {
       clicked = true
       gravitate(main, {
-        gravity: 1.4,
-        damping: 0.9,
+        gravity: 1,
+        damping: 1,
       })
       explode(main, { spread: 0.4 })
-      await wait(800)
+      await wait(700)
       morph(main, logo)
-      await wait(2400)
+      await wait(3000)
       morph(
         main,
         addText({
           col: Math.floor(dimensions.cols / 2),
-          row: Math.floor(dimensions.rows / 2) + 7,
+          row: textRow,
           align: 'center',
           context: 'text',
           text: 'Born in Sweden · based in Scandinavia · Operating worldwide'.toUpperCase(),
@@ -195,7 +233,7 @@ export default async function home(app) {
         [
           createPoint({
             x: 0.5,
-            y: (Math.floor(dimensions.rows / 2) + 7) / dimensions.rows,
+            y: textRow / dimensions.rows,
             context: 'text',
             value: ' ',
           }),
@@ -204,7 +242,7 @@ export default async function home(app) {
           contextFilter: 'text',
         }
       )
-      await wait(1000)
+      await wait(600)
       explode(main, {
         spread: 1,
       })
@@ -213,7 +251,25 @@ export default async function home(app) {
         damping: 0.9,
       })
       await wait(400)
-      console.log(main)
+
+      // await wait(1000)
+      const menu = [
+        ...addText({
+          col: 2,
+          row: 1,
+          context: 'text',
+          text: 'Aino Work About'.toUpperCase(),
+        }),
+        ...addText({
+          col: dimensions.cols - 29,
+          row: 1,
+          context: 'text',
+          text: 'Studio life careers contact'.toUpperCase(),
+        }),
+      ]
+      // menu.push(...officePoints)
+      morph(main, menu)
+
       // gravitate(main)
     },
     { once: true }

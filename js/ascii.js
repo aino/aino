@@ -2,7 +2,7 @@ import { create, getCssVariable } from '@/js/utils/dom'
 
 export const toGrayScale = ({ r, g, b }) => 0.21 * r + 0.72 * g + 0.07 * b
 
-export const grayRamp = 'N@O$0A869#452I3=7+1/:-·` '
+export const grayRamp = 'N@O$0A869#452I3=7+1/:-·` '
 
 export const getCharacterForGrayScale = (grayScale) =>
   grayRamp[Math.ceil(((grayRamp.length - 1) * grayScale) / 255)]
