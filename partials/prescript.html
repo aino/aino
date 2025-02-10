@@ -6,18 +6,16 @@
       const width = innerWidth
       let rem = 8.5
       let cols = Math.floor(width / rem)
-      let col = cols - 4
-      if (width > 767) {
-        const charsColumns = cols - 18
-        const evenCharsColumns = charsColumns - (charsColumns % 8)
-        cols = evenCharsColumns + 14
-        rem = width / (cols + 4)
-        col = Math.floor((width / rem - 10) / 4)
-      } else {
-        cols = Math.floor(cols / 2) * 2
-        rem = width / cols
-        col = (cols - 4) / 2
-      }
+      cols -= 11 // 1 gutter, 2 margin
+      // Snap down to multiple of 8
+      cols -= cols % 8
+      // Add 7 back
+      cols += 11
+      // Recalculate charWidth
+      rem = width / cols
+
+      col = Math.floor((width / rem - 11) / 4)
+
       let fontSize = rem / 0.6 - 0.9
       let letterSpacing = (rem / 0.6 - fontSize) * 0.6
       if (isSafari) {

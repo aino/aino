@@ -14,7 +14,6 @@ export const path = /^\/$/
 export default async function home(app) {
   const [gridNode] = q('.grid')
   const nav = id('nav')
-  nav.style.opacity = '0'
 
   const {
     canvas,
@@ -240,21 +239,24 @@ export default async function home(app) {
       })
       await wait(800)
 
-      // await wait(1000)
-      const menu = [
-        ...createText({
-          col: 2,
-          row: 1,
-          context: 'text',
-          text: 'Aino Work About'.toUpperCase(),
-        }),
-        ...createText({
-          col: dimensions.cols - 29,
-          row: 1,
-          context: 'text',
-          text: 'Studio life careers contact'.toUpperCase(),
-        }),
-      ]
+      const menu = []
+      let col = 2
+      const navLength = nav.children.length
+      for (let i = 0; i < navLength; i++) {
+        const navContainer = nav.children[i]
+        const text = q('a', navContainer)
+          .map((a) => a.innerText.toUpperCase())
+          .join('  ')
+        menu.push(
+          ...createText({
+            col: i === navLength - 1 ? dimensions.cols - 2 - text.length : col,
+            row: 1,
+            context: 'text',
+            text,
+          })
+        )
+        col += Math.floor((dimensions.cols - 4) / 4) + 1
+      }
       morph(main, menu)
     },
     { once: true }

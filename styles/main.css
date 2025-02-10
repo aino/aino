@@ -84,3 +84,8 @@ hr {
 section.image {
   margin-bottom: 2rem;
 }
+
+.cols {
+  display: flex;
+  gap: 1rem;
+}

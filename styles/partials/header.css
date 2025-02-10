@@ -3,7 +3,15 @@
   top: 2rem;
   left: 2rem;
   z-index: 2;
-  display: flex;
   width: calc(100vw - 4rem);
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  > div {
+    display: flex;
+    gap: 2rem;
+    &:last-child {
+      justify-self: end;
+    }
+  }
 }
