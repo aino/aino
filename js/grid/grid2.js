@@ -3,6 +3,7 @@ import animate, { lerp } from '@/js/utils/animate'
 import { getCssVariable } from '@/js/utils/dom'
 import { getCharacterForGrayScale, toGrayScale } from '../ascii'
 import { inQuad, outQuad, inOutCirc, outCirc, inCirc } from '../utils/easing'
+import { create, style } from '../utils/dom'
 
 const DIFFUSION = 0.001
 
@@ -164,27 +165,6 @@ export default function grid(node) {
         const ax = dx * p.spring
         const ay = dy * p.spring
 
-        /*
-
-        const currentDistance = Math.sqrt(dx * dx + dy * dy)
-        const totalDistance = Math.sqrt(
-          Math.pow(p.morph.toX - p.morph.fromX, 2) +
-            Math.pow(p.morph.toY - p.morph.fromY, 2)
-        )
-        const dist = Math.abs(currentDistance / totalDistance)
-        let progress = 1 - dist
-        progress = Math.max(0, Math.min(1, progress))
-
-        if (progress > 0.98) {
-          progress = 1
-        }
-
-        */
-
-        const totalDistance = Math.sqrt(
-          Math.pow(p.morph.toX - p.x, 2) + Math.pow(p.morph.toY - p.y, 2)
-        )
-
         const now = performance.now() // High-resolution time
 
         const smoothTime = 0.5
@@ -274,20 +254,56 @@ export default function grid(node) {
   const applyPhysics = (points, delta = 0) => {
     const dt = Math.min(0.1, delta / 1000)
     const floor = (rows - 1) / rows
-    const radiusX = 0.05 / cols
-    const radiusY = 0.08 / rows
-    const combinedRadius = 8
-    const combinedRadiusSqr = combinedRadius * combinedRadius
 
     applyMorph(points, dt)
+
+    const dots = []
+    const collisions = []
+
+    const applyFriction = (point) => {
+      if (point.y === floor && Math.abs(point.vy) < 0.005) {
+        point.vy = 0
+        point.vx *= 0.95
+        if (Math.abs(point.vx) < 0.005) {
+          point.vx = 0
+        }
+      }
+    }
+
+    const now = Date.now()
+
+    const atFloor = (point) =>
+      Math.abs(point.vy) < 0.001 &&
+      Math.abs(point.vx) < 0.001 &&
+      point.y === floor &&
+      point.gravity
 
     // Update velocities and positions.
     for (let i = points.length - 1; i >= 0; i--) {
       const p = points[i]
+      const col = Math.round(p.x * cols)
+      const row = Math.round(p.y * rows)
+      if (p.removeAt && now > p.removeAt) {
+        points[i] = points[points.length - 1]
+        points.pop()
+        continue
+      }
       if (!p.morph) {
-        if (Math.abs(p.vy) < 0.0001 && p.y >= 0.95 && p.gravity) {
+        if (!dots[row]) {
+          dots[row] = []
+        }
+        if (dots[row][col]) {
+          collisions.push([p, dots[row][col]])
+        } else {
+          dots[row][col] = p
+        }
+        if (atFloor(p) && !p.removeAt) {
+          p.removeAt = now + 800
+        }
+        if (p.removeAt && now > p.removeAt && atFloor(p)) {
           points[i] = points[points.length - 1]
           points.pop()
+          console.log('removed')
           continue
         }
         p.vy += p.gravity * dt
@@ -307,14 +323,37 @@ export default function grid(node) {
         p.vy *= -p.damping
         p.y = 0
       }
-      if (p.y === floor && Math.abs(p.vy) < 0.001) {
-        p.vy = 0
-        p.vx *= 0.95
-        if (Math.abs(p.vx) < 0.001) {
-          p.vx = 0
-        }
-      }
+      applyFriction(p)
     }
+
+    for (const [e, d] of collisions) {
+      const vCollision = { x: e.x - d.x, y: e.y - d.y }
+      const distance = Math.sqrt(
+        (e.x - d.x) * (e.x - d.x) + (e.y - d.y) * (e.y - d.y)
+      )
+      const vCollisionNorm = {
+        x: vCollision.x / distance,
+        y: vCollision.y / distance,
+      }
+      const vRelativeVelocity = {
+        x: d.vx - e.vx,
+        y: d.vy - e.vy,
+      }
+      const speed =
+        vRelativeVelocity.x * vCollisionNorm.x +
+        vRelativeVelocity.y * vCollisionNorm.y
+      if (speed >= 0) {
+        const impulse = (2 * speed) / 2
+        d.vx -= impulse * vCollisionNorm.x * d.damping
+        d.vy -= impulse * vCollisionNorm.y * d.damping
+        e.vx += impulse * vCollisionNorm.x * e.damping
+        e.vy += impulse * vCollisionNorm.y * e.damping
+      }
+      // applyFriction(d)
+      // applyFriction(e)
+    }
+
+    /*
 
     // Spatial Partitioning
     const cellSizeX = 2 * radiusX
@@ -407,6 +446,7 @@ export default function grid(node) {
         }
       }
     }
+      */
   }
 
   // --- Optimized morph function using a lookup map by character ---
@@ -548,7 +588,15 @@ export default function grid(node) {
     console.log(`Morphed in ${Date.now() - now}ms`)
   }
 
-  const gravitate = (points, { gravity = 3, damping = 0.85 } = {}) => {
+  const randomize = (points, { spread = 1 } = {}) => {
+    for (let i = 0, len = points.length; i < len; i++) {
+      const p = points[i]
+      p.x = lerp(p.x, Math.random(), spread)
+      p.y = lerp(p.y, Math.random(), spread)
+    }
+  }
+
+  const gravitate = (points, { gravity = 3, damping = 0.8 } = {}) => {
     for (let i = 0, len = points.length; i < len; i++) {
       const p = points[i]
       delete p.morph
@@ -556,7 +604,7 @@ export default function grid(node) {
     }
   }
 
-  const addParagraph = ({
+  const createParagraph = ({
     text,
     width = 40,
     col = 0,
@@ -630,7 +678,7 @@ export default function grid(node) {
     for (let r = 0, len = alignedLines.length; r < len; r++) {
       if (r + row >= rows) break
       points.push(
-        ...addText({
+        ...createText({
           row: row + r,
           col,
           text: alignedLines[r].slice(0, cols - col),
@@ -641,7 +689,7 @@ export default function grid(node) {
     return points
   }
 
-  const addCanvas = ({ context = 'canvas' } = {}) => {
+  const createCanvas = ({ context = 'canvas' } = {}) => {
     const points = []
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
     const data = imageData.data
@@ -697,14 +745,14 @@ export default function grid(node) {
       vx: 0,
       vy: 0,
       gravity: 0,
-      damping: 0.8,
+      damping: 0.7,
       spring: 0.4,
       friction: 0.9,
       uid: generateUID(),
     }
   }
 
-  const addText = ({
+  const createText = ({
     row = 0,
     col = 0,
     text,
@@ -726,6 +774,47 @@ export default function grid(node) {
     return points
   }
 
+  let loggers = create('div')
+  style(loggers, {
+    position: 'fixed',
+    top: 'calc(100vh - 2rem)',
+    left: '1rem',
+    opacity: 0.3,
+  })
+
+  document.body.appendChild(loggers)
+
+  const startRenderLoop = (points, fn) => {
+    const logger = create('div')
+    loggers.appendChild(logger)
+    let lastTimestamp = 0
+    let raf
+    const loop = (timestamp) => {
+      const delta = timestamp - lastTimestamp
+      if (lastTimestamp !== 0) {
+        const delta = timestamp - lastTimestamp
+        const fps = 1000 / delta
+        logger.textContent = `FPS: ${fps.toFixed(2)}` // Print FPS to the console with 2 decimal places.
+      }
+      if (fn) {
+        const nextPoints = fn(delta, timestamp)
+        if (Array.isArray(nextPoints)) {
+          points = nextPoints
+        }
+      }
+      applyPhysics(points, delta)
+      render(points)
+      lastTimestamp = timestamp
+      raf = requestAnimationFrame(loop)
+    }
+    raf = requestAnimationFrame(loop)
+    return raf
+  }
+
+  const stopRenderLoop = (id) => {
+    cancelAnimationFrame(id)
+  }
+
   return {
     render,
     morph,
@@ -733,11 +822,14 @@ export default function grid(node) {
     explode,
     canvas,
     applyPhysics,
-    addText,
-    addParagraph,
-    addCanvas,
+    createText,
+    createParagraph,
+    createCanvas,
     gravitate,
     createPoint,
+    startRenderLoop,
+    stopRenderLoop,
+    randomize,
     dimensions: {
       get width() {
         return width

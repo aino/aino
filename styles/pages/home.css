@@ -13,3 +13,10 @@
   white-space: pre;
   cursor: default;
 }
+
+.fps {
+  position: fixed;
+  top: calc(100vh - 4rem);
+  right: 2rem;
+  opacity: 0.3;
+}

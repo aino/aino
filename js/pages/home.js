@@ -7,6 +7,7 @@ import animate, { lerp, reverseLerp } from '@/js/utils/animate'
 import work from '@/data/work.js'
 import loadimage from '@/js/utils/loadimage'
 import { grayRamp } from '../ascii'
+import { create } from '../utils/dom'
 
 export const path = /^\/$/
 
@@ -18,16 +19,18 @@ export default async function home(app) {
   const {
     canvas,
     createPoint,
-    addText,
+    createText,
     blend,
     addParagraph,
-    addCanvas,
+    createCanvas,
     gravitate,
     explode,
     render,
     morph,
     applyPhysics,
     dimensions,
+    startRenderLoop,
+    stopRenderLoop,
   } = grid(gridNode)
 
   const ctx = canvas.getContext('2d')
@@ -50,24 +53,13 @@ export default async function home(app) {
     logoHeight
   )
 
-  document.body.appendChild(canvas)
-
-  const logo = addCanvas({
+  const logo = createCanvas({
     context: 'logo',
   })
 
-  const office = await loadimage('/images/office.jpg')
   ctx.globalAlpha = 1
   ctx.fillStyle = '#fff'
   ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-  scale = Math.max(
-    (canvas.width - 4) / 2 / office.width,
-    (canvas.height - 4) / office.height
-  )
-  ctx.drawImage(office, 2, 3, office.width * scale, (office.height * scale) / 2)
-
-  const officePoints = addCanvas()
 
   let intro = []
 
@@ -104,77 +96,78 @@ export default async function home(app) {
     return (1 - Math.cos(2 * Math.PI * t)) / 2
   }
 
-  let then = Date.now()
-
   let clicked = false
 
   let main = []
 
   let forceWidth = null
 
-  function loop(timestamp) {
+  startRenderLoop(main, (delta, timestamp) => {
     intro = []
-    mouseX += (nextMouseX - mouseX) * 0.03
-    mouseY += (nextMouseY - mouseY) * 0.03
+    mouseX += (nextMouseX - mouseX) * (delta / 200)
+    mouseY += (nextMouseY - mouseY) * (delta / 200)
     dirX += (nextMouseX - dirX) * 0.01
-    for (let r = 0; r < dimensions.rows; r++) {
-      const timeValue = getValue(timestamp, 4000)
-      const ms = timestamp + r * lerp(50, 150, timeValue)
-      const mainValue = getValue(ms, 3000)
-      const widthValue = getValue(timestamp, 8000)
+    if (!clicked) {
+      for (let r = 0; r < dimensions.rows; r++) {
+        const timeValue = getValue(timestamp, 4000)
+        const ms = timestamp + r * lerp(50, 150, timeValue)
+        const mainValue = getValue(ms, 3000)
+        const widthValue = getValue(timestamp, 8000)
 
-      const width = forceWidth || lerp(30, dimensions.cols - 2, widthValue)
-      const len = lerp(0, width, mainValue)
-      const col = Math.floor(dimensions.cols / 2)
+        const width = forceWidth || lerp(30, dimensions.cols - 2, widthValue)
+        const len = lerp(0, width, mainValue)
+        const col = Math.floor(dimensions.cols / 2)
 
-      const halfLen = Math.floor(len / 2)
-      for (let i = -halfLen; i <= halfLen; i++) {
-        if (col + i >= 0 && col + i < dimensions.cols) {
-          // `base` runs from 0 (left edge) to 1 (right edge) along the drawn segment.
-          const base = (i + halfLen) / (2 * halfLen)
-          // The time-based phase is preserved.
-          const phase = (timestamp + (r / 6) * lerp(10, 20, timeValue)) * 0.003
+        const halfLen = Math.floor(len / 2)
+        for (let i = -halfLen; i <= halfLen; i++) {
+          if (col + i >= 0 && col + i < dimensions.cols) {
+            // `base` runs from 0 (left edge) to 1 (right edge) along the drawn segment.
+            const base = (i + halfLen) / (2 * halfLen)
+            // The time-based phase is preserved.
+            const phase =
+              (timestamp + (r / 6) * lerp(10, 20, timeValue)) * 0.003
 
-          // Compute the new dome center from the mouse.
-          const mouseTarget = dirX / window.innerWidth
+            // Compute the new dome center from the mouse.
+            const mouseTarget = dirX / window.innerWidth
 
-          const modulated = Math.min(
-            1,
-            (Math.cos(
-              lerp(3, -3, mouseTarget) * Math.PI * (base - mouseTarget) + phase
-            ) +
-              1) /
-              2 +
-              (1 - fadeIndex)
-          )
-
-          const charIndex = !isNaN(modulated)
-            ? Math.floor(
-                lerp(0, grayRamp.length - (fadeIndex < 0.95 ? 1 : 2), modulated)
-              )
-            : grayRamp.length - 2
-          const value = grayRamp[charIndex]
-          if (value.trim()) {
-            intro.push(
-              createPoint({
-                x: (col + i) / dimensions.cols,
-                y: r / dimensions.rows,
-                context: 'animation',
-                value: grayRamp[charIndex],
-              })
+            const modulated = Math.min(
+              1,
+              (Math.cos(
+                lerp(3, -3, mouseTarget) * Math.PI * (base - mouseTarget) +
+                  phase
+              ) +
+                1) /
+                2 +
+                (1 - fadeIndex)
             )
+
+            const charIndex = !isNaN(modulated)
+              ? Math.floor(
+                  lerp(
+                    0,
+                    grayRamp.length - (fadeIndex < 0.95 ? 1 : 2),
+                    modulated
+                  )
+                )
+              : grayRamp.length - 2
+            const value = grayRamp[charIndex]
+            if (value.trim()) {
+              intro.push(
+                createPoint({
+                  x: (col + i) / dimensions.cols,
+                  y: r / dimensions.rows,
+                  context: 'animation',
+                  value: grayRamp[charIndex],
+                })
+              )
+            }
           }
         }
       }
-    }
-
-    const now = Date.now()
-
-    if (!clicked) {
       main = [
         ...intro,
         ...(nextMouseX !== null && nextMouseY !== null
-          ? addText({
+          ? createText({
               col:
                 Math.floor((mouseX / dimensions.width) * dimensions.cols) - 2,
               row: Math.floor((mouseY / dimensions.height) * dimensions.rows),
@@ -183,17 +176,12 @@ export default async function home(app) {
             })
           : []),
       ]
+      return main
     }
-    applyPhysics(main, now - then)
-    render(main)
-    then = now
-    raf = requestAnimationFrame(loop)
-  }
-
-  raf = requestAnimationFrame(loop)
+  })
 
   logo.push(
-    ...addText({
+    ...createText({
       col: Math.floor(dimensions.cols / 2),
       row: textRow,
       align: 'center',
@@ -202,13 +190,13 @@ export default async function home(app) {
     })
   )
 
-  document.body.addEventListener(
-    'click',
+  gridNode.addEventListener(
+    'mousedown',
     async () => {
       clicked = true
       gravitate(main, {
-        gravity: 1,
-        damping: 1,
+        gravity: 2,
+        damping: 0.9,
       })
       explode(main, { spread: 0.4 })
       await wait(700)
@@ -216,7 +204,7 @@ export default async function home(app) {
       await wait(3000)
       morph(
         main,
-        addText({
+        createText({
           col: Math.floor(dimensions.cols / 2),
           row: textRow,
           align: 'center',
@@ -247,30 +235,27 @@ export default async function home(app) {
         spread: 1,
       })
       gravitate(main, {
-        gravity: 1,
-        damping: 0.9,
+        gravity: 2,
+        damping: 0.4,
       })
-      await wait(400)
+      await wait(800)
 
       // await wait(1000)
       const menu = [
-        ...addText({
+        ...createText({
           col: 2,
           row: 1,
           context: 'text',
           text: 'Aino Work About'.toUpperCase(),
         }),
-        ...addText({
+        ...createText({
           col: dimensions.cols - 29,
           row: 1,
           context: 'text',
           text: 'Studio life careers contact'.toUpperCase(),
         }),
       ]
-      // menu.push(...officePoints)
       morph(main, menu)
-
-      // gravitate(main)
     },
     { once: true }
   )
