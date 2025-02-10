@@ -5,7 +5,7 @@
     const setVariables = () => {
       const width = innerWidth
       let rem = 8.5
-      let cols = Math.floor(width / rem)
+      let cols = Math.round(width / rem)
       cols -= 11 // 1 gutter, 2 margin
       // Snap down to multiple of 8
       cols -= cols % 8
