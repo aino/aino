@@ -1,7 +1,7 @@
 import { insertEvery } from '@/js/utils/array'
 import animate, { lerp } from '@/js/utils/animate'
 import { getCssVariable } from '@/js/utils/dom'
-import { getCharacterForGrayScale, toGrayScale } from '../ascii'
+import { toGrayScale } from '../ascii'
 import { inQuad, outQuad, inOutCirc, outCirc, inCirc } from '../utils/easing'
 import { create, style } from '../utils/dom'
 
@@ -9,6 +9,9 @@ const DIFFUSION = 0.001
 
 // The character set for ASCII rendering.
 export const CHARS = `$MBNQW@&R8GD6S9OH#E5UK0A2XP34ZC%VIF17YTJL[]?}{()<>|=+\\/^!";*_:~,'-.·\` `
+
+const getCharacterForGrayScale = (grayScale, grayRamp) =>
+  grayRamp[Math.ceil(((grayRamp.length - 1) * grayScale) / 255)]
 
 function generateUID() {
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
@@ -59,7 +62,7 @@ function findClosestPoint(target, points) {
   return closest
 }
 
-export default function grid(node) {
+export default function grid(node, grayRamp = CHARS) {
   let width,
     height,
     rem,
@@ -235,8 +238,8 @@ export default function grid(node) {
           inCirc(elapsed / (p.morph.duration * 1.5))
         )
 
-        const fromIndex = CHARS.indexOf(p.morph.fromValue)
-        const toIndex = CHARS.indexOf(p.morph.toValue)
+        const fromIndex = grayRamp.indexOf(p.morph.fromValue)
+        const toIndex = grayRamp.indexOf(p.morph.toValue)
         const charIndex = Math.floor(lerp(fromIndex, toIndex, progress))
         if (
           fromIndex === -1 ||
@@ -245,7 +248,7 @@ export default function grid(node) {
         ) {
           p.value = p.morph.toValue
         } else {
-          p.value = CHARS[charIndex]
+          p.value = grayRamp[charIndex]
         }
       }
     }
@@ -689,7 +692,7 @@ export default function grid(node) {
     return points
   }
 
-  const createCanvas = ({ context = 'canvas' } = {}) => {
+  const createFromCanvas = ({ context = 'canvas' } = {}) => {
     const points = []
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
     const data = imageData.data
@@ -702,7 +705,7 @@ export default function grid(node) {
         g = data[i + 1],
         b = data[i + 2]
       const l = toGrayScale({ r, g, b })
-      const value = getCharacterForGrayScale(l)
+      const value = getCharacterForGrayScale(l, grayRamp)
       if (value.trim() && l !== 255) {
         const x = xPixel / cols
         const y = yPixel / rows
@@ -722,13 +725,13 @@ export default function grid(node) {
         return Math.round(q.x * cols) === col && Math.round(q.y * rows) === row
       })
       if (top) {
-        const fromIndex = CHARS.indexOf(p.value)
-        const toIndex = CHARS.indexOf(top.value)
+        const fromIndex = grayRamp.indexOf(p.value)
+        const toIndex = grayRamp.indexOf(top.value)
         if (fromIndex === -1 || toIndex === -1) {
           p.value = top.value
         } else {
           const charIndex = Math.floor(lerp(fromIndex, toIndex, opacity))
-          p.value = CHARS[charIndex]
+          p.value = grayRamp[charIndex]
         }
       } else if (typeof fallback === 'string') {
         p.value = fallback
@@ -824,7 +827,7 @@ export default function grid(node) {
     applyPhysics,
     createText,
     createParagraph,
-    createCanvas,
+    createFromCanvas,
     gravitate,
     createPoint,
     startRenderLoop,

@@ -21,7 +21,7 @@ export default async function home(app) {
     createText,
     blend,
     addParagraph,
-    createCanvas,
+    createFromCanvas,
     gravitate,
     explode,
     render,
@@ -43,7 +43,7 @@ export default async function home(app) {
 
   ctx.fillStyle = '#fff'
   ctx.fillRect(0, 0, canvas.width, canvas.height)
-  ctx.globalAlpha = 0.2
+  ctx.globalAlpha = 0.4
   ctx.drawImage(
     svg,
     canvas.width / 2 - logoWidth / 2,
@@ -52,7 +52,7 @@ export default async function home(app) {
     logoHeight
   )
 
-  const logo = createCanvas({
+  const logo = createFromCanvas({
     context: 'logo',
   })
 
@@ -198,7 +198,7 @@ export default async function home(app) {
         damping: 0.9,
       })
       explode(main, { spread: 0.4 })
-      await wait(700)
+      await wait(600)
       morph(main, logo)
       await wait(3000)
       morph(
@@ -229,15 +229,15 @@ export default async function home(app) {
           contextFilter: 'text',
         }
       )
-      await wait(600)
-      explode(main, {
-        spread: 1,
-      })
-      gravitate(main, {
-        gravity: 2,
-        damping: 0.4,
-      })
       await wait(800)
+      //explode(main, {
+      //  spread: 1,
+      //})
+      // gravitate(main, {
+      //   gravity: 1,
+      //   damping: 0.8,
+      // })
+      // await wait(1800)
 
       const menu = []
       let col = 2
