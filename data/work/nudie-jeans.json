@@ -1,23 +1,32 @@
 {
   "name": "Nudie Jeans",
-  "slug": "nudie-jeans",
-  "year": "2010-",
+  "url": "https://www.nudiejeans.com/",
+  "services": [
+    "E-commerce",
+    "Architecture",
+    "Design",
+    "Development",
+    "Replatforming",
+    "Campaigns"
+  ],
+  "technologies": [
+    "Centra",
+    "Storyblok",
+    "Aino Commerce Engine",
+    "Voyado Elevate",
+    "Voyado Engage"
+  ],
   "sections": [
-    {
-      "columns": [
-        {
-          "html": "<br>"
-        },
-        {
-          "html": "Goa grejer enaSSSS"
-        },
-        {
-          "image": "placeholder"
-        },
-        {
-          "html": "test"
-        }
-      ]
-    }
+    [
+      {
+        "span": 2,
+        "html": "",
+        "image": "",
+        "video": ""
+      },
+      {
+        "html": "<p>Footwear, accessories</p>"
+      }
+    ]
   ]
 }

@@ -16,7 +16,6 @@ export default function ascii(source) {
   const ctx = canvas.getContext('2d')
 
   const text = create('div', {
-    contenteditable: true,
     class: 'ascii',
   })
 
@@ -43,6 +42,9 @@ export default function ascii(source) {
     }
     text.innerHTML = chars
   }
+
+  const resizeObserver = new ResizeObserver(() => draw())
+  resizeObserver.observe(source)
 
   const onload = () => {
     loaded = true

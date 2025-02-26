@@ -1,0 +1,58 @@
+{
+  "name": "Samsøe Samsøe",
+  "link": {
+    "url": "https://www.samsoe.com/",
+    "title": "samsoe.com"
+  },
+  "services": [
+    "E-commerce",
+    "Architecture",
+    "Design",
+    "Development",
+    "Replatforming",
+    "Campaigns"
+  ],
+  "technologies": [
+    "Centra",
+    "Storyblok",
+    "Aino Commerce Engine",
+    "Voyado Elevate",
+    "Voyado Engage"
+  ],
+  "mainsection": [
+    {
+      "span": 4,
+      "image": "/images/work/samsoe-samsoe/samsoe_2.png"
+    }
+  ],
+  "sections": [
+    [
+      {
+        "span": 2
+      },
+      {
+        "span": 2,
+        "html": "<div class=\"space\"><p>Samsøe Samsøe is a Danish fashion brand founded in 1993. The brand is known for its minimalistic and Scandinavian design. Samsøe Samsøe has a strong presence in the Nordic countries and is expanding globally.</p></div>"
+      }
+    ],
+    [
+      {
+        "span": 3,
+        "html": "<div class=\"space\"><p class=\"big\">Samsøe Samsøe is a Danish fashion brand founded in 1993. The brand is known for its minimalistic and Scandinavian design. Samsøe Samsøe has a strong presence in the Nordic countries and is expanding globally.</p></div>"
+      },
+      {
+        "span": 1
+      }
+    ],
+    [
+      {
+        "span": 1,
+        "image": "/images/work/samsoe-samsoe/samsoe_4.png"
+      },
+      {
+        "span": 3,
+        "image": "/images/work/samsoe-samsoe/samsoe_1.png"
+      }
+    ]
+  ]
+}

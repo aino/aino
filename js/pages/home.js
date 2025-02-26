@@ -30,6 +30,7 @@ export default async function home(app) {
     dimensions,
     startRenderLoop,
     stopRenderLoop,
+    listen,
   } = grid(gridNode)
 
   const ctx = canvas.getContext('2d')
@@ -100,6 +101,88 @@ export default async function home(app) {
   let main = []
 
   let forceWidth = null
+
+  const { update } = startRenderLoop(main)
+
+  listen('frame', ({ delta, timestamp, points }) => {
+    mouseX += (nextMouseX - mouseX) * (delta / 200)
+    mouseY += (nextMouseY - mouseY) * (delta / 200)
+    dirX += (nextMouseX - dirX) * 0.01
+    intro = []
+    if (!clicked) {
+      for (let r = 0; r < dimensions.rows; r++) {
+        const timeValue = getValue(timestamp, 4000)
+        const ms = timestamp + r * lerp(50, 150, timeValue)
+        const mainValue = getValue(ms, 3000)
+        const widthValue = getValue(timestamp, 8000)
+
+        const width = forceWidth || lerp(30, dimensions.cols - 2, widthValue)
+        const len = lerp(0, width, mainValue)
+        const col = Math.floor(dimensions.cols / 2)
+
+        const halfLen = Math.floor(len / 2)
+        for (let i = -halfLen; i <= halfLen; i++) {
+          if (col + i >= 0 && col + i < dimensions.cols) {
+            // `base` runs from 0 (left edge) to 1 (right edge) along the drawn segment.
+            const base = (i + halfLen) / (2 * halfLen)
+            // The time-based phase is preserved.
+            const phase =
+              (timestamp + (r / 6) * lerp(10, 20, timeValue)) * 0.003
+
+            // Compute the new dome center from the mouse.
+            const mouseTarget = dirX / window.innerWidth
+
+            const modulated = Math.min(
+              1,
+              (Math.cos(
+                lerp(3, -3, mouseTarget) * Math.PI * (base - mouseTarget) +
+                  phase
+              ) +
+                1) /
+                2 +
+                (1 - fadeIndex)
+            )
+
+            const charIndex = !isNaN(modulated)
+              ? Math.floor(
+                  lerp(
+                    0,
+                    grayRamp.length - (fadeIndex < 0.95 ? 1 : 2),
+                    modulated
+                  )
+                )
+              : grayRamp.length - 2
+            const value = grayRamp[charIndex]
+            if (value.trim()) {
+              intro.push(
+                createPoint({
+                  x: (col + i) / dimensions.cols,
+                  y: r / dimensions.rows,
+                  context: 'animation',
+                  value: grayRamp[charIndex],
+                })
+              )
+            }
+          }
+        }
+      }
+      main = [
+        ...intro,
+        ...(nextMouseX !== null && nextMouseY !== null
+          ? createText({
+              col:
+                Math.floor((mouseX / dimensions.width) * dimensions.cols) - 2,
+              row: Math.floor((mouseY / dimensions.height) * dimensions.rows),
+              context: 'text',
+              text: 'Click'.toUpperCase(),
+            })
+          : []),
+      ]
+      update(main)
+    }
+  })
+
+  /*
 
   startRenderLoop(main, (delta, timestamp) => {
     intro = []
@@ -178,6 +261,8 @@ export default async function home(app) {
       return main
     }
   })
+
+  */
 
   logo.push(
     ...createText({

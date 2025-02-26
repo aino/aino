@@ -8,7 +8,7 @@ import { create, style } from '../utils/dom'
 const DIFFUSION = 0.001
 
 // The character set for ASCII rendering.
-export const CHARS = `$MBNQW@&R8GD6S9OH#E5UK0A2XP34ZC%VIF17YTJL[]?}{()<>|=+\\/^!";*_:~,'-.·\` `
+export const CHARS = `$MBNQØW@&R8GD6S9OH#E5UK0A2XP34ZC%VIF17YTJL[]?}{()<>|=+\\/^!";*_:~,'-.·\` `
 
 const getCharacterForGrayScale = (grayScale, grayRamp) =>
   grayRamp[Math.ceil(((grayRamp.length - 1) * grayScale) / 255)]
@@ -24,7 +24,13 @@ function generateUID() {
   return uid
 }
 
-function smoothDamp(current, target, currentVelocity, smoothTime, dt) {
+export function fadeChar(char, opacity, grayRamp = CHARS) {
+  return grayRamp[
+    Math.floor(lerp(grayRamp.indexOf(char), grayRamp.length - 1, 1 - opacity))
+  ]
+}
+
+export function smoothDamp(current, target, currentVelocity, smoothTime, dt) {
   smoothTime = Math.max(0.0001, smoothTime)
   const omega = 2 / smoothTime
   const x = omega * dt
@@ -72,6 +78,28 @@ export default function grid(node, grayRamp = CHARS) {
     textArr = []
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')
+  const listeners = {}
+
+  const listen = (type, fn) => {
+    if (!listeners[type]) {
+      listeners[type] = []
+    }
+    listeners[type].push(fn)
+
+    // Return an unsubscribe function
+    return () => {
+      listeners[type] = listeners[type].filter((l) => l !== fn)
+    }
+  }
+
+  // Emit/trigger the event
+  const emit = (type, payload) => {
+    if (listeners[type]) {
+      for (const fn of listeners[type]) {
+        fn(payload)
+      }
+    }
+  }
 
   const onResize = () => {
     rem = getCssVariable('rem')
@@ -95,6 +123,8 @@ export default function grid(node, grayRamp = CHARS) {
     textArr.fill(' ')
     for (let f = 0, flen = frames.length; f < flen; f++) {
       const points = frames[f]
+      emit('render', points)
+
       for (let i = 0, plen = points.length; i < plen; i++) {
         const p = points[i]
         const col = Math.round(p.x * cols)
@@ -115,6 +145,13 @@ export default function grid(node, grayRamp = CHARS) {
       }
     }
     node.textContent = insertEvery(textArr, '\n', cols).join('')
+  }
+
+  const setOpacity = (points, opacity) => {
+    for (let i = 0, len = points.length; i < len; i++) {
+      const p = points[i]
+      p.value = fadeChar(p.value, opacity, grayRamp)
+    }
   }
 
   const explode = (points, { spread = 0.3 } = {}) => {
@@ -352,104 +389,9 @@ export default function grid(node, grayRamp = CHARS) {
         e.vx += impulse * vCollisionNorm.x * e.damping
         e.vy += impulse * vCollisionNorm.y * e.damping
       }
-      // applyFriction(d)
-      // applyFriction(e)
+      applyFriction(d)
+      applyFriction(e)
     }
-
-    /*
-
-    // Spatial Partitioning
-    const cellSizeX = 2 * radiusX
-    const cellSizeY = 2 * radiusY
-    const gridCols = Math.ceil(1 / cellSizeX)
-    const gridRows = Math.ceil(1 / cellSizeY)
-    const gridCells = new Array(gridCols * gridRows)
-    for (let i = 0, len = gridCells.length; i < len; i++) {
-      gridCells[i] = []
-    }
-    for (let i = 0, plen = points.length; i < plen; i++) {
-      const p = points[i]
-      if (p.morph) continue
-      const cellX = Math.floor(p.x / cellSizeX)
-      const cellY = Math.floor(p.y / cellSizeY)
-      const index = cellX + cellY * gridCols
-      gridCells[index].push(p)
-    }
-
-    const processCollision = (p, q) => {
-      const tol = 0.001
-      if (Math.abs(p.y - floor) < tol && Math.abs(q.y - floor) < tol) {
-        const minSeparation = 0.1
-        const dx = p.x - q.x
-        if (Math.abs(dx) < minSeparation) {
-          const overlap = minSeparation - Math.abs(dx)
-          if (!p.fixed && !q.fixed) {
-            p.x += dx >= 0 ? overlap / 2 : -overlap / 2
-            q.x += dx >= 0 ? -overlap / 2 : overlap / 2
-          } else if (!p.fixed) {
-            p.x += dx >= 0 ? overlap : -overlap
-          } else if (!q.fixed) {
-            q.x += dx >= 0 ? -overlap : overlap
-          }
-          p.vx = 0
-          q.vx = 0
-          return
-        }
-      }
-      let dx = p.x - q.x
-      let dy = p.y - q.y
-      const scaledDx = dx / radiusX
-      const scaledDy = dy / radiusY
-      const sqrDist = scaledDx * scaledDx + scaledDy * scaledDy
-
-      if (sqrDist < combinedRadiusSqr) {
-        const dist = Math.sqrt(sqrDist)
-        if (dist === 0) return
-        const overlap = combinedRadius - dist
-        const nx = scaledDx / dist
-        const ny = scaledDy / dist
-
-        p.x += nx * overlap * 0.5 * radiusX
-        p.y += ny * overlap * 0.5 * radiusY
-        q.x -= nx * overlap * 0.5 * radiusX
-        q.y -= ny * overlap * 0.5 * radiusY
-        const relVel = (p.vx - q.vx) * nx + (p.vy - q.vy) * ny
-        const impulse = (1.2 * relVel) / 2
-        p.vx -= impulse * nx
-        p.vy -= impulse * ny
-        q.vx += impulse * nx
-        q.vy += impulse * ny
-      }
-    }
-
-    for (let cellY = 0; cellY < gridRows; cellY++) {
-      for (let cellX = 0; cellX < gridCols; cellX++) {
-        const index = cellX + cellY * gridCols
-        const cellPoints = gridCells[index]
-        const cellLen = cellPoints.length
-        for (let i = 0; i < cellLen; i++) {
-          for (let j = i + 1; j < cellLen; j++) {
-            processCollision(cellPoints[i], cellPoints[j])
-          }
-        }
-        for (let offsetY = 0; offsetY <= 1; offsetY++) {
-          // When offsetY is 0, start offsetX at 1; otherwise, use -1.
-          for (let offsetX = offsetY === 0 ? 1 : -1; offsetX <= 1; offsetX++) {
-            const nX = cellX + offsetX
-            const nY = cellY + offsetY
-            if (nX < 0 || nX >= gridCols || nY < 0 || nY >= gridRows) continue
-            const neighborIndex = nX + nY * gridCols
-            const neighborPoints = gridCells[neighborIndex]
-            for (let i = 0, len1 = cellPoints.length; i < len1; i++) {
-              for (let j = 0, len2 = neighborPoints.length; j < len2; j++) {
-                processCollision(cellPoints[i], neighborPoints[j])
-              }
-            }
-          }
-        }
-      }
-    }
-      */
   }
 
   // --- Optimized morph function using a lookup map by character ---
@@ -692,6 +634,34 @@ export default function grid(node, grayRamp = CHARS) {
     return points
   }
 
+  const paintCanvas = (
+    src,
+    { cover = false, scale = 1, alpha = 1, x, y } = {}
+  ) => {
+    const srcWidth = src.videoWidth || src.width
+    const srcHeight = src.videoHeight || src.height
+    let s =
+      Math[cover ? 'max' : 'min'](
+        canvas.width / srcWidth,
+        (canvas.height / srcHeight) * 2
+      ) * scale
+    const w = srcWidth * s
+    const h = srcHeight * s * 0.5
+    ctx.globalAlpha = 1
+    ctx.fillStyle = '#fff'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.globalAlpha = alpha
+    x = typeof x === 'number' ? x : canvas.width / 2 - w / 2
+    y = typeof y === 'number' ? y : canvas.height / 2 - h / 2
+    ctx.drawImage(src, x, y, w, h)
+    return {
+      x,
+      y,
+      w,
+      h,
+    }
+  }
+
   const createFromCanvas = ({ context = 'canvas' } = {}) => {
     const points = []
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
@@ -787,7 +757,8 @@ export default function grid(node, grayRamp = CHARS) {
 
   document.body.appendChild(loggers)
 
-  const startRenderLoop = (points, fn) => {
+  const startRenderLoop = () => {
+    let points = []
     const logger = create('div')
     loggers.appendChild(logger)
     let lastTimestamp = 0
@@ -799,23 +770,26 @@ export default function grid(node, grayRamp = CHARS) {
         const fps = 1000 / delta
         logger.textContent = `FPS: ${fps.toFixed(2)}` // Print FPS to the console with 2 decimal places.
       }
-      if (fn) {
-        const nextPoints = fn(delta, timestamp)
-        if (Array.isArray(nextPoints)) {
-          points = nextPoints
-        }
-      }
+      emit('frame', {
+        delta,
+        timestamp,
+        points,
+      })
       applyPhysics(points, delta)
       render(points)
       lastTimestamp = timestamp
       raf = requestAnimationFrame(loop)
     }
     raf = requestAnimationFrame(loop)
-    return raf
-  }
-
-  const stopRenderLoop = (id) => {
-    cancelAnimationFrame(id)
+    return {
+      update(newPoints) {
+        points = newPoints
+      },
+      destroy() {
+        cancelAnimationFrame(raf)
+        loggers.removeChild(logger)
+      },
+    }
   }
 
   return {
@@ -828,11 +802,14 @@ export default function grid(node, grayRamp = CHARS) {
     createText,
     createParagraph,
     createFromCanvas,
+    paintCanvas,
     gravitate,
     createPoint,
     startRenderLoop,
-    stopRenderLoop,
     randomize,
+    listen,
+    emit,
+    setOpacity,
     dimensions: {
       get width() {
         return width
