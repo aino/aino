@@ -19,10 +19,21 @@
     "Voyado Elevate",
     "Voyado Engage"
   ],
+  "intro": {
+    "image": {
+      "url": "/images/work/samsoe-samsoe/bag.webp",
+      "width": "2048",
+      "height": "1638"
+    }
+  },
   "mainsection": [
     {
       "span": 4,
-      "image": "/images/work/samsoe-samsoe/samsoe_2.png"
+      "video": {
+        "url": "/samsoe.mp4",
+        "width": 1920,
+        "height": 1080
+      }
     }
   ],
   "sections": [
@@ -46,12 +57,22 @@
     ],
     [
       {
-        "span": 1,
-        "image": "/images/work/samsoe-samsoe/samsoe_4.png"
-      },
+        "span": 4,
+        "image": {
+          "url": "/images/work/samsoe-samsoe/samsoe_2.png",
+          "width": 1920,
+          "height": 1080
+        }
+      }
+    ],
+    [
       {
-        "span": 3,
-        "image": "/images/work/samsoe-samsoe/samsoe_1.png"
+        "span": 4,
+        "image": {
+          "url": "/images/work/samsoe-samsoe/samsoe_4.png",
+          "width": 1920,
+          "height": 1080
+        }
       }
     ]
   ]

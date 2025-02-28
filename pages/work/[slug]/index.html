@@ -1,6 +1,10 @@
 {{#> layout bodyclass="case" }}
-<section>{{> columns data.mainsection }}</section>
-<section class="hoverchar">
+<div class="intro">
+  {{#if data.intro.image }}
+  <img {{ img data.intro.image }} />
+  {{/if}} {{ worktitle name=data.name position=position }}
+</div>
+<section>
   <div>
     <h1>{{ data.name }}</h1>
   </div>

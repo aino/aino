@@ -1,6 +1,9 @@
 @import 'reset.css';
 @import 'partials/worktable.css';
 @import 'partials/footer.css';
+@import 'pages/contact.css';
+@import 'pages/work.css';
+@import 'pages/case.css';
 
 @font-face {
   font-family: 'mono';
@@ -100,6 +103,22 @@ hr {
   }
 }
 
+.video {
+  border-radius: 0.4rem;
+  overflow: hidden;
+  video {
+    width: 100%;
+    height: auto;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .video video,
+  .image img {
+    mix-blend-mode: multiply;
+  }
+}
+
 section {
   margin-bottom: 2rem;
   display: grid;
@@ -119,6 +138,9 @@ section {
   &.space {
     padding: 4rem 0;
   }
+  &.first {
+    margin-top: 12rem;
+  }
 }
 
 .cols {
@@ -129,18 +151,11 @@ section {
   }
 }
 
-.text p {
-  font-family: abc;
-  text-transform: none;
-  letter-spacing: -0.01em;
-  font-size: 130%;
-  line-height: 1.2;
-}
-
 .space {
   padding: 2rem 0;
 }
-p {
+p,
+.text h2 {
   font-family: abc;
   text-transform: none;
   font-feature-settings: 'ss05';
@@ -153,5 +168,14 @@ p {
     font-size: 180%;
     line-height: 3rem;
     letter-spacing: -0.02em;
+  }
+}
+
+.text {
+  h2 {
+    opacity: 0.4;
+  }
+  p + h2 {
+    margin-top: 2rem;
   }
 }

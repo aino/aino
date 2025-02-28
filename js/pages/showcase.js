@@ -7,8 +7,8 @@ export const path = /^\/work\/[^/]+$/
 export default async function showcase(app) {
   const destroyers = []
   for (const img of q('img', app)) {
-    ascii(img)
-    pixelate(img)
+    // ascii(img)
+    // pixelate(img)
   }
   return () => {
     for (const destroy of destroyers) {

@@ -757,8 +757,7 @@ export default function grid(node, grayRamp = CHARS) {
 
   document.body.appendChild(loggers)
 
-  const startRenderLoop = () => {
-    let points = []
+  const startRenderLoop = (points = []) => {
     const logger = create('div')
     loggers.appendChild(logger)
     let lastTimestamp = 0

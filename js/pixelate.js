@@ -38,7 +38,7 @@ export default function pixelate(source) {
       if (source.complete) {
         onload()
       } else {
-        source.onload = onload
+        source.addEventListener('load', onload, { once: true })
       }
       break
     default:

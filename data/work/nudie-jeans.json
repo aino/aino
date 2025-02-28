@@ -16,6 +16,13 @@
     "Voyado Elevate",
     "Voyado Engage"
   ],
+  "intro": {
+    "image": {
+      "url": "/images/work/nudie-jeans/download.jpeg",
+      "width": "2400",
+      "height": "2989"
+    }
+  },
   "sections": [
     [
       {

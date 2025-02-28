@@ -53,10 +53,11 @@ export default function ascii(source) {
 
   switch (source.tagName) {
     case 'IMG':
+      console.log('source', source, source.complete)
       if (source.complete) {
         onload()
       } else {
-        source.onload = onload
+        source.addEventListener('load', onload, { once: true })
       }
       break
     case 'VIDEO':
