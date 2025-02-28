@@ -70,7 +70,11 @@ const prefetchLink = (link) => {
 }
 
 const onLinkClick = (e) => {
-  const { pathname, hostname, search, hash } = new URL(e.currentTarget.href)
+  const link = e.currentTarget
+  if (link.dataset.preventclick) {
+    return
+  }
+  const { pathname, hostname, search, hash } = new URL(link.href)
   if (!history.pushState || hostname !== location.hostname) {
     return
   }

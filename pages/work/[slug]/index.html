@@ -5,20 +5,18 @@
   {{/if}} {{ worktitle name=data.name position=position }}
 </div>
 <section>
-  <div>
-    <h1>{{ data.name }}</h1>
-  </div>
-  <div>
+  <div class="position">00{{ position }}</div>
+  <div class="link">
     <a href="{{ data.link.url }}" target="_blank">{{ data.link.title }}</a>
   </div>
-  <div>
+  <div class="services">
     <ul>
       {{#each data.services }}
       <li>{{ this }}</li>
       {{/each }}
     </ul>
   </div>
-  <div>
+  <div class="technologies">
     <ul>
       {{#each data.technologies }}
       <li>{{ this }}</li>

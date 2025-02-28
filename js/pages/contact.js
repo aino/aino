@@ -22,6 +22,6 @@ export default async function contact(app) {
 
   update(text)
   gravitate(text, {
-    damping: 1.00002,
+    damping: 1.01,
   })
 }

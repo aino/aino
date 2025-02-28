@@ -39,16 +39,12 @@
   "sections": [
     [
       {
-        "span": 2
-      },
-      {
-        "span": 2,
-        "html": "<div class=\"space\"><p>Samsøe Samsøe is a Danish fashion brand founded in 1993. The brand is known for its minimalistic and Scandinavian design. Samsøe Samsøe has a strong presence in the Nordic countries and is expanding globally.</p></div>"
+        "html": "<div class=\"space\"></div>"
       }
     ],
     [
       {
-        "span": 3,
+        "span": 2,
         "html": "<div class=\"space\"><p class=\"big\">Samsøe Samsøe is a Danish fashion brand founded in 1993. The brand is known for its minimalistic and Scandinavian design. Samsøe Samsøe has a strong presence in the Nordic countries and is expanding globally.</p></div>"
       },
       {

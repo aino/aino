@@ -22,6 +22,20 @@ function addAnimation(node, offset, distance) {
   }
 }
 
+let timer
+
+export function stopHoverChar() {
+  clearTimeout(timer)
+  nodeAnimations.forEach((offsetsMap, node) => {
+    const textArr = node.textContent.split('')
+    for (const [offset, { char }] of Object.entries(offsetsMap)) {
+      textArr[offset] = char
+    }
+    node.textContent = textArr.join('')
+  })
+  nodeAnimations.clear()
+}
+
 function loop() {
   nodeAnimations.forEach((offsetsMap, node) => {
     const textArr = node.textContent.split('')
@@ -61,7 +75,7 @@ function loop() {
     }
   })
 
-  setTimeout(loop, 1000 / 40)
+  timer = setTimeout(loop, 1000 / 40)
 }
 
 export default function hoverchar() {

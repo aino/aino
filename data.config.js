@@ -23,7 +23,7 @@ export const routes = {
     slugs: () => workSlugs.filter(Boolean),
     data: async ({ lang, slug }) => {
       let data = null
-      const position = workSlugs.indexOf(slug)
+      const position = workSlugs.indexOf(slug) + 1
       try {
         data = JSON.parse(readFileSync(`data/work/${slug}.json`, 'utf-8'))
       } catch (error) {
