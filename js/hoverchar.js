@@ -1,4 +1,4 @@
-import { getCssVariable } from '@/js/utils/dom'
+import { getCssVariable, q } from '@/js/utils/dom'
 import { lerp } from '@/js/utils/animate'
 import { outQuint } from '@/js/utils/easing'
 import { CHARS } from '@/js/grid/grid2'
@@ -27,9 +27,7 @@ function loop() {
     const textArr = node.textContent.split('')
     let updatedSomething = false
 
-    for (const [offset, { start, char, distance }] of Object.entries(
-      offsetsMap
-    )) {
+    for (const [offset, { start, char }] of Object.entries(offsetsMap)) {
       const factor = 0
       const now = Date.now()
       const duration = 1000 * (1 - factor)
@@ -68,7 +66,7 @@ function loop() {
 
 export default function hoverchar() {
   loop()
-  for (const hoverchar of document.querySelectorAll('a, .hoverchar')) {
+  for (const hoverchar of q('a, .hoverchar')) {
     const dy = hoverchar.dataset.dy || 0
     const dx = hoverchar.dataset.dx || 1
     hoverchar.addEventListener('mousemove', (e) => {
