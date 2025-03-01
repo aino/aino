@@ -1,0 +1,22 @@
+{
+  "name": "Majblomman",
+  "link": {
+    "url": "https://apps.apple.com/se/app/majblomman/id1458490999",
+    "title": "Majblomman App"
+  },
+  "services": ["Design", "Development", "App development", "E-commerce"],
+  "technologies": ["Sanity", "React Native", "Firebase", "Stripe"],
+  "sections": [
+    [
+      {
+        "span": 2,
+        "html": "",
+        "image": "",
+        "video": ""
+      },
+      {
+        "html": "<p>Footwear, accessories</p>"
+      }
+    ]
+  ]
+}

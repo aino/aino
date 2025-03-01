@@ -1,27 +1,15 @@
 {{#> layout bodyclass="work" }}
 <section class="first">
+  <h1>Our work</h1>
   <div class="span-4">{{> worktable}}</div>
 </section>
 <div class="bg">
+  {{# each work }}
   <div>
-    <img
-      {{
-      img
-      url="/images/work/nudie-jeans/download.jpeg"
-      width="2400"
-      height="2989"
-      }}
-    />
+    {{# if intro.image }}
+    <img {{ img intro.image }} />
+    {{/if}}
   </div>
-  <div>
-    <img
-      {{
-      img
-      url="/images/work/samsoe-samsoe/bag.webp"
-      width="2048"
-      height="1638"
-      }}
-    />
-  </div>
+  {{/each}}
 </div>
 {{/layout}}

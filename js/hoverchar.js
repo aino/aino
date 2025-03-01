@@ -79,8 +79,11 @@ function loop() {
 }
 
 export default function hoverchar() {
+  clearTimeout(timer)
   loop()
   for (const hoverchar of q('a, .hoverchar')) {
+    if (hoverchar.dataset.active) continue
+    hoverchar.dataset.active = 'true'
     const dy = hoverchar.dataset.dy || 0
     const dx = hoverchar.dataset.dx || 1
     hoverchar.addEventListener('mousemove', (e) => {

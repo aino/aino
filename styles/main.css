@@ -169,6 +169,9 @@ p,
     line-height: 3rem;
     letter-spacing: -0.02em;
   }
+  span {
+    opacity: 0.4;
+  }
 }
 
 .text {

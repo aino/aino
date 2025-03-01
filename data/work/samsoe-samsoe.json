@@ -19,13 +19,6 @@
     "Voyado Elevate",
     "Voyado Engage"
   ],
-  "intro": {
-    "image": {
-      "url": "/images/work/samsoe-samsoe/bag.webp",
-      "width": "2048",
-      "height": "1638"
-    }
-  },
   "mainsection": [
     {
       "span": 4,
@@ -44,8 +37,8 @@
     ],
     [
       {
-        "span": 2,
-        "html": "<div class=\"space\"><p class=\"big\">Samsøe Samsøe is a Danish fashion brand founded in 1993. The brand is known for its minimalistic and Scandinavian design. Samsøe Samsøe has a strong presence in the Nordic countries and is expanding globally.</p></div>"
+        "span": 4,
+        "html": "<div class=\"space\"><p class=\"big\">Samsøe Samsøe <span>is a Danish fashion brand founded in 1993. The brand is known for its minimalistic and Scandinavian design. Samsøe Samsøe has a strong presence in the Nordic countries and is expanding globally.</span></p></div>"
       },
       {
         "span": 1

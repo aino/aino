@@ -1,8 +1,8 @@
 {{#> layout bodyclass="case" }}
 <div class="intro">
-  {{#if data.intro.image }}
-  <img {{ img data.intro.image }} />
-  {{/if}} {{ worktitle name=data.name position=position }}
+  {{ worktitle name=data.name position=position }} {{#if intro.image }}
+  <img {{ img intro.image }} />
+  {{/if}}
 </div>
 <section>
   <div class="position">00{{ position }}</div>

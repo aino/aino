@@ -24,6 +24,7 @@ export const routes = {
     data: async ({ lang, slug }) => {
       let data = null
       const position = workSlugs.indexOf(slug) + 1
+      const intro = work.find((w) => w.slug === slug)?.intro
       try {
         data = JSON.parse(readFileSync(`data/work/${slug}.json`, 'utf-8'))
       } catch (error) {
@@ -33,6 +34,7 @@ export const routes = {
         data,
         slug,
         position,
+        intro,
       }
     },
   },

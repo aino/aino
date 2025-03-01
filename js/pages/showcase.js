@@ -11,13 +11,14 @@ export default async function showcase(app) {
     // ascii(img)
     // pixelate(img)
   }
-  for (const d of q('.position, .link, .services li, .technologies li', app)) {
+  for (const d of q(
+    '.position, .link, .services li:first-child, .technologies li:first-child',
+    app
+  )) {
     fadein(d)
   }
   const [intro] = q('.intro', app)
   intro.classList.add('in')
-
-  /*
 
   function showMeta() {
     if (scrollY > 20) {
@@ -32,8 +33,6 @@ export default async function showcase(app) {
   }
 
   addEventListener('scroll', showMeta)
-
-  */
 
   return () => {
     for (const destroy of destroyers) {
