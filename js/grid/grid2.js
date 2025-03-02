@@ -3,9 +3,10 @@ import animate, { lerp } from '@/js/utils/animate'
 import { getCssVariable } from '@/js/utils/dom'
 import { toGrayScale } from '../ascii'
 import { inQuad, outQuad, inOutCirc, outCirc, inCirc } from '../utils/easing'
-import { create, style } from '../utils/dom'
+import { create, getStyle, style } from '../utils/dom'
 
 const DIFFUSION = 0.001
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
 
 // The character set for ASCII rendering.
 export const CHARS =
@@ -69,7 +70,7 @@ function findClosestPoint(target, points) {
   return closest
 }
 
-export default function grid(node, grayRamp = CHARS) {
+export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
   let width,
     height,
     rem,
@@ -103,13 +104,13 @@ export default function grid(node, grayRamp = CHARS) {
   }
 
   const onResize = () => {
-    rem = getCssVariable('rem')
+    rem = getCssVariable('ch')
     line = rem * 2
     const rect = node.getBoundingClientRect()
     width = rect.width
     height = rect.height
     cols = Math.round(width / rem)
-    rows = Math.round(height / line)
+    rows = Math[isSafari ? 'ceil' : 'round'](height / line)
     canvas.width = cols
     canvas.height = rows
     const length = rows * cols
@@ -145,7 +146,8 @@ export default function grid(node, grayRamp = CHARS) {
         }
       }
     }
-    node.textContent = insertEvery(textArr, '\n', cols).join('')
+    const next = insertEvery(textArr, '\n', cols)
+    node.textContent = next.join('')
   }
 
   const setOpacity = (points, opacity) => {
@@ -764,21 +766,23 @@ export default function grid(node, grayRamp = CHARS) {
     let lastTimestamp = 0
     let raf
     const loop = (timestamp) => {
-      const delta = timestamp - lastTimestamp
-      if (lastTimestamp !== 0) {
-        const delta = timestamp - lastTimestamp
-        const fps = 1000 / delta
-        logger.textContent = `FPS: ${fps.toFixed(2)}` // Print FPS to the console with 2 decimal places.
-      }
-      emit('frame', {
-        delta,
-        timestamp,
-        points,
-      })
-      applyPhysics(points, delta)
-      render(points)
-      lastTimestamp = timestamp
       raf = requestAnimationFrame(loop)
+      setTimeout(() => {
+        const delta = timestamp - lastTimestamp
+        if (lastTimestamp !== 0) {
+          const delta = timestamp - lastTimestamp
+          const fps = 1000 / delta
+          logger.textContent = `FPS: ${fps.toFixed(2)}` // Print FPS to the console with 2 decimal places.
+        }
+        emit('frame', {
+          delta,
+          timestamp,
+          points,
+        })
+        applyPhysics(points, delta)
+        render(points)
+        lastTimestamp = timestamp
+      })
     }
     raf = requestAnimationFrame(loop)
     return {

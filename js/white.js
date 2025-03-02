@@ -171,7 +171,12 @@ const fakeState = async (href, trigger) => {
       const key = keyNode.getAttribute('key')
       const node = app.querySelector(`*[key="${key}"]`)
       if (node) {
+        let currentTime = 0
+        if (keyNode.nodeName === 'VIDEO') {
+          currentTime = keyNode.currentTime
+        }
         node.replaceWith(keyNode)
+        keyNode.currentTime = currentTime
       }
     }
     const head = document.head

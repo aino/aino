@@ -750,7 +750,7 @@ export default function grid(node) {
    * Set up or recalculate grid variables based on the node’s dimensions.
    */
   const setVariables = () => {
-    rem = getCssVariable('rem')
+    rem = getCssVariable('ch')
     line = rem * 2
     const rect = node.getBoundingClientRect()
     width = rect.width

@@ -1,10 +1,25 @@
 {{#> layout bodyclass="case" }}
 <div class="intro">
-  {{ worktitle name=data.name position=position }} {{#if intro.image }}
-  <img {{ img intro.image }} />
-  {{/if}}
+  {{ worktitle name=data.name position=position reel=data.reel.url }} {{#if
+  intro.image }}
+  <div class="media">
+    <img {{ img intro.image }} />
+    {{/if}} {{#if intro.video }}
+    <video
+      autoplay
+      playsinline
+      loop
+      muted
+      width="{{intro.video.width}}"
+      height="{{intro.video.height}}"
+      key="casevideo"
+    >
+      <source type="video/mp4" src="{{intro.video.url}}" />
+    </video>
+    {{/if}}
+  </div>
 </div>
-<section>
+<section class="meta">
   <div class="position">00{{ position }}</div>
   <div class="link">
     <a href="{{ data.link.url }}" target="_blank">{{ data.link.title }}</a>
@@ -26,4 +41,9 @@
 </section>
 {{# each data.sections}}
 <section>{{> columns this }}</section>
-{{/ each }} {{/layout}}
+{{/ each }}
+<section class="casefooter">
+  <div></div>
+  <div class="span-2">{{> worktable }}</div>
+</section>
+{{/layout}}

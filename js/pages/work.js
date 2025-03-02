@@ -3,6 +3,7 @@ import fadeout from '@/js/fadeout'
 import fadein from '@/js/fadein'
 import { stopHoverChar } from '../hoverchar'
 import { smoothScroll } from '../utils/scroll'
+import wait from '@/js/utils/wait'
 
 export const path = /^\/work$/
 
@@ -12,7 +13,9 @@ export default async function about(app) {
   const [worktable] = q('.worktable', app)
   fadein(worktable)
   const [h1] = q('h1', app)
-  fadein(h1)
+  setTimeout(() => {
+    fadein(h1)
+  }, 400)
   let pending = false
   const items = q('li', worktable)
   for (let i = 0; i < items.length; i++) {

@@ -2,6 +2,7 @@ import { q, id, style, create, getCssVariable } from '@/js/utils/dom'
 import grid from '../grid/grid2'
 import loadimage from '@/js/utils/loadimage'
 import hoverchar from '@/js/hoverchar'
+import gridoverlay from '../gridoverlay'
 
 export const path = /.*/
 
@@ -10,11 +11,11 @@ export default async function global(app) {
     const [img] = q('img', imageSection)
     const fitHeight = () => {
       imageSection.style.height = ''
-      const rem = getCssVariable('rem')
+      const rem = getCssVariable('ch')
       const { height } = imageSection.getBoundingClientRect()
-      const rows = Math.round(height / rem)
+      const rows = Math.floor(height / rem)
       const newHeightInRem = Math.floor(rows / 2) * 2
-      imageSection.style.height = `${newHeightInRem}rem`
+      imageSection.style.height = `${newHeightInRem * rem}px`
     }
     if (img.complete) {
       fitHeight()
@@ -46,6 +47,7 @@ export default async function global(app) {
   )
 
   hoverchar()
+  //gridoverlay()
 
   document.body.appendChild(canvas)
 }

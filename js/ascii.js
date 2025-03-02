@@ -28,7 +28,7 @@ export default function ascii(source) {
     const box = source.getBoundingClientRect()
     width = box.width
     height = box.height
-    const rem = getCssVariable('rem')
+    const rem = getCssVariable('ch')
     canvas.width = Math.round(width / rem)
     canvas.height = Math.round(height / (2 * rem))
     ctx.drawImage(source, 0, 0, canvas.width, canvas.height)

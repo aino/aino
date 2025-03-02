@@ -1,5 +1,5 @@
 #footer {
-  padding: 0 2rem;
+  padding: 0 var(--char2);
   cursor: default;
   .logo {
     height: 0;

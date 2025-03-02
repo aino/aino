@@ -1,11 +1,23 @@
 import { q } from '@/js/utils/dom'
 import grid from '../grid/grid2'
 import { lerp } from '@/js/utils/animate'
+import { create, getCssVariable, getStyle } from '../utils/dom'
+import fadein from '@/js/fadein'
 
 export const path = /^\/contact\/?$/
 
 export default async function contact(app) {
   const [bouncer] = q('.bounce', app)
+  const [info] = q('.info', app)
+
+  fadein(info)
+  const parent = bouncer.parentElement
+  const onResize = () => {
+    const marginTop = getStyle(info, 'margin-top')
+    bouncer.style.height = marginTop
+  }
+  new ResizeObserver(onResize).observe(parent)
+  onResize()
   const { createText, startRenderLoop, render, explode, gravitate, listen } =
     grid(bouncer)
   const text = createText({

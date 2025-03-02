@@ -4,32 +4,28 @@
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
     const setVariables = () => {
       const width = innerWidth
-      let rem = 8.5
-      let cols = Math.round(width / rem)
+      let ch = 8.5
+      let cols = Math.round(width / ch)
       cols -= 18 // 2 gutter, 2 margin
       // Snap down to multiple of 8
       cols -= cols % 8
       // Add 7 back
       cols += 18
       // Recalculate charWidth
-      rem = width / cols
+      ch = width / cols
 
-      col = Math.ceil((width / rem - 11) / 4)
+      col = Math.ceil((width / ch - 11) / 4)
 
-      let fontSize = rem / 0.6 - 0.9
-      let letterSpacing = (rem / 0.6 - fontSize) * 0.6
-      if (isSafari) {
-        const fontSizeRounded = Math.floor(rem / 0.6 - 0.3)
-        letterSpacing = (rem / 0.6 - fontSizeRounded) * 0.6
-        fontSize = fontSizeRounded
-      }
+      let fontSize = ch / 0.6 - 0.9
+      const letterSpacing = (ch / 0.6 - fontSize) * 0.6
       html.style = Object.entries({
-        rem,
+        ch,
         cols,
         col,
-        rows: Math.floor(innerHeight / (rem * 2)),
+        rows: Math.floor(innerHeight / (ch * 2)),
         'letter-spacing': letterSpacing,
         'font-size': fontSize,
+        'line-height': `${ch * 2}px`,
         'screen-height': screen.availHeight,
       })
         .map(([key, value]) => `--${key}:${value}`)

@@ -93,7 +93,7 @@ function addAnimation(node, offset, delay) {
   }
 }
 
-export default function fadeout(node, filter, ready) {
+export default function fadein(node, filter, ready, speed = 2) {
   node.style.opacity = 0
   let textNodes = getTextNodes(node)
   if (filter) {
@@ -112,7 +112,7 @@ export default function fadeout(node, filter, ready) {
             continue
           }
           addAnimation(node, i, d)
-          d += 2
+          d += speed
         }
         node.textContent = text.map(() => ' ').join('')
       }

@@ -66,20 +66,45 @@ export function resize(onResize) {
   }
 }
 
-export const observer = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting && !entry.target.classList.contains('io-show')) {
-        entry.target.classList.add('io-show')
-      }
-      entry.target.classList.toggle('io-inview', entry.isIntersecting)
-    })
-  },
-  {
-    rootMargin: '0px',
-    threshold: 1,
-  }
-)
+export const observe = (
+  node,
+  onEnter,
+  onLeave,
+  { rootMargin = '0px', threshold = 0, once = false } = {}
+) => {
+  let isIntersecting = false
+  let lastY = null
+  let hasEntered = false
+  let hasLeft = false
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        const currentY = entry.boundingClientRect.y
+        let direction = null
+        if (lastY !== null) {
+          direction = currentY < lastY ? 'down' : 'up'
+        }
+        lastY = currentY
+        if (entry.isIntersecting && !isIntersecting) {
+          isIntersecting = true
+          if (!once || !hasEntered) {
+            onEnter?.(direction)
+            hasEntered = true
+          }
+        } else if (!entry.isIntersecting && isIntersecting) {
+          isIntersecting = false
+          if (!once || !hasLeft) {
+            onLeave?.(direction)
+            hasLeft = true
+          }
+        }
+      })
+    },
+    { rootMargin, threshold }
+  )
+  observer.observe(node)
+  return () => observer.unobserve(node)
+}
 
 export function getRenderData(node) {
   if (node?.dataset?.render) {

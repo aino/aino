@@ -3,17 +3,16 @@
   z-index: 2;
   opacity: 0;
   li {
-    height: 2rem;
+    height: calc(var(--char) * 2);
     overflow: hidden;
     .line {
       display: flex;
       align-items: flex-start;
       justify-content: flex-start;
-      margin: 0 0 0 calc(var(--col) * 1rem + 2rem);
       width: fit-content;
       strong {
         display: block;
-        width: calc(var(--col) * 1rem + 2rem);
+        width: var(--fullcol);
       }
       &.inactive {
         opacity: 0.2;

@@ -29,6 +29,11 @@
       }
     }
   ],
+  "reel": {
+    "url": "/samsoe.mp4",
+    "width": 1920,
+    "height": 1080
+  },
   "sections": [
     [
       {
@@ -38,7 +43,7 @@
     [
       {
         "span": 4,
-        "html": "<div class=\"space\"><p class=\"big\">Samsøe Samsøe <span>is a Danish fashion brand founded in 1993. The brand is known for its minimalistic and Scandinavian design. Samsøe Samsøe has a strong presence in the Nordic countries and is expanding globally.</span></p></div>"
+        "html": "<div class=\"space\"><p class=\"big\">Samsøe Samsøe <span>is a Danish fashion brand founded in 1993. Known for its minimalistic and Scandinavian design, Samsøe Samsøe has a strong presence in the Nordic countries and is expanding globally.</span></p></div>"
       },
       {
         "span": 1
@@ -59,6 +64,76 @@
         "span": 4,
         "image": {
           "url": "/images/work/samsoe-samsoe/samsoe_4.png",
+          "width": 1920,
+          "height": 1080
+        }
+      }
+    ],
+    [
+      {
+        "span": 4,
+        "image": {
+          "url": "/images/work/samsoe-samsoe/samsoe_3.png",
+          "width": 1920,
+          "height": 1080
+        }
+      }
+    ],
+    [
+      {
+        "span": 4,
+        "image": {
+          "url": "/images/work/samsoe-samsoe/samsoe_5.png",
+          "width": 1920,
+          "height": 1080
+        }
+      }
+    ],
+    [
+      {
+        "span": 4,
+        "image": {
+          "url": "/images/work/samsoe-samsoe/samsoe_6.png",
+          "width": 1920,
+          "height": 1080
+        }
+      }
+    ],
+    [
+      {
+        "span": 4,
+        "image": {
+          "url": "/images/work/samsoe-samsoe/samsoe_7.png",
+          "width": 1920,
+          "height": 1080
+        }
+      }
+    ],
+    [
+      {
+        "span": 4,
+        "image": {
+          "url": "/images/work/samsoe-samsoe/samsoe_8.png",
+          "width": 1920,
+          "height": 1080
+        }
+      }
+    ],
+    [
+      {
+        "span": 4,
+        "image": {
+          "url": "/images/work/samsoe-samsoe/samsoe_9.png",
+          "width": 1920,
+          "height": 1080
+        }
+      }
+    ],
+    [
+      {
+        "span": 4,
+        "image": {
+          "url": "/images/work/samsoe-samsoe/samsoe_10.png",
           "width": 1920,
           "height": 1080
         }

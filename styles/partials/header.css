@@ -1,15 +1,15 @@
 #nav {
   position: fixed;
-  top: 2rem;
-  left: 2rem;
+  top: var(--char2);
+  left: var(--char2);
   z-index: 2;
-  width: calc(100vw - 4rem);
+  width: calc(100vw - var(--char) * 4);
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
+  gap: var(--char2);
   > div {
     display: flex;
-    gap: 2rem;
+    gap: var(--char2);
     a {
       /* white-space: nowrap; */
     }

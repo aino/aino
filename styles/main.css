@@ -29,6 +29,10 @@
   --black-rgb: 24, 24, 24;
   --black: rgb(var(--black-rgb));
   --white: rgb(var(--white-rgb));
+  --char: calc(var(--ch) * 1px);
+  --char2: calc(var(--char) * 2);
+  --fullcol: calc((var(--col) + 2) * var(--char));
+  --border-radius: calc(var(--char) * 0.4);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -39,26 +43,26 @@
 }
 
 html {
-  font-size: calc(var(--rem) / 16 * 100%);
   text-transform: uppercase;
   font-family: mono, monospace;
   color: var(--black);
   background: var(--white);
+  font-size: var(--font-size);
+  letter-spacing: var(--letter-spacing);
+  line-height: var(--line-height);
 }
 
 body {
   margin: 0;
   padding: 0;
-  font-size: calc(var(--font-size) * 1px);
-  line-height: 2rem;
-  letter-spacing: calc(var(--letter-spacing) * 1px);
+
   -webkit-text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 hr {
-  height: 3rem;
+  height: calc(var(--char) * 3);
   margin: 0;
   position: relative;
   border: none;
@@ -77,13 +81,13 @@ hr {
 #app {
   background: var(--white);
   min-height: 100vh;
-  padding: 6rem 2rem;
+  padding: calc(var(--char) * 6) calc(var(--char) * 2);
 }
 
 .image {
   position: relative;
   overflow: hidden;
-  border-radius: 0.4rem;
+  border-radius: var(--border-radius);
   canvas,
   .ascii {
     position: absolute;
@@ -104,7 +108,7 @@ hr {
 }
 
 .video {
-  border-radius: 0.4rem;
+  border-radius: var(--border-radius);
   overflow: hidden;
   video {
     width: 100%;
@@ -120,10 +124,10 @@ hr {
 }
 
 section {
-  margin-bottom: 2rem;
+  margin-bottom: calc(var(--char) * 2);
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
+  gap: var(--char2);
   > div {
     &.span-2 {
       grid-column: span 2;
@@ -136,10 +140,10 @@ section {
     }
   }
   &.space {
-    padding: 4rem 0;
+    padding: calc(var(--char) * 4) 0;
   }
   &.first {
-    margin-top: 12rem;
+    margin-top: calc(var(--char) * 12);
   }
 }
 
@@ -152,7 +156,7 @@ section {
 }
 
 .space {
-  padding: 2rem 0;
+  padding: calc(var(--char) * 2) 0;
 }
 p,
 .text h2 {
@@ -166,11 +170,12 @@ p,
   &.big {
     font-weight: 720;
     font-size: 180%;
-    line-height: 3rem;
+    line-height: calc(var(--char) * 3);
     letter-spacing: -0.02em;
   }
   span {
     opacity: 0.4;
+    font-weight: inherit;
   }
 }
 
@@ -179,6 +184,13 @@ p,
     opacity: 0.4;
   }
   p + h2 {
-    margin-top: 2rem;
+    margin-top: calc(var(--char) * 2);
   }
+}
+
+button:not(.ghost) {
+  background: rgba(var(--white-rgb), 0.1);
+  padding: var(--char) var(--char2);
+  cursor: pointer;
+  border-radius: var(--border-radius);
 }

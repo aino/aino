@@ -3,8 +3,8 @@ body.contact {
     opacity: 1;
   }
   section {
-    position: relative;
     .split {
+      position: relative;
       display: flex;
       flex-direction: column;
     }
@@ -12,14 +12,18 @@ body.contact {
       opacity: 0.4;
     }
     .bounce {
-      flex: 1;
-      margin-bottom: 2rem;
-      cursor: default;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
     }
     .info {
+      opacity: 0;
       display: flex;
       flex: 0;
-      gap: 2rem;
+      gap: var(--char2);
+      padding-top: var(--char2);
+      margin-top: auto;
       > div {
         flex: 1;
         margin-top: auto;

@@ -1,4 +1,4 @@
-import { create, style, getCssVariable } from '@js/utils/dom'
+import { create, style, getCssVariable } from '@/js/utils/dom'
 
 export default function gridoverlay() {
   const aa = create('div', { id: 'grid' }, document.body)
@@ -8,7 +8,7 @@ export default function gridoverlay() {
     left: 0,
     width: '100vw',
     height: '100vh',
-    opacity: 0,
+    opacity: 0.5,
     zIndex: 100,
     pointerEvents: 'none',
     wordBreak: 'break-all',
