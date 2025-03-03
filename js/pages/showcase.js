@@ -52,6 +52,7 @@ export default async function showcase(app) {
       null,
       {
         threshold: 0.2,
+        once: true,
       }
     )
   )

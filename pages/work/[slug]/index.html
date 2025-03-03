@@ -1,8 +1,8 @@
 {{#> layout bodyclass="case" }}
 <div class="intro">
-  {{ worktitle name=data.name position=position reel=data.reel.url }} {{#if
-  intro.image }}
-  <div class="media">
+  {{ worktitle name=data.name position=position reel=data.reel.url }}
+  <div class="media image">
+    {{#if intro.image }}
     <img {{ img intro.image }} />
     {{/if}} {{#if intro.video }}
     <video
@@ -42,8 +42,19 @@
 {{# each data.sections}}
 <section>{{> columns this }}</section>
 {{/ each }}
-<section class="casefooter">
-  <div></div>
-  <div class="span-2">{{> worktable }}</div>
+<section class="casefooter fadein">
+  <div>{{> newbusiness }}</div>
+  <div class="span-2">
+    <h2 class="light">More work</h2>
+    {{> worktable }}
+  </div>
+  <div>
+    <h2 class="light">Open positions</h2>
+    <ul>
+      <li>Web Developer</li>
+      <li>Aino Norge - various roles</li>
+      <li>Internships</li>
+    </ul>
+  </div>
 </section>
 {{/layout}}

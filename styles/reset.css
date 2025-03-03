@@ -48,7 +48,8 @@ b {
   font-weight: 500;
 }
 
-img {
+img,
+video {
   max-width: 100%;
   display: block;
   height: auto;

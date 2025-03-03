@@ -32,7 +32,7 @@
       "handle": "filesystem"
     },
     {
-      "src": "^/(sv)(/|/.*)?$",
+      "src": "^/()(/|/.*)?$",
       "status": 404,
       "dest": "/$1/404/index.html"
     },

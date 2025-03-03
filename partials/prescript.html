@@ -4,7 +4,7 @@
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
     const setVariables = () => {
       const width = innerWidth
-      let ch = 8.5
+      let ch = 8
       let cols = Math.round(width / ch)
       cols -= 18 // 2 gutter, 2 margin
       // Snap down to multiple of 8
@@ -23,8 +23,8 @@
         cols,
         col,
         rows: Math.floor(innerHeight / (ch * 2)),
-        'letter-spacing': letterSpacing,
-        'font-size': fontSize,
+        'letter-spacing': `${letterSpacing}px`,
+        'font-size': `${fontSize}px`,
         'line-height': `${ch * 2}px`,
         'screen-height': screen.availHeight,
       })

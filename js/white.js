@@ -74,7 +74,7 @@ const onLinkClick = (e) => {
   if (link.dataset.preventclick) {
     return
   }
-  const { pathname, hostname, search, hash } = new URL(link.href)
+  const { pathname, hostname, search, hash, href } = new URL(link.href)
   if (!history.pushState || hostname !== location.hostname) {
     return
   }
@@ -82,7 +82,11 @@ const onLinkClick = (e) => {
     isDev ? addTrailingSlash(pathname) : pathname
   }${search}${hash}`
   e.preventDefault()
-  history.pushState(null, '', nextHref)
+  if (addTrailingSlash(pathname) === addTrailingSlash(location.pathname)) {
+    scrollTo(0, 0)
+  } else {
+    history.pushState(null, '', nextHref)
+  }
 }
 
 const onLinkHover = (e) => {

@@ -173,17 +173,23 @@ p,
     line-height: calc(var(--char) * 3);
     letter-spacing: -0.02em;
   }
-  span {
-    opacity: 0.4;
-    font-weight: inherit;
-  }
+}
+
+.light {
+  opacity: 0.4;
+  font-weight: inherit;
+}
+
+html.js .fadein {
+  opacity: 0;
 }
 
 .text {
   h2 {
     opacity: 0.4;
   }
-  p + h2 {
+  p + h2,
+  p + p {
     margin-top: calc(var(--char) * 2);
   }
 }

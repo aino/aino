@@ -44,7 +44,7 @@ export default [
     slug: 'all-blues',
     year: '2020-',
     intro: {
-      image: {
+      video: {
         url: '/images/work/all-blues/allblues.avif',
         width: 2400,
         height: 2989,

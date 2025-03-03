@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs'
 import work from './data/work.js'
 
-export const locales = ['en', 'sv']
+export const locales = ['en']
 
 export const globalData = async () => {
   return {
@@ -15,7 +15,7 @@ export const routes = {
   '/': {
     data: async ({ lang }) => {
       return {
-        title: `Hello White!`,
+        title: `Aino`,
       }
     },
   },
@@ -35,8 +35,12 @@ export const routes = {
         slug,
         position,
         intro,
+        title: data?.name,
       }
     },
+  },
+  '/contact': {
+    title: 'Contact',
   },
   '/about': {
     data: async ({ lang }) => {

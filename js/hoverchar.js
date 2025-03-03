@@ -132,7 +132,10 @@ export default function hoverchar() {
             const text = (node.textContent || '').split('')
             // Make sure offset is valid:
             if (offset >= 0 && offset < text.length) {
-              if (text[offset].trim()) {
+              if (
+                text[offset].trim() &&
+                CHARS.includes(text[offset].toUpperCase())
+              ) {
                 addAnimation(node, offset, Math.abs(x * y))
               }
             }

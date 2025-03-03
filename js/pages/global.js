@@ -3,10 +3,13 @@ import grid from '../grid/grid2'
 import loadimage from '@/js/utils/loadimage'
 import hoverchar from '@/js/hoverchar'
 import gridoverlay from '../gridoverlay'
+import { observe } from '../utils/dom'
+import fadein from '../fadein'
 
 export const path = /.*/
 
 export default async function global(app) {
+  const destroyers = []
   for (const imageSection of q('section .image')) {
     const [img] = q('img', imageSection)
     const fitHeight = () => {
@@ -47,7 +50,25 @@ export default async function global(app) {
   )
 
   hoverchar()
-  //gridoverlay()
+  for (const fader of q('.fadein')) {
+    destroyers.push(
+      observe(
+        fader,
+        () => {
+          fadein(fader, null, null, 1)
+        },
+        null,
+        {
+          threshold: 0.2,
+          once: true,
+        }
+      )
+    )
+  }
 
-  document.body.appendChild(canvas)
+  return () => {
+    for (const destroy of destroyers) {
+      destroy()
+    }
+  }
 }

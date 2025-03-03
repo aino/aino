@@ -36,6 +36,9 @@ body.case {
       }
       a {
         animation: blinker 1s linear infinite;
+        &:hover {
+          animation: none;
+        }
       }
     }
   }
@@ -88,6 +91,17 @@ body.case {
       top: var(--char2);
       right: var(--char2);
     }
+  }
+  .worktable {
+    li:not(:has(a)) {
+      display: none;
+    }
+  }
+  .casefooter {
+    padding-top: calc(var(--char2) * 3);
+  }
+  .meta {
+    margin-bottom: calc(var(--char) * 12);
   }
 }
 

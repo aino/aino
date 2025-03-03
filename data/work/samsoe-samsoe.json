@@ -19,16 +19,6 @@
     "Voyado Elevate",
     "Voyado Engage"
   ],
-  "mainsection": [
-    {
-      "span": 4,
-      "video": {
-        "url": "/samsoe.mp4",
-        "width": 1920,
-        "height": 1080
-      }
-    }
-  ],
   "reel": {
     "url": "/samsoe.mp4",
     "width": 1920,
@@ -37,13 +27,8 @@
   "sections": [
     [
       {
-        "html": "<div class=\"space\"></div>"
-      }
-    ],
-    [
-      {
         "span": 4,
-        "html": "<div class=\"space\"><p class=\"big\">Samsøe Samsøe <span>is a Danish fashion brand founded in 1993. Known for its minimalistic and Scandinavian design, Samsøe Samsøe has a strong presence in the Nordic countries and is expanding globally.</span></p></div>"
+        "html": "<div class=\"space\"><p class=\"big\">Samsøe Samsøe <span class=\"light\">is a Danish fashion brand founded in 1993. Known for its minimalistic and Scandinavian design, Samsøe Samsøe has a strong presence in the Nordic countries and is expanding globally.</span></p></div>"
       },
       {
         "span": 1
