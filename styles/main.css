@@ -107,6 +107,14 @@ hr {
   }
 }
 
+html.textmode .image img {
+  opacity: 0 !important;
+}
+
+html:not(.textmode) .image .ascii {
+  display: none;
+}
+
 .video {
   border-radius: var(--border-radius);
   overflow: hidden;
@@ -138,6 +146,10 @@ section {
     &.span-4 {
       grid-column: span 4;
     }
+    &.sticky > div {
+      position: sticky;
+      top: calc(var(--char) * 6);
+    }
   }
   &.space {
     padding: calc(var(--char) * 4) 0;
@@ -149,7 +161,7 @@ section {
 
 .cols {
   display: flex;
-  gap: 1rem;
+  gap: 2rem;
   .col2 {
     grid-column: span 2;
   }
@@ -158,6 +170,7 @@ section {
 .space {
   padding: calc(var(--char) * 2) 0;
 }
+
 p,
 .text h2 {
   font-family: abc;

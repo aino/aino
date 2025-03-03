@@ -44,10 +44,10 @@ export default [
     slug: 'all-blues',
     year: '2020-',
     intro: {
-      video: {
-        url: '/images/work/all-blues/allblues.avif',
+      image: {
+        url: '/images/work/all-blues/bg.jpg',
         width: 2400,
-        height: 2989,
+        height: 2400,
       },
     },
   },

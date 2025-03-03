@@ -1,8 +1,9 @@
 import { create, getCssVariable } from '@/js/utils/dom'
+import { getStyle, style } from './utils/dom'
 
 export const toGrayScale = ({ r, g, b }) => 0.21 * r + 0.72 * g + 0.07 * b
 
-export const grayRamp = 'N@O$0A869#452I3=7+1/:-·` '
+export const grayRamp = 'NO0A869452I3=+/:-· '
 
 export const getCharacterForGrayScale = (grayScale) =>
   grayRamp[Math.ceil(((grayRamp.length - 1) * grayScale) / 255)]
@@ -21,17 +22,49 @@ export default function ascii(source) {
 
   source.parentNode.appendChild(text)
 
+  let naturalWidth = 0
+  let naturalHeight = 0
+  let tempImage
+
   const draw = () => {
-    if (!loaded) {
+    if (!loaded || !source) {
       return
     }
     const box = source.getBoundingClientRect()
     width = box.width
     height = box.height
-    const rem = getCssVariable('ch')
-    canvas.width = Math.round(width / rem)
-    canvas.height = Math.round(height / (2 * rem))
-    ctx.drawImage(source, 0, 0, canvas.width, canvas.height)
+    const ch = getCssVariable('ch')
+    canvas.width = Math.round(width / ch)
+    canvas.height = Math.round(height / (2 * ch))
+
+    const objectFit = getStyle(source, 'object-fit')
+    if (objectFit === 'cover') {
+      const objectPosition = getStyle(source, 'object-position')
+      const [posX, posY] = objectPosition.split(' ')
+      const s = Math.max(
+        canvas.width / naturalWidth,
+        canvas.height / naturalHeight
+      )
+      const nw = naturalWidth * s
+      const nh = (naturalHeight * s) / 2
+      let offsetX = 0
+      let offsetY = 0
+      offsetX = (canvas.width - nw) * (parseFloat(posX) / 100)
+      offsetY = (canvas.height - nh) * (parseFloat(posY) / 100)
+      ctx.drawImage(
+        tempImage,
+        0,
+        0,
+        naturalWidth,
+        naturalHeight,
+        offsetX,
+        offsetY,
+        nw,
+        nh
+      )
+    } else {
+      ctx.drawImage(source, 0, 0, canvas.width, canvas.height)
+    }
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
     let chars = ''
     for (let i = 0; i < imageData.data.length; i += 4) {
@@ -47,13 +80,18 @@ export default function ascii(source) {
   resizeObserver.observe(source)
 
   const onload = () => {
-    loaded = true
-    draw()
+    tempImage = new Image()
+    tempImage.onload = () => {
+      naturalWidth = tempImage.width
+      naturalHeight = tempImage.height
+      loaded = true
+      draw()
+    }
+    tempImage.src = source.src
   }
 
   switch (source.tagName) {
     case 'IMG':
-      console.log('source', source, source.complete)
       if (source.complete) {
         onload()
       } else {

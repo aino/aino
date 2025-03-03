@@ -5,6 +5,8 @@ import hoverchar from '@/js/hoverchar'
 import gridoverlay from '../gridoverlay'
 import { observe } from '../utils/dom'
 import fadein from '../fadein'
+import site from '@/js/stores/site'
+import ascii from '../ascii'
 
 export const path = /.*/
 
@@ -29,27 +31,28 @@ export default async function global(app) {
     observer.observe(img)
   }
 
-  const footer = id('footer')
-  const [logo] = q('.logo', footer)
-  const svg = await loadimage('/aino-agency.svg')
-  const ratio = svg.width / svg.height
-  logo.style.paddingBottom = `${100 / ratio}%`
-  const { render, canvas, createFromCanvas } = grid(logo)
-  const ctx = canvas.getContext('2d')
-  ctx.fillStyle = '#fff'
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
-  ctx.globalAlpha = 0.4
-  let scale = Math.min(canvas.width / svg.width, canvas.height / svg.height)
-  const logoWidth = svg.width * scale
-  const logoHeight = svg.height * scale * 0.5
-  ctx.drawImage(svg, 0, 0, logoWidth * 1.9, logoHeight * 1.9)
-  render(
-    createFromCanvas({
-      context: 'logo',
+  hoverchar()
+
+  destroyers.push(
+    site.subscribe((newValue, oldValue) => {
+      if (newValue.textMode !== oldValue.textMode) {
+        document.documentElement.classList.toggle('textmode', newValue.textMode)
+        for (const img of q('.image img')) {
+          ascii(img)
+        }
+      }
     })
   )
 
-  hoverchar()
+  if (site.value.textMode) {
+    for (const img of q('.image img')) {
+      ascii(img)
+    }
+    setTimeout(() => {
+      document.documentElement.classList.add('textmode')
+    }, 40)
+  }
+
   for (const fader of q('.fadein')) {
     destroyers.push(
       observe(
