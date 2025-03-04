@@ -31,12 +31,44 @@ body.case {
       z-index: 1;
       margin-bottom: var(--char2);
       display: flex;
+      width: fit-content;
       h1 {
         width: var(--fullcol);
       }
       a {
         animation: blinker 1s linear infinite;
         &:hover {
+          animation: none;
+        }
+      }
+      &:not(:has(a)) {
+        h1 {
+          width: fit-content;
+          padding-right: var(--char);
+        }
+      }
+      &.clone {
+        display: none;
+        position: absolute;
+        pointer-events: none;
+        margin-top: calc(var(--char2) * -3);
+        left: calc(var(--char) * -1);
+        h1 {
+          padding: 0 var(--char);
+          width: fit-content;
+        }
+        a {
+          animation: none;
+          padding-right: var(--char2);
+          position: absolute;
+          left: var(--fullcol);
+          display: block;
+          white-space: nowrap;
+        }
+        h1,
+        a {
+          background: var(--white);
+          color: rgba(0, 0, 0, 0);
           animation: none;
         }
       }
@@ -103,6 +135,12 @@ body.case {
   .meta {
     margin-bottom: calc(var(--char) * 12);
   }
+}
+
+html.textmode body.case .intro .worktitle {
+  display: flex;
+  position: absolute;
+  margin-top: calc(var(--char2) * -3);
 }
 
 @keyframes blinker {

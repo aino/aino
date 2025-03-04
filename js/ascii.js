@@ -3,12 +3,12 @@ import { getStyle, style } from './utils/dom'
 
 export const toGrayScale = ({ r, g, b }) => 0.21 * r + 0.72 * g + 0.07 * b
 
-export const grayRamp = 'NO0A869452I3=+/:-· '
+export const grayRamp = 'NO0A869452I3?!<>=+/:-·'
 
 export const getCharacterForGrayScale = (grayScale) =>
   grayRamp[Math.ceil(((grayRamp.length - 1) * grayScale) / 255)]
 
-export default function ascii(source) {
+export default function ascii(source, filter = (chars) => chars) {
   let width = 0
   let height = 0
   let loaded = false
@@ -43,7 +43,7 @@ export default function ascii(source) {
       const [posX, posY] = objectPosition.split(' ')
       const s = Math.max(
         canvas.width / naturalWidth,
-        canvas.height / naturalHeight
+        (canvas.height / naturalHeight) * 2
       )
       const nw = naturalWidth * s
       const nh = (naturalHeight * s) / 2
@@ -73,7 +73,7 @@ export default function ascii(source) {
       const lastChar = (i / 4 + 1) % canvas.width === 0
       chars += `${getCharacterForGrayScale(l)}${lastChar ? '\n' : ''}`
     }
-    text.innerHTML = chars
+    text.innerText = filter(chars)
   }
 
   const resizeObserver = new ResizeObserver(() => draw())
@@ -81,13 +81,15 @@ export default function ascii(source) {
 
   const onload = () => {
     tempImage = new Image()
+    const sets = source.srcset.split(', ')
+    const url = sets[1].split(' ')[0]
     tempImage.onload = () => {
       naturalWidth = tempImage.width
       naturalHeight = tempImage.height
       loaded = true
       draw()
     }
-    tempImage.src = source.src
+    tempImage.src = url
   }
 
   switch (source.tagName) {
@@ -108,5 +110,8 @@ export default function ascii(source) {
       throw new Error(`Unsupported source: ${source.tagName}`)
   }
 
-  return draw
+  return () => {
+    text.remove()
+    resizeObserver.disconnect()
+  }
 }
