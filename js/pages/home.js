@@ -48,7 +48,7 @@ export default async function home(app) {
   ctx.drawImage(
     svg,
     canvas.width / 2 - logoWidth / 2,
-    canvas.height / 2 - logoHeight / 1.5,
+    canvas.height / 2 - logoHeight / 2,
     logoWidth,
     logoHeight
   )
@@ -264,15 +264,15 @@ export default async function home(app) {
 
   */
 
-  logo.push(
-    ...createText({
-      col: Math.floor(dimensions.cols / 2),
-      row: textRow,
-      align: 'center',
-      context: 'text',
-      text: 'Digital first creative design agency'.toUpperCase(),
-    })
-  )
+  // logo.push(
+  //   ...createText({
+  //     col: Math.floor(dimensions.cols / 2),
+  //     row: textRow,
+  //     align: 'center',
+  //     context: 'text',
+  //     text: 'Digital first creative design agency'.toUpperCase(),
+  //   })
+  // )
 
   gridNode.addEventListener(
     'mousedown',
@@ -285,36 +285,38 @@ export default async function home(app) {
       explode(main, { spread: 0.4 })
       await wait(600)
       morph(main, logo)
-      await wait(3000)
+      await wait(2200)
+      gravitate(main, {
+        gravity: 1.8,
+        damping: 1.005,
+      })
+      await wait(1600)
       morph(
         main,
         createText({
           col: Math.floor(dimensions.cols / 2),
-          row: textRow,
+          row: Math.floor(dimensions.rows / 2),
           align: 'center',
           context: 'text',
-          text: 'Born in Sweden · based in Scandinavia · Operating worldwide'.toUpperCase(),
-        }),
-        {
-          contextFilter: 'text',
-        }
+          text: 'Digital first creative design agency'.toUpperCase(),
+        })
       )
-      await wait(2400)
-      morph(
-        main,
-        [
-          createPoint({
-            x: 0.5,
-            y: textRow / dimensions.rows,
-            context: 'text',
-            value: ' ',
-          }),
-        ],
-        {
-          contextFilter: 'text',
-        }
-      )
-      await wait(800)
+      // await wait(2400)
+      // morph(
+      //   main,
+      //   [
+      //     createPoint({
+      //       x: 0.5,
+      //       y: textRow / dimensions.rows,
+      //       context: 'text',
+      //       value: ' ',
+      //     }),
+      //   ],
+      //   {
+      //     contextFilter: 'text',
+      //   }
+      // )
+      // await wait(800)
       //explode(main, {
       //  spread: 1,
       //})
@@ -323,26 +325,6 @@ export default async function home(app) {
       //   damping: 0.8,
       // })
       // await wait(1800)
-
-      const menu = []
-      let col = 2
-      const navLength = nav.children.length
-      for (let i = 0; i < navLength; i++) {
-        const navContainer = nav.children[i]
-        const text = q('a', navContainer)
-          .map((a) => a.innerText.toUpperCase())
-          .join('  ')
-        menu.push(
-          ...createText({
-            col: i === navLength - 1 ? dimensions.cols - 2 - text.length : col,
-            row: 1,
-            context: 'text',
-            text,
-          })
-        )
-        col += Math.floor((dimensions.cols - 4) / 4) + 1
-      }
-      morph(main, menu)
     },
     { once: true }
   )

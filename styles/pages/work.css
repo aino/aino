@@ -12,6 +12,9 @@ body.work {
     left: 0;
     transition: opacity 100ms ease-out;
     opacity: 0;
+    &.hover {
+      opacity: 0.5;
+    }
     > div {
       height: 100vh;
       width: 100vw;

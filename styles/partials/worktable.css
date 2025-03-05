@@ -3,7 +3,7 @@
   z-index: 2;
   opacity: 0;
   li {
-    height: calc(var(--char) * 2);
+    height: calc(var(--line));
     overflow: hidden;
     .line {
       display: flex;

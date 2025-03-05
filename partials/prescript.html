@@ -17,7 +17,9 @@
       col = Math.ceil((width / ch - 11) / 4)
 
       let fontSize = ch / 0.6 - 0.9
+      const lineHeight = ch * 2
       const letterSpacing = (ch / 0.6 - fontSize) * 0.6
+      const line = isSafari ? Math.round(lineHeight) : lineHeight
       html.style = Object.entries({
         ch,
         cols,
@@ -25,7 +27,8 @@
         rows: Math.floor(innerHeight / (ch * 2)),
         'letter-spacing': `${letterSpacing}px`,
         'font-size': `${fontSize}px`,
-        'line-height': `${ch * 2}px`,
+        'line-height': `${lineHeight}px`,
+        line: `${line}px`,
         'screen-height': screen.availHeight,
       })
         .map(([key, value]) => `--${key}:${value}`)

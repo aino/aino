@@ -13,6 +13,7 @@ export default async function showcase(app) {
   )) {
     fadein(d)
   }
+  document.documentElement.classList.add('dark')
 
   const [intro] = q('.intro', app)
   intro.classList.add('in')
@@ -42,14 +43,14 @@ export default async function showcase(app) {
     worktitle.before(clone)
     clone.classList.add('clone')
     const round = (n) => {
-      const ch = getCssVariable('ch')
-      return Math.round(n / (ch * 2)) * ch * 2
+      const line = getCssVariable('line')
+      return Math.round(n / line) * line
     }
     const onScroll = () => {
       if (document.documentElement.classList.contains('textmode')) {
-        const ch = getCssVariable('ch')
-        const top = round(parseFloat(getStyle(worktitle, 'top'))) - ch * 2
-        const maxDistance = round(intro.offsetHeight) - top
+        const line = getCssVariable('line')
+        const top = round(parseFloat(getStyle(worktitle, 'top'))) - line
+        const maxDistance = round(intro.offsetHeight) - top - 0.5
         const distance = Math.min(maxDistance, round(scrollY))
         clone.style.transform = `translateY(${distance}px)`
         worktitle.style.transform = `translateY(${distance}px)`
@@ -64,7 +65,7 @@ export default async function showcase(app) {
     observe(
       worktable,
       () => {
-        fadein(worktable, null, null, 1)
+        fadein(worktable, { speed: 1 })
       },
       null,
       {
@@ -148,6 +149,7 @@ export default async function showcase(app) {
   }
 
   return () => {
+    document.documentElement.classList.remove('dark')
     for (const destroy of destroyers) {
       destroy()
     }

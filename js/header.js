@@ -1,9 +1,16 @@
-import { create, q } from './utils/dom'
+import { create, id, q } from './utils/dom'
 import site, { toggleTextMode } from './stores/site'
+import fadein from './fadein'
 
-export default function header() {
-  const [about] = q('#nav .about')
-  console.log(site.value)
+export default async function header() {
+  const nav = id('nav')
+  const [about] = q('.about', nav)
+  setTimeout(() => {
+    fadein(nav, {
+      duration: 1200,
+      speed: 10,
+    })
+  }, 200)
   const toggler = create(
     'button',
     {

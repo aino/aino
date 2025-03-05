@@ -12,10 +12,10 @@ const isTextMode = () => document.documentElement.classList.contains('textmode')
 export default async function about(app) {
   const destroyers = []
   const [bg] = q('.bg', app)
-  bg.style.opacity = 0
   const [worktable] = q('.worktable', app)
   fadein(worktable)
   const [h1] = q('h1', app)
+  document.documentElement.classList.add('dark')
   setTimeout(() => {
     fadein(h1)
   }, 400)
@@ -24,7 +24,7 @@ export default async function about(app) {
   destroyers.push(
     site.subscribe((nextValue) => {
       if (nextValue.textMode) {
-        bg.style.opacity = 0
+        bg.classList.remove('hover')
       }
     })
   )
@@ -36,13 +36,13 @@ export default async function about(app) {
         if (pending || isTextMode()) {
           return
         }
-        bg.style.opacity = 0.5
+        bg.classList.add('hover')
         bg.style.marginTop = `${i * -100}vh`
       })
       a.addEventListener('click', (e) => {
         if (!isTextMode()) {
           pending = true
-          bg.style.opacity = 0.5
+          bg.classList.add('hover')
           setTimeout(() => {
             bg.classList.add('out')
           }, 200)
@@ -75,5 +75,9 @@ export default async function about(app) {
         }
       })
     }
+  }
+  return () => {
+    destroyers.forEach((destroy) => destroy())
+    document.documentElement.classList.remove('dark')
   }
 }

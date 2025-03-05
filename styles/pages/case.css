@@ -140,7 +140,7 @@ body.case {
 html.textmode body.case .intro .worktitle {
   display: flex;
   position: absolute;
-  margin-top: calc(var(--char2) * -3);
+  margin-top: calc(var(--line) * -3);
 }
 
 @keyframes blinker {

@@ -32,14 +32,16 @@ function loop() {
     const textArr = node.textContent.split('')
     let updatedSomething = false
 
-    for (const [offset, { start, char }] of Object.entries(offsetsMap)) {
+    for (const [offset, { start, char, duration }] of Object.entries(
+      offsetsMap
+    )) {
       const factor = 0
       const now = Date.now()
       if (start > now) {
         continue
       }
-      const duration = 400 * (1 - factor)
-      const t = inOutQuad(Math.min((now - start) / duration, 1))
+      const timing = duration * (1 - factor)
+      const t = inOutQuad(Math.min((now - start) / timing, 1))
       const progress = t
 
       // Pick the new char
@@ -77,7 +79,7 @@ function loop() {
   }
 }
 
-function addAnimation(node, offset, delay) {
+function addAnimation(node, offset, delay, duration) {
   // If this node doesn't have an animation record yet, create one
   if (!nodeAnimations.has(node)) {
     nodeAnimations.set(node, {})
@@ -89,11 +91,15 @@ function addAnimation(node, offset, delay) {
     offsetsMap[offset] = {
       start: Date.now() + delay,
       char: node.textContent.split('')[offset],
+      duration,
     }
   }
 }
 
-export default function fadein(node, filter, ready, speed = 2) {
+export default function fadein(
+  node,
+  { filter, ready, speed = 2, duration = 400 } = {}
+) {
   node.style.opacity = 0
   let textNodes = getTextNodes(node)
   if (filter) {
@@ -111,7 +117,7 @@ export default function fadein(node, filter, ready, speed = 2) {
           if (!text[i].trim()) {
             continue
           }
-          addAnimation(node, i, d)
+          addAnimation(node, i, d, duration)
           d += speed
         }
         node.textContent = text.map(() => ' ').join('')

@@ -4,7 +4,7 @@ import loadimage from '@/js/utils/loadimage'
 import hoverchar from '@/js/hoverchar'
 import gridoverlay from '../gridoverlay'
 import { getStyle, observe } from '../utils/dom'
-import fadein from '../fadein'
+import fadein from '@/js/fadein'
 import site from '@/js/stores/site'
 import ascii from '../ascii'
 
@@ -41,35 +41,12 @@ export default async function global(app) {
   let asciiDestroyers = []
 
   const applyAscii = (img) => {
-    const intro = img.closest('.intro')
     let filter
-    /*
-    if (intro) {
-      const [title] = q('.worktitle', intro)
-      if (title) {
-        const { top, left, width } = title.getBoundingClientRect()
-        const ch = getCssVariable('ch')
-        console.log(top, ch)
-        const row = Math.round(top / ch / 2) - 3
-        const col = Math.round(left / ch) - 2
-        const len = Math.round(width / ch)
-        console.log({ row, col, len })
-        filter = (chars) => {
-          const lines = chars.split('\n')
-          const lineWidth = lines[0].length + 1
-          const nextChars = chars.split('')
-          for (let r = row - 1; r < row + 2; r++) {
-            for (let i = -1; i < len + 1; i++) {
-              nextChars[lineWidth * r + col + i] = ' '
-            }
-          }
-          console.log(chars.length, nextChars.length) // nextChars is bigger now
-          return nextChars.join('')
-        }
-      }
-    }
-      */
     asciiDestroyers.push(ascii(img, filter))
+  }
+
+  for (const node of q('.fadein')) {
+    fadein(node)
   }
 
   destroyers.push(
@@ -106,7 +83,7 @@ export default async function global(app) {
       observe(
         fader,
         () => {
-          fadein(fader, null, null, 1)
+          fadein(fader, { speed: 1 })
         },
         null,
         {

@@ -5,7 +5,7 @@ export default [
     year: '2010-',
     intro: {
       image: {
-        url: '/images/work/nudie-jeans/download.jpeg',
+        url: '/images/work/nudie-jeans/n2.avif',
         width: 2400,
         height: 2989,
       },
@@ -25,7 +25,7 @@ export default [
     slug: 'samsoe-samsoe',
     intro: {
       image: {
-        url: '/images/work/samsoe-samsoe/bag.webp',
+        url: '/images/work/samsoe-samsoe/s1.webp',
         width: 2048,
         height: 1638,
       },

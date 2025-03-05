@@ -22,7 +22,3 @@
   right: var(--char2);
   opacity: 0.3;
 }
-
-body.home #nav {
-  opacity: 0;
-}
