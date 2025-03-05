@@ -1,5 +1,5 @@
 #footer {
-  padding: 0 var(--char2);
+  padding: calc(var(--line) * 4) var(--char2) var(--line);
   cursor: default;
   .logo {
     height: 0;

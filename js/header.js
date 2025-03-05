@@ -5,12 +5,7 @@ import fadein from './fadein'
 export default async function header() {
   const nav = id('nav')
   const [about] = q('.about', nav)
-  setTimeout(() => {
-    fadein(nav, {
-      duration: 1200,
-      speed: 10,
-    })
-  }, 200)
+
   const toggler = create(
     'button',
     {
@@ -25,4 +20,14 @@ export default async function header() {
   site.subscribe((newValue) => {
     toggler.textContent = newValue.textMode ? 'Image mode' : 'Text mode'
   })
+  if (document.body.classList.contains('home')) {
+    setTimeout(() => {
+      fadein(nav, {
+        duration: 1200,
+        speed: 10,
+      })
+    }, 200)
+  } else {
+    fadein(nav)
+  }
 }

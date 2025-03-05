@@ -6,8 +6,11 @@ import wait from '@/js/utils/wait'
 import animate, { lerp, reverseLerp } from '@/js/utils/animate'
 import work from '@/data/work.js'
 import loadimage from '@/js/utils/loadimage'
-import { grayRamp } from '../ascii'
-import { create } from '../utils/dom'
+import { grayRamp as ascChars } from '../ascii'
+import { create, getCssVariable } from '../utils/dom'
+import { CHARS } from '../grid/grid2'
+
+const grayRamp = `${ascChars} `
 
 export const path = /^\/$/
 
@@ -31,7 +34,7 @@ export default async function home(app) {
     startRenderLoop,
     stopRenderLoop,
     listen,
-  } = grid(gridNode)
+  } = grid(gridNode, grayRamp)
 
   const ctx = canvas.getContext('2d')
   let raf
@@ -291,16 +294,20 @@ export default async function home(app) {
         damping: 1.005,
       })
       await wait(1600)
-      morph(
-        main,
-        createText({
-          col: Math.floor(dimensions.cols / 2),
-          row: Math.floor(dimensions.rows / 2),
-          align: 'center',
+      morph(main, [
+        ...createText({
+          col: getCssVariable('col') + 4,
+          row: Math.floor(dimensions.rows / 2) - 2,
           context: 'text',
-          text: 'Digital first creative design agency'.toUpperCase(),
-        })
-      )
+          text: 'Digital first'.toUpperCase(),
+        }),
+        ...createText({
+          col: getCssVariable('col') * 2 + 6,
+          row: Math.floor(dimensions.rows / 2) - 2,
+          context: 'text',
+          text: 'Creative design agency'.toUpperCase(),
+        }),
+      ])
       // await wait(2400)
       // morph(
       //   main,

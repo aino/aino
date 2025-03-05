@@ -210,7 +210,7 @@ html.js .fadein {
 }
 
 button:not(.ghost) {
-  background: rgba(var(--white-rgb), 0.1);
+  background: rgba(var(--black-rgb), 0.1);
   padding: var(--char) var(--char2);
   cursor: pointer;
   border-radius: var(--border-radius);

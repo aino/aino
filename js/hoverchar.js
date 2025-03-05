@@ -5,7 +5,7 @@ import { CHARS } from '@/js/grid/grid2'
 
 const nodeAnimations = new Map()
 
-function addAnimation(node, offset, distance) {
+function addAnimation(node, offset, distance, duration) {
   // If this node doesn't have an animation record yet, create one
   if (!nodeAnimations.has(node)) {
     nodeAnimations.set(node, {})
@@ -18,6 +18,7 @@ function addAnimation(node, offset, distance) {
       distance,
       start: Date.now(),
       char: node.textContent.split('')[offset],
+      duration,
     }
   }
 }
@@ -41,11 +42,13 @@ function loop() {
     const textArr = node.textContent.split('')
     let updatedSomething = false
 
-    for (const [offset, { start, char }] of Object.entries(offsetsMap)) {
+    for (const [offset, { start, char, duration }] of Object.entries(
+      offsetsMap
+    )) {
       const factor = 0
       const now = Date.now()
-      const duration = 1000 * (1 - factor)
-      const t = outQuint(Math.min((now - start) / duration, 1))
+      const timing = duration * (1 - factor)
+      const t = outQuint(Math.min((now - start) / timing, 1))
       const progress = 1 - 2 * Math.abs(t - 0.5)
 
       // Pick the new char
@@ -86,6 +89,7 @@ export default function hoverchar() {
     hoverchar.dataset.active = 'true'
     const dy = hoverchar.dataset.dy || 0
     const dx = hoverchar.dataset.dx || 1
+    const duration = hoverchar.dataset.duration || 1000
     hoverchar.addEventListener('mousemove', (e) => {
       const rem = getCssVariable('ch')
       const { clientX, clientY } = e
@@ -136,7 +140,7 @@ export default function hoverchar() {
                 text[offset].trim() &&
                 CHARS.includes(text[offset].toUpperCase())
               ) {
-                addAnimation(node, offset, Math.abs(x * y))
+                addAnimation(node, offset, Math.abs(x * y), duration)
               }
             }
             node.textContent = text.join('')

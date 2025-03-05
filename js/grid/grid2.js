@@ -104,19 +104,20 @@ export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
   }
 
   const onResize = () => {
-    rem = getCssVariable('ch')
-    line = rem * 2
+    const ch = getCssVariable('ch')
+    const line = getCssVariable('line')
     const rect = node.getBoundingClientRect()
     width = rect.width
     height = rect.height
-    cols = Math.round(width / rem)
-    rows = Math[isSafari ? 'ceil' : 'round'](height / line)
+    cols = Math.round(width / ch)
+    rows = Math.round(height / line)
     canvas.width = cols
     canvas.height = rows
     const length = rows * cols
     if (length !== textArr.length) {
       textArr = new Array(length).fill(' ')
     }
+    emit('resize', { cols, rows, width, height })
   }
   new ResizeObserver(() => onResize()).observe(node)
   onResize()

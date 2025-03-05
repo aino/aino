@@ -6,7 +6,7 @@
 .grid {
   height: 100vh;
   text-transform: none;
-  margin-top: calc(var(--char) * -6);
+  margin-top: calc(var(--line) * -3);
   width: 100vw;
   margin-left: calc(var(--char) * -2);
   overflow: hidden;
@@ -18,7 +18,7 @@
 
 .fps {
   position: fixed;
-  top: calc(100vh - calc(var(--char) * 4));
+  top: calc(100vh - calc(var(--line) * 3));
   right: var(--char2);
   opacity: 0.3;
 }
