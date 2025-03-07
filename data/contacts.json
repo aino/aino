@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Julie Nord",
+    "title": "Managing Director",
+    "email": "julie@aino.agency",
+    "image": {
+      "url": "/images/julie.png",
+      "width": 370,
+      "height": 512
+    }
+  },
+  {
+    "name": "David Hellsing",
+    "title": "Founder",
+    "email": "david@aino.agency",
+    "image": {
+      "url": "/images/david.jpg",
+      "width": 2129,
+      "height": 2129
+    }
+  },
+  {
+    "name": "Emelie Wassenius",
+    "title": "Pr & Marketing",
+    "email": "emelie@aino.agency",
+    "image": {
+      "url": "/images/emelie.png",
+      "width": 1000,
+      "height": 1000
+    }
+  },
+  {
+    "name": "Linnéa Furhammar",
+    "title": "Operations Manager",
+    "email": "linnea@aino.agency",
+    "image": {
+      "url": "/images/linnea.jpeg",
+      "width": 1000,
+      "height": 1000
+    }
+  }
+]

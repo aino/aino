@@ -1,0 +1,49 @@
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .backdrop {
+    background: rgba(var(--black-rgb), 0.6);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .content {
+    position: relative;
+    .close {
+      position: absolute;
+      top: var(--char);
+      right: var(--char);
+      cursor: pointer;
+    }
+    border-radius: var(--border-radius);
+    width: calc(var(--char) * 50);
+    display: flex;
+    gap: var(--char2);
+    > div {
+      display: flex;
+      flex-direction: column;
+    }
+    .image {
+      width: calc(var(--char) * 23);
+      height: auto;
+    }
+    .buttons {
+      margin-top: auto;
+    }
+    background: var(--white);
+    padding: var(--line) var(--char2);
+    h2 {
+      opacity: 1;
+    }
+  }
+}

@@ -7,6 +7,7 @@ import { getStyle, observe } from '../utils/dom'
 import fadein from '@/js/fadein'
 import site from '@/js/stores/site'
 import ascii from '../ascii'
+import email from '../email'
 
 export const path = /.*/
 
@@ -93,6 +94,10 @@ export default async function global(app) {
       )
     )
   }
+
+  q('a[href^="mailto:"]').forEach((a) => {
+    email(a)
+  })
 
   return () => {
     for (const destroy of [...destroyers, ...asciiDestroyers]) {

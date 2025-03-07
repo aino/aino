@@ -1,0 +1,23 @@
+<div class="modal">
+  <div class="backdrop"></div>
+  <div class="content">
+    <button class="ghost close">X</button>
+    <div class="image">
+      <img {{ img image }} />
+    </div>
+    <div>
+      <h2>{{ name }}</h2>
+      <div class="light">{{ title }}</div>
+      <br />
+      <a href="mailto:{{ email }}">{{ email }}</a>
+      <div class="buttons">
+        <button class="ghost copy">→ Copy address</button><br />
+        <a
+          href="https://mail.google.com/mail/u/0/?view=cm&fs=1&to={{ email }}"
+          class="gmail"
+          >→ Open Gmail</a
+        >
+      </div>
+    </div>
+  </div>
+</div>

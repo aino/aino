@@ -2,6 +2,7 @@
 @import 'reset.css';
 @import 'partials/worktable.css';
 @import 'partials/footer.css';
+@import 'partials/modal.css';
 @import 'pages/contact.css';
 @import 'pages/work.css';
 @import 'pages/case.css';

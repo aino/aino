@@ -169,6 +169,22 @@ export default async function home(app) {
           }
         }
       }
+      /*
+      const logoCoordinates = new Set()
+      for (const logopoint of logo) {
+        const logoCol = Math.round(logopoint.x * dimensions.cols)
+        const logoRow = Math.round(logopoint.y * dimensions.rows)
+        logoCoordinates.add(`${logoCol},${logoRow}`)
+      }
+      for (const point of intro) {
+        const col = Math.round(point.x * dimensions.cols)
+        const row = Math.round(point.y * dimensions.rows)
+        if (logoCoordinates.has(`${col},${row}`)) {
+          const index = CHARS.indexOf(point.value)
+          point.value = CHARS[Math.min(CHARS.length - 2, index + 20)]
+        }
+      }
+        */
       main = [
         ...intro,
         ...(nextMouseX !== null && nextMouseY !== null
