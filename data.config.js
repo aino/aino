@@ -1,4 +1,5 @@
-import { readFileSync } from 'fs'
+import { readFileSync, readdirSync } from 'fs'
+import { join } from 'path'
 import work from './data/work.js'
 
 export const locales = ['en']
@@ -9,7 +10,19 @@ export const globalData = async () => {
   }
 }
 
+const positions = readJsonFilesSync('data/positions')
+
 const workSlugs = work.map((w) => w.slug)
+
+function readJsonFilesSync(directory) {
+  return readdirSync(directory) // Get all file names in the directory
+    .filter((file) => file.endsWith('.json')) // Keep only .json files
+    .map((file) => {
+      const filePath = join(directory, file)
+      const fileContents = readFileSync(filePath, 'utf-8') // Read file
+      return JSON.parse(fileContents)
+    })
+}
 
 export const routes = {
   '/': {
@@ -19,8 +32,33 @@ export const routes = {
       }
     },
   },
+  '/careers': {
+    data: async ({ lang }) => {
+      return {
+        positions,
+      }
+    },
+  },
+  '/careers/[slug]': {
+    slugs: () => positions.map((p) => p.slug),
+    data: async ({ slug }) => {
+      const position = positions.find((p) => p.slug === slug)
+      return {
+        position,
+      }
+    },
+  },
+  '/work': {
+    data: async ({ lang }) => {
+      return {
+        title: 'Work',
+      }
+    },
+  },
   '/work/[slug]': {
-    slugs: () => workSlugs.filter(Boolean),
+    slugs: () => {
+      return workSlugs.filter(Boolean)
+    },
     data: async ({ lang, slug }) => {
       let data = null
       const position = workSlugs.indexOf(slug) + 1
@@ -49,14 +87,6 @@ export const routes = {
           en: 'About',
           sv: 'Om oss',
         }[lang],
-      }
-    },
-  },
-  '/about/[slug]': {
-    slugs: () => ['contact', 'team'],
-    data: async ({ slug }) => {
-      return {
-        title: `About ${slug}`,
       }
     },
   },

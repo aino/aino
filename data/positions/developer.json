@@ -1,0 +1,40 @@
+{
+  "title": "Web Developer",
+  "slug": "developer",
+  "subtitle": "Shopify/React/Remix/Next",
+  "location": "Gothenburg",
+  "active": true,
+  "image": {
+    "url": "/images/careers/developer.jpg",
+    "width": 2400,
+    "height": 2989
+  },
+  "description": "<p>We are expanding our development team and are looking for a mid/senior-level developer with experience in Shopify (Hydrogen & Liquid), React, and Remix or Next.js. You will be working closely with our design and development teams, using frameworks, open architectures, microservices, and REST/GraphQL APIs in JavaScript runtimes on the client, server, and edge. It doesn’t really matter if you know all the buzzwords — what matters most is your passion and openness to learn quickly and stay hungry.</p><p>Our spacious office is located in a building from the late 1800s, right in the heart of Gothenburg. We are a small, collaborative, and creative team looking for someone who wants to grow with us and be part of our future. Please note that this position is on-site in Gothenburg, with some flexible remote options on fixed days of the week.</p>",
+  "responsibilities": [
+    "Frontend coding in JavaScript/React/CSS",
+    "Shopify and Centra setup and management",
+    "Interpret and implement Figma designs",
+    "Quality assurance and testing",
+    "Be creative and drive inspiration"
+  ],
+  "details": [
+    "Full-time",
+    "On-site in Gothenburg (with flexible remote)",
+    "2+ years experience (or relevant education)",
+    "Fluent in English & Swedish"
+  ],
+  "mustHave": [
+    "Javascript",
+    "React",
+    "CSS/Sass",
+    "Next.js or Remix",
+    "E-commerce & Shopify"
+  ],
+  "niceToHave": [
+    "NodeJS",
+    "Postgres",
+    "Redis",
+    "CDN (Cloudflare/AWS)",
+    "GraphQL"
+  ]
+}

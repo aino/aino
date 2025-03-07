@@ -1,27 +1,11 @@
+@import 'fonts.css';
 @import 'reset.css';
 @import 'partials/worktable.css';
 @import 'partials/footer.css';
 @import 'pages/contact.css';
 @import 'pages/work.css';
 @import 'pages/case.css';
-
-@font-face {
-  font-family: 'mono';
-  src: url('fonts/ABCDiatypeMono-Medium.woff') format('woff');
-  src: url('fonts/ABCDiatypeMono-Medium.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'abc';
-  src: url('fonts/ABCDiatypeVariable.woff') format('woff');
-  src: url('fonts/ABCDiatypeVariable.woff2') format('woff2');
-  font-weight: 100 800;
-  font-style: normal;
-  font-display: swap;
-}
+@import 'pages/position.css';
 
 :root {
   color-scheme: light dark;
@@ -174,19 +158,27 @@ html.js .fadein {
 }
 
 p,
-.text h2 {
-  font-family: abc;
+.text h2,
+.pagetitle,
+.text li {
+  font-family: abc, helvetica, sans-serif;
   text-transform: none;
   font-feature-settings: 'ss05';
   font-size: 120%;
   letter-spacing: 0;
-  line-height: 120%;
+  line-height: 126%;
   letter-spacing: -0.01em;
   &.big {
     font-weight: 720;
     font-size: 180%;
-    line-height: calc(var(--char) * 3);
+    line-height: calc(var(--line) * 1.5);
     letter-spacing: -0.02em;
+  }
+  h1 {
+    font-size: 225%;
+    font-weight: 720;
+    line-height: calc(var(--line) * 2);
+    letter-spacing: -0.03em;
   }
 }
 
@@ -204,7 +196,8 @@ html.js .fadein {
     opacity: 0.4;
   }
   p + h2,
-  p + p {
+  p + p,
+  ul + h2 {
     margin-top: calc(var(--char) * 2);
   }
 }
