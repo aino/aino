@@ -1,7 +1,15 @@
 #footer {
   padding: calc(var(--line) * 4) var(--char2) var(--line);
   cursor: default;
+  margin-bottom: var(--line);
   .logo {
     height: 0;
+    opacity: 0.4;
+  }
+  .shortcuts {
+    margin-top: calc(var(--line) * -2);
+    opacity: 0.4;
+    display: flex;
+    gap: calc(var(--char2) * 3);
   }
 }

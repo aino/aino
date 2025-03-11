@@ -1,0 +1,26 @@
+html.js body.apply {
+  .stepscontainer {
+    position: relative;
+    width: var(--fullcol);
+    overflow: hidden;
+    padding-bottom: calc(var(--line) * 3);
+  }
+  .steps {
+    width: calc(var(--fullcol) * 3 - var(--char2));
+    display: flex;
+    gap: var(--char2);
+    > div {
+      flex: 0.3333333;
+    }
+  }
+  .steps[data-step='2'] {
+    transform: translateX(calc(var(--fullcol) * -1));
+  }
+  .steps[data-step='3'] {
+    transform: translateX(calc(var(--fullcol) * -2));
+  }
+  .next {
+    position: absolute;
+    bottom: 0;
+  }
+}

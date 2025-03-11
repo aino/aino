@@ -4,6 +4,7 @@
 @import 'partials/footer.css';
 @import 'partials/modal.css';
 @import 'pages/contact.css';
+@import 'pages/apply.css';
 @import 'pages/work.css';
 @import 'pages/case.css';
 @import 'pages/position.css';
@@ -141,6 +142,9 @@ section {
   &.space {
     padding: calc(var(--line) * 2) 0;
   }
+  &.spacebig {
+    padding: calc(var(--line) * 3) 0;
+  }
   &.first {
     margin-top: calc(var(--line) * 6);
   }
@@ -152,6 +156,12 @@ section {
   .col2 {
     grid-column: span 2;
   }
+}
+
+.cols-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--char2);
 }
 
 html.js .fadein {
@@ -167,11 +177,11 @@ p,
   font-feature-settings: 'ss05';
   font-size: 120%;
   letter-spacing: 0;
-  line-height: 126%;
+  line-height: calc(var(--line) * 1.2);
   letter-spacing: -0.01em;
   &.big {
     font-weight: 720;
-    font-size: 180%;
+    font-size: 170%;
     line-height: calc(var(--line) * 1.5);
     letter-spacing: -0.02em;
   }
@@ -180,6 +190,14 @@ p,
     font-weight: 720;
     line-height: calc(var(--line) * 2);
     letter-spacing: -0.03em;
+  }
+  .mono {
+    font-size: var(--font-size);
+    letter-spacing: var(--letter-spacing);
+    font-family: mono, monospace;
+    line-height: var(--line-height);
+    text-transform: uppercase;
+    padding-right: var(--char2);
   }
 }
 
@@ -193,13 +211,18 @@ html.js .fadein {
 }
 
 .text {
-  h2 {
-    opacity: 0.4;
-  }
   p + h2,
   p + p,
-  ul + h2 {
-    margin-top: calc(var(--char) * 2);
+  ul + h2,
+  p + h3,
+  ul + h3 {
+    margin-top: calc(var(--line) * 1.2);
+  }
+  h3 {
+    line-height: calc(var(--line) * 1.2);
+    transform: translateY(1px);
+    padding-bottom: calc(var(--line) * 1.2);
+    /* padding-bottom: 0.252em; */
   }
 }
 
@@ -213,4 +236,17 @@ button:not(.ghost) {
 html.dark {
   --white: rgb(var(--black-rgb));
   --black: rgb(var(--white-rgb));
+  button:not(.ghost) {
+    background: rgba(var(--white-rgb), 0.1);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --white: rgb(var(--black-rgb));
+    --black: rgb(var(--white-rgb));
+  }
+  button:not(.ghost) {
+    background: rgba(var(--white-rgb), 0.1);
+  }
 }

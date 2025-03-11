@@ -93,8 +93,8 @@ const onLinkHover = (e) => {
   prefetchLink(e.currentTarget)
 }
 
-const parseLinks = () => {
-  for (const link of q('a')) {
+export const parseLinks = (parent = document.body) => {
+  for (const link of q('a', parent)) {
     if (link.getAttribute('rel') === 'prefetch') {
       prefetchLink(link)
     }

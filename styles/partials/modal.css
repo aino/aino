@@ -10,7 +10,7 @@
   justify-content: center;
   .backdrop {
     background: rgba(var(--black-rgb), 0.6);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(20px);
     width: 100%;
     height: 100%;
     position: absolute;

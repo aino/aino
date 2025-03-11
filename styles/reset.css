@@ -75,3 +75,7 @@ button {
   font-weight: 500;
   list-style: none;
 }
+
+span {
+  font-weight: inherit;
+}

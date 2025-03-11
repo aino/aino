@@ -10,7 +10,7 @@ const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
 
 // The character set for ASCII rendering.
 export const CHARS =
-  '$MBNQØW@&R8GD6S9ÖOH#E5UK0ÄÅA2XP34ZC%VIF17YTJL[]?}{()<>|=+\\/^!";*_:~,\'-.·\\` '
+  '$MBNQØW@&R8GD6S9ÖOH#ÉE5UK0ÄÅA2XP34ZC%VIF17YTJL[]?}{()<>|=+\\/^!";*_:~,\'-.·\\` '
 
 const getCharacterForGrayScale = (grayScale, grayRamp) =>
   grayRamp[Math.ceil(((grayRamp.length - 1) * grayScale) / 255)]

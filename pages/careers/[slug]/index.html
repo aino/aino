@@ -2,50 +2,41 @@
 <section class="first">
   <div></div>
   <div class="span-2 pagetitle">
-    <h1>
-      {{ position.title }}<br /><span class="light"
-        >{{ position.subtitle }}</span
-      >
-    </h1>
+    <h1>{{ position.title }}<br /><span>{{ position.subtitle }}</span></h1>
   </div>
 </section>
 <section class="space"></section>
 <section>
   <div></div>
   <div class="text">
-    <h2 class="light">Welcome to Aino</h2>
+    <h3>Welcome to Aino</h3>
     {{{position.description}}}
   </div>
   <div class="text">
-    <h2 class="light">Main responsibilities</h2>
+    <h3>Main responsibilities</h3>
     <ul>
       {{#each position.responsibilities}}
       <li>{{this}}</li>
       {{/each}}
     </ul>
-    <h2 class="light">Position details</h2>
+    <h3>Position details</h3>
     <ul>
       {{#each position.details}}
       <li>{{this}}</li>
       {{/each}}
     </ul>
-    <h2 class="light">You should know this</h2>
+    <h3>You should know this</h3>
     <ul>
       {{#each position.mustHave}}
       <li>{{this}}</li>
       {{/each}}
     </ul>
-    <h2 class="light">Nice if you also know this</h2>
+    <h3>Nice if you also know this</h3>
     <ul>
       {{#each position.niceToHave}}
       <li>{{this}}</li>
       {{/each}}
     </ul>
-  </div>
-  <div>
-    <div class="image">
-      <img {{ img position.image }} />
-    </div>
   </div>
 </section>
 {{/layout}}
