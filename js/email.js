@@ -11,11 +11,11 @@ export default async function email(link) {
   if (!contact) {
     return
   }
-  const { default: emailTemplate } = await import('partials/email')
-  link.addEventListener('click', (event) => {
-    event.preventDefault()
+  let container
+  const onClick = (e) => {
+    e.preventDefault()
 
-    const container = create('div')
+    container = create('div')
     container.innerHTML = emailTemplate(contact)
     link.after(container)
     const [img] = q('img', container)
@@ -55,5 +55,11 @@ export default async function email(link) {
       { once: true }
     )
     hoverchar(container)
-  })
+  }
+  const { default: emailTemplate } = await import('partials/email')
+  link.addEventListener('click', onClick)
+  return () => {
+    container?.remove()
+    link.removeEventListener('click', onClick)
+  }
 }

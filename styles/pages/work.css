@@ -30,10 +30,6 @@ body.work {
     }
     &.out {
       transition: none;
-      > div {
-        padding: calc(var(--char) * 6) var(--char2) calc(var(--char) * 6);
-        border-radius: var(--border-radius);
-      }
     }
   }
 }

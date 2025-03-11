@@ -221,8 +221,7 @@ html.js .fadein {
   h3 {
     line-height: calc(var(--line) * 1.2);
     transform: translateY(1px);
-    padding-bottom: calc(var(--line) * 1.2);
-    /* padding-bottom: 0.252em; */
+    /* padding-bottom: calc(var(--line) * 1.2); */
   }
 }
 

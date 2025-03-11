@@ -9,8 +9,8 @@
   align-items: center;
   justify-content: center;
   .backdrop {
-    background: rgba(var(--black-rgb), 0.6);
-    backdrop-filter: blur(20px);
+    background: rgba(var(--black-rgb), 0.2);
+    backdrop-filter: blur(50px);
     width: 100%;
     height: 100%;
     position: absolute;
@@ -46,4 +46,8 @@
       opacity: 1;
     }
   }
+}
+
+html.dark .modal .backdrop {
+  background: rgba(var(--black-rgb), 0.6);
 }

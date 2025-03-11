@@ -1,6 +1,6 @@
 import { create, getCssVariable } from '@/js/utils/dom'
 
-export default function pixelate(source) {
+export default function pixelate(source, { factor = 1 } = {}) {
   let width = 0
   let height = 0
   let loaded = false
@@ -12,7 +12,7 @@ export default function pixelate(source) {
 
   source.parentNode.appendChild(canvas)
 
-  const draw = (factor = 1) => {
+  const draw = () => {
     if (!loaded) {
       return
     }
@@ -45,5 +45,8 @@ export default function pixelate(source) {
       throw new Error(`Unsupported source: ${source.tagName}`)
   }
 
-  return draw
+  return () => {
+    resizeObserver.disconnect()
+    canvas.remove()
+  }
 }

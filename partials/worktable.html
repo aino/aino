@@ -1,16 +1,18 @@
 <ul class="worktable">
   {{# each work }}
-  <li>
-    {{# if slug }}
-    <a href="/work/{{slug}}" class="line nocursor">
-      <strong>{{name}}</strong>
-      <span>{{year}}</span>
+  <li data-index="{{@index}}">
+    {{#if slug}}
+    <a href="/work/{{slug}}" class="line">
+    {{else}}
+    <div class="line inactive">
+    {{/if}}
+    <span class="number">{{ zeropad @index }}</span>
+    <span class="name">{{name}}</span>
+    <span class="year">{{year}}</span>
+    {{#if slug }}
     </a>
     {{else}}
-    <span class="line inactive">
-      <strong>{{name}}</strong>
-      <span>{{year}}</span>
-    </span>
+    </div>
     {{/if}}
   </li>
   {{/each}}

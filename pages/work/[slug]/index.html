@@ -1,26 +1,14 @@
 {{#> layout bodyclass="case" }}
-<div class="intro">
-  {{ worktitle name=data.name position=position reel=data.reel.url }}
-  <div class="media image">
-    {{#if intro.image }}
-    <img {{ img intro.image }} />
-    {{/if}} {{#if intro.video }}
-    <video
-      autoplay
-      playsinline
-      loop
-      muted
-      width="{{intro.video.width}}"
-      height="{{intro.video.height}}"
-      key="casevideo"
-    >
-      <source type="video/mp4" src="{{intro.video.url}}" />
-    </video>
-    {{/if}}
-  </div>
-</div>
+<section
+  class="first worktitle"
+  style="padding-top: calc(var(--line) * {{index}})"
+>
+  <div class="position">{{ zeropad index }}</div>
+  <div class="title"><h1>{{data.name}}</h1></div>
+  <div></div>
+  <div class="year">{{year}}</div>
+</section>
 <section class="meta">
-  <div class="position">00{{ position }}</div>
   <div class="link">
     <a href="{{ data.link.url }}" target="_blank">{{ data.link.title }}</a>
   </div>
@@ -38,23 +26,23 @@
       {{/each }}
     </ul>
   </div>
+  <div class="watch">
+    {{#if data.reel}}
+    <a
+      href="{{data.reel.url}}"
+      target="_blank"
+      class="reel"
+      data-preventclick="true"
+      title="{{data.name}} reel"
+      ><span>▶︎</span> Play reel</a
+    >
+    {{/if}}
+  </div>
 </section>
 {{# each data.sections}}
 <section>{{> columns this }}</section>
 {{/ each }}
 <section class="casefooter fadein">
-  <div>{{> newbusiness }}</div>
-  <div class="span-2">
-    <h2 class="light">More work</h2>
-    {{> worktable }}
-  </div>
-  <div>
-    <h2 class="light">Open positions</h2>
-    <ul>
-      <li>Web Developer</li>
-      <li>Aino Norge - various roles</li>
-      <li>Internships</li>
-    </ul>
-  </div>
+  <div class="span-4">{{> worktable }}</div>
 </section>
 {{/layout}}

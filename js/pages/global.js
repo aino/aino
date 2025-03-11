@@ -95,9 +95,11 @@ export default async function global(app) {
     )
   }
 
-  q('a[href^="mailto:"]').forEach((a) => {
-    email(a)
+  q('a[href^="mailto:"]').forEach(async (a) => {
+    destroyers.push(await email(a))
   })
+
+  console.log(destroyers)
 
   return () => {
     for (const destroy of [...destroyers, ...asciiDestroyers]) {

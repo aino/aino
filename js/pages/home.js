@@ -312,16 +312,28 @@ export default async function home(app) {
       await wait(1600)
       morph(main, [
         ...createText({
+          col: 2,
+          row: Math.floor(dimensions.rows / 2) - 2,
+          context: 'text',
+          text: 'Ditigal first'.toUpperCase(),
+        }),
+        ...createText({
           col: getCssVariable('col') + 4,
           row: Math.floor(dimensions.rows / 2) - 2,
           context: 'text',
-          text: 'Digital first'.toUpperCase(),
+          text: 'Creative'.toUpperCase(),
         }),
         ...createText({
           col: getCssVariable('col') * 2 + 6,
           row: Math.floor(dimensions.rows / 2) - 2,
           context: 'text',
-          text: 'Creative design agency'.toUpperCase(),
+          text: 'Design'.toUpperCase(),
+        }),
+        ...createText({
+          col: dimensions.cols - 9,
+          row: Math.floor(dimensions.rows / 2) - 2,
+          context: 'text',
+          text: 'Agrency'.toUpperCase(),
         }),
       ])
       // await wait(2400)

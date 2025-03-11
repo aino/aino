@@ -4,6 +4,9 @@ import fadein from '@/js/fadein'
 import { stopHoverChar } from '../hoverchar'
 import { smoothScroll } from '../utils/scroll'
 import site from '@/js/stores/site'
+import wait from '@/js/utils/wait'
+import animate, { lerp } from '../utils/animate'
+import { getCssVariable } from '../utils/dom'
 
 export const path = /^\/work$/
 
@@ -13,12 +16,14 @@ export default async function about(app) {
   const destroyers = []
   const [bg] = q('.bg', app)
   const [worktable] = q('.worktable', app)
-  fadein(worktable)
-  const [h1] = q('h1', app)
-  document.documentElement.classList.add('dark')
-  setTimeout(() => {
-    fadein(h1)
-  }, 400)
+  const lines = q('.line', worktable)
+  const renderLines = async () => {
+    for (const line of lines) {
+      line.style.display = 'grid'
+      await wait(30)
+    }
+  }
+  renderLines()
   let pending = false
   const items = q('li', worktable)
   destroyers.push(
@@ -36,43 +41,15 @@ export default async function about(app) {
         if (pending || isTextMode()) {
           return
         }
-        bg.classList.add('hover')
-        bg.style.marginTop = `${i * -100}vh`
       })
-      a.addEventListener('click', (e) => {
-        if (!isTextMode()) {
-          pending = true
-          bg.classList.add('hover')
-          setTimeout(() => {
-            bg.classList.add('out')
-          }, 200)
-          if (scrollY) {
-            smoothScroll(0)
-          }
-          e.preventDefault()
-          stopHoverChar()
-          fadeout(h1)
-          fadeout(
-            worktable,
-            (node) => {
-              const nodeParent = node.parentNode.closest('a')
-              const targetParent = e.target.closest('a')
-              if (node.parentNode.nodeName === 'SPAN') {
-                return true
-              }
-              if (nodeParent?.href === targetParent?.href) {
-                return false
-              }
-              return true
-            },
-            () => {
-              history.pushState(null, '', a.href)
-            }
-          )
-        } else {
-          e.preventDefault()
-          history.pushState(null, '', a.href)
-        }
+      a.addEventListener('click', async (e) => {
+        e.preventDefault()
+        stopHoverChar()
+        const li = e.target.closest('li')
+        li.classList.add('active')
+        li.parentElement.classList.add('out')
+        await wait(400)
+        history.pushState(null, '', a.href)
       })
     }
   }

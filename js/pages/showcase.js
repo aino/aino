@@ -2,62 +2,15 @@ import { q, create, observe, getCssVariable, getStyle } from '../utils/dom'
 import fadein from '@/js/fadein'
 import site from '@/js/stores/site'
 import { fitHeight } from './global'
+import pixelate from '../pixelate'
+import wait from '../utils/wait'
 
 export const path = /^\/work\/[^/]+$/
 
 export default async function showcase(app) {
   const destroyers = []
-  for (const d of q(
-    '.position, .link, .services li:first-child, .technologies li:first-child',
-    app
-  )) {
+  for (const d of q('.link, .services li, .technologies li', app)) {
     fadein(d)
-  }
-  document.documentElement.classList.add('dark')
-
-  const [intro] = q('.intro', app)
-  intro.classList.add('in')
-
-  const [meta] = q('.meta', app)
-  destroyers.push(
-    observe(
-      meta,
-      () => {
-        for (const d of q(
-          '.technologies li:not(:first-child), .services li:not(:first-child)',
-          app
-        )) {
-          fadein(d)
-        }
-      },
-      null,
-      {
-        threshold: 1,
-        once: true,
-      }
-    )
-  )
-  const [worktitle] = q('.worktitle', intro)
-  if (worktitle) {
-    const clone = worktitle.cloneNode(true)
-    worktitle.before(clone)
-    clone.classList.add('clone')
-    const round = (n) => {
-      const line = getCssVariable('line')
-      return Math.round(n / line) * line
-    }
-    const onScroll = () => {
-      if (document.documentElement.classList.contains('textmode')) {
-        const line = getCssVariable('line')
-        const top = round(parseFloat(getStyle(worktitle, 'top'))) - line
-        const maxDistance = round(intro.offsetHeight) - top - 0.5
-        const distance = Math.min(maxDistance, round(scrollY))
-        clone.style.transform = `translateY(${distance}px)`
-        worktitle.style.transform = `translateY(${distance}px)`
-      }
-    }
-    addEventListener('scroll', onScroll)
-    destroyers.push(() => removeEventListener('scroll', onScroll))
   }
 
   const [worktable] = q('.worktable', app)
@@ -75,30 +28,11 @@ export default async function showcase(app) {
     )
   )
 
-  destroyers.push(
-    site.subscribe((newValue) => {
-      if (newValue.textMode) {
-        fitHeight(intro)
-      } else {
-        intro.style.height = ''
-      }
-    })
-  )
+  const [firstImage] = q('.image img', app)
+  const makePixels = async () => {}
+  makePixels()
 
-  const observer = new ResizeObserver(() => {
-    if (site.value.textMode) {
-      fitHeight(intro)
-    }
-  })
-  observer.observe(intro)
-
-  destroyers.push(() => observer.disconnect())
-
-  if (site.value.textMode) {
-    fitHeight(intro)
-  }
-
-  const [reel] = q('.worktitle:not(.clone) .reel', app)
+  const [reel] = q('.reel', app)
   if (reel) {
     reel.addEventListener('click', (e) => {
       e.preventDefault()
