@@ -19,6 +19,8 @@
   --char2: calc(var(--char) * 2);
   --fullcol: calc((var(--col) + 2) * var(--char));
   --border-radius: calc(var(--char) * 0.4);
+
+  --line-padding: calc(var(--line) * 0.43923331);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -179,12 +181,6 @@ p,
   letter-spacing: 0;
   line-height: calc(var(--line) * 1.2);
   letter-spacing: -0.01em;
-  &.big {
-    font-weight: 720;
-    font-size: 170%;
-    line-height: calc(var(--line) * 1.5);
-    letter-spacing: -0.02em;
-  }
   h1 {
     font-size: 225%;
     font-weight: 720;
@@ -197,8 +193,38 @@ p,
     font-family: mono, monospace;
     line-height: var(--line-height);
     text-transform: uppercase;
-    padding-right: var(--char2);
+    padding-right: var(--char);
+    font-weight: 400;
   }
+}
+
+.big p,
+.big h2,
+.big li,
+h2.big,
+p.big,
+li.big {
+  font-weight: 720;
+  font-size: 170%;
+  line-height: calc(var(--line) * 1.5);
+  letter-spacing: -0.02em;
+}
+
+hr {
+  height: 1px;
+  background: var(--black);
+  margin: calc(var(--line)) 0;
+  opacity: 0.1;
+  display: block;
+}
+
+hr + .big {
+  margin-top: calc(var(--line) * -0.2);
+}
+
+.big h2 + p,
+h2.big + p {
+  margin-top: calc(var(--line) * 1.2);
 }
 
 .light {
@@ -225,11 +251,40 @@ html.js .fadein {
   }
 }
 
-button:not(.ghost) {
-  background: rgba(var(--black-rgb), 0.1);
-  padding: var(--char) var(--char2);
-  cursor: pointer;
-  border-radius: var(--border-radius);
+button,
+a.button {
+  &:not(.ghost) {
+    display: inline-block;
+    vertical-align: middle;
+    height: calc(var(--line) * 2);
+    display: flex;
+    align-items: center;
+    padding: var(--line-padding) var(--char);
+    background: rgba(var(--black-rgb), 0.1);
+    cursor: pointer;
+    border-radius: var(--border-radius);
+  }
+  &.fullwidth {
+    width: 100%;
+    text-align: left;
+    padding-left: var(--char);
+  }
+  &.outline {
+    background: none;
+    border: 1px solid var(--black);
+    color: var(--black);
+  }
+  &.arrow {
+    position: relative;
+    padding-right: calc(var(--char) * 2);
+    &::after {
+      content: '→';
+      position: absolute;
+      right: var(--char);
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
 }
 
 html.dark {
@@ -245,7 +300,30 @@ html.dark {
     --white: rgb(var(--black-rgb));
     --black: rgb(var(--white-rgb));
   }
-  button:not(.ghost) {
+  button:not(.ghost, .outline) {
     background: rgba(var(--white-rgb), 0.1);
+  }
+}
+
+.blink {
+  animation: blinker 0.4s linear infinite;
+}
+
+.blink-fast {
+  animation: blinker 0.2s linear infinite;
+}
+
+@keyframes blinker {
+  0% {
+    opacity: 0;
+  }
+  49% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  99% {
+    opacity: 1;
   }
 }

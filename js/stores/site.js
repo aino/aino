@@ -1,7 +1,9 @@
 import state from '@/js/utils/state'
 
+export const modes = ['image', 'text', 'pixel']
+
 const defaultValue = {
-  textMode: false,
+  mode: 'image',
   ...(typeof localStorage !== 'undefined'
     ? JSON.parse(localStorage.getItem('site') || '{}')
     : {}),
@@ -15,8 +17,11 @@ store.subscribe((value) => {
   }
 })
 
-export const toggleTextMode = () => {
-  store.assign({ textMode: !store.value.textMode })
+export const toggleMode = () => {
+  console.log(store)
+  store.assign({
+    mode: modes[(modes.indexOf(store.value.mode) + 1) % modes.length],
+  })
 }
 
 export default store

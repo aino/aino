@@ -1,42 +1,84 @@
 {{#> layout bodyclass="careers" }}
 <section class="first">
-  <div></div>
-  <div class="span-2 pagetitle">
-    <h1>{{ position.title }}<br /><span>{{ position.subtitle }}</span></h1>
+  <div class="pagetitle">
+    <h1>{{ position.title }}</h1>
+  </div>
+  <div class="pagetitle span-3">
+    <h1>{{ position.subtitle }}</h1>
   </div>
 </section>
 <section class="space"></section>
 <section>
-  <div></div>
+  <div>
+    <a href="/careers/apply?position={{position.slug}}"
+      ><span class="blink-fast">●</span> Hiring Now</a
+    >
+  </div>
   <div class="text">
-    <h3>Welcome to Aino</h3>
+    <h2 class="light">Welcome to Aino</h2>
     {{{position.description}}}
   </div>
   <div class="text">
-    <h3>Main responsibilities</h3>
+    <h2 class="light">Main responsibilities</h2>
     <ul>
       {{#each position.responsibilities}}
       <li>{{this}}</li>
       {{/each}}
     </ul>
-    <h3>Position details</h3>
+    <h2 class="light">Position details</h2>
     <ul>
       {{#each position.details}}
       <li>{{this}}</li>
       {{/each}}
     </ul>
-    <h3>You should know this</h3>
+    <h2 class="light">You should know this</h2>
     <ul>
       {{#each position.mustHave}}
       <li>{{this}}</li>
       {{/each}}
     </ul>
-    <h3>Nice if you also know this</h3>
+    <h2 class="light">Nice if you also know this</h2>
     <ul>
       {{#each position.niceToHave}}
       <li>{{this}}</li>
       {{/each}}
     </ul>
+  </div>
+  <div>
+    <div class="image">
+      <img {{ img position.image }} />
+    </div>
+  </div>
+</section>
+<section>
+  <div>
+    <h2>Share</h2>
+    <br />
+    <ul>
+      <li>
+        <a
+          data-preventclick="true"
+          data-message="→ Link copied"
+          href="/careers/{{position.slug}}"
+          class="copy"
+          >→ Copy link</a
+        >
+      </li>
+      <li>
+        <a
+          href="https://www.linkedin.com/sharing/share-offsite/?url=https://aino.agency/careers/{{position.slug}}"
+          target="_blank"
+          >→ Share on LinkedIn</a
+        >
+      </li>
+    </ul>
+  </div>
+  <div>
+    <h2>Apply</h2>
+    <br />
+    <a class="button fullwidth outline arrow" href="/careers/apply"
+      >Start your application</a
+    >
   </div>
 </section>
 {{/layout}}

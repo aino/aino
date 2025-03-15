@@ -1,10 +1,14 @@
 import ascii from './ascii'
 import hoverchar from './hoverchar'
 import { fitHeight } from './pages/global'
+import pixelate from './pixelate'
 import { create, q } from './utils/dom'
 import contacts from '@/data/contacts'
 
+const html = document.documentElement
+
 export default async function email(link) {
+  const destroyers = []
   const { href } = link
   const email = href.replace('mailto:', '')
   const contact = contacts.find((c) => c.email === email)
@@ -12,6 +16,7 @@ export default async function email(link) {
     return
   }
   let container
+  const { default: emailTemplate } = await import('partials/email')
   const onClick = (e) => {
     e.preventDefault()
 
@@ -19,12 +24,19 @@ export default async function email(link) {
     container.innerHTML = emailTemplate(contact)
     link.after(container)
     const [img] = q('img', container)
-    if (document.documentElement.classList.contains('textmode')) {
-      container.style.opacity = 0
+    const [content] = q('.content', container)
+    const textmode = html.classList.contains('textmode')
+    const pixelmode = html.classList.contains('pixelmode')
+    if (textmode || pixelmode) {
+      content.style.opacity = 0
       fitHeight(img.parentElement)
-      ascii(img)
+      if (textmode) {
+        destroyers.push(ascii(img))
+      } else if (pixelmode) {
+        destroyers.push(pixelate(img))
+      }
       setTimeout(() => {
-        container.style.opacity = 1
+        content.style.opacity = 1
       }, 100)
     }
     for (const closer of q('button.close, .backdrop', container)) {
@@ -56,10 +68,12 @@ export default async function email(link) {
     )
     hoverchar(container)
   }
-  const { default: emailTemplate } = await import('partials/email')
   link.addEventListener('click', onClick)
+  destroyers.push(() => link.removeEventListener('click', onClick))
+  destroyers.push(() => container?.remove())
   return () => {
-    container?.remove()
-    link.removeEventListener('click', onClick)
+    for (const destroy of destroyers) {
+      destroy()
+    }
   }
 }

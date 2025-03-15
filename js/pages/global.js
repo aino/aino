@@ -8,17 +8,20 @@ import fadein from '@/js/fadein'
 import site from '@/js/stores/site'
 import ascii from '../ascii'
 import email from '../email'
+import pixelate from '../pixelate'
 
 export const path = /.*/
+
+const html = document.documentElement
 
 export const fitHeight = (node) => {
   const adjust = () => {
     node.style.height = ''
-    const ch = getCssVariable('ch')
+    const line = getCssVariable('line')
     const { height } = node.getBoundingClientRect()
-    const rows = Math.floor(height / ch)
-    const newHeightInRem = Math.floor(rows / 2) * 2
-    node.style.height = `${newHeightInRem * ch}px`
+    const rows = Math.floor(Math.floor(height) / line)
+    node.style.height = `${rows * line}px`
+    console.log(height, rows)
   }
   const [img] = q('img', node)
   if (img.complete) {
@@ -39,45 +42,40 @@ export default async function global(app) {
 
   hoverchar()
 
-  let asciiDestroyers = []
-
-  const applyAscii = (img) => {
-    let filter
-    asciiDestroyers.push(ascii(img, filter))
+  let imageDestroyers = []
+  const resetImages = () => {
+    for (const destroy of imageDestroyers) {
+      destroy()
+    }
+    imageDestroyers = []
   }
 
   for (const node of q('.fadein')) {
     fadein(node)
   }
 
+  const setMode = (mode) => {
+    html.classList.toggle('textmode', mode === 'text')
+    html.classList.toggle('pixelmode', mode === 'pixel')
+    resetImages()
+    for (const img of q('img')) {
+      if (mode === 'text') {
+        imageDestroyers.push(ascii(img))
+      } else if (mode === 'pixel') {
+        imageDestroyers.push(pixelate(img, { factor: 1 }))
+      }
+    }
+  }
+
   destroyers.push(
     site.subscribe((newValue, oldValue) => {
-      if (newValue.textMode !== oldValue.textMode) {
-        document.documentElement.classList.toggle('textmode', newValue.textMode)
-        if (newValue.textMode) {
-          for (const img of q('.image img')) {
-            applyAscii(img)
-          }
-        } else {
-          for (const destroy of asciiDestroyers) {
-            if (destroy) {
-              destroy()
-            }
-          }
-          asciiDestroyers = []
-        }
+      if (newValue.mode !== oldValue.mode) {
+        setMode(newValue.mode)
       }
     })
   )
 
-  if (site.value.textMode) {
-    for (const img of q('.image img')) {
-      applyAscii(img)
-    }
-    setTimeout(() => {
-      document.documentElement.classList.add('textmode')
-    }, 40)
-  }
+  setMode(site.value.mode)
 
   for (const fader of q('.fadein')) {
     destroyers.push(
@@ -99,10 +97,22 @@ export default async function global(app) {
     destroyers.push(await email(a))
   })
 
-  console.log(destroyers)
+  for (const copy of q('a.copy')) {
+    const onClick = (e) => {
+      e.preventDefault()
+      navigator.clipboard.writeText(copy.href)
+      if (copy.dataset.message) {
+        copy.replaceWith(copy.dataset.message)
+      } else {
+        copy.replaceWith('Address copied')
+      }
+    }
+    copy.addEventListener('click', onClick)
+    destroyers.push(() => copy.removeEventListener('click', onClick))
+  }
 
   return () => {
-    for (const destroy of [...destroyers, ...asciiDestroyers]) {
+    for (const destroy of [...destroyers, ...imageDestroyers]) {
       if (destroy) {
         destroy()
       }

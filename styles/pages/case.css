@@ -29,6 +29,13 @@ body.case {
     align-items: center;
     justify-content: center;
     background: rgba(var(--black-rgb), 0.2);
+    background: repeating-linear-gradient(
+      180deg,
+      var(--white) 0,
+      var(--white) 1px,
+      transparent 1px,
+      transparent 2px
+    );
     backdrop-filter: blur(50px);
     z-index: 10;
     video {
@@ -75,21 +82,6 @@ body.case {
   }
   .meta {
     margin-bottom: var(--line);
-  }
-}
-
-@keyframes blinker {
-  0% {
-    opacity: 0;
-  }
-  49% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  99% {
-    opacity: 1;
   }
 }
 

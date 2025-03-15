@@ -1,6 +1,7 @@
 import { create, id, q } from './utils/dom'
-import site, { toggleTextMode } from './stores/site'
+import site, { toggleMode } from './stores/site'
 import fadein from './fadein'
+import { capitalize } from './utils/string'
 
 export default async function header() {
   const nav = id('nav')
@@ -9,16 +10,16 @@ export default async function header() {
   const toggler = create(
     'button',
     {
-      textContent: site.value.textMode ? 'Image mode' : 'Text mode',
+      textContent: `${capitalize(site.value.mode)} mode`,
       className: 'toggler ghost',
       onclick() {
-        toggleTextMode()
+        toggleMode()
       },
     },
     about
   )
   site.subscribe((newValue) => {
-    toggler.textContent = newValue.textMode ? 'Image mode' : 'Text mode'
+    toggler.textContent = `${capitalize(newValue.mode)} mode`
   })
   if (document.body.classList.contains('home')) {
     setTimeout(() => {

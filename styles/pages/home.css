@@ -6,14 +6,19 @@
 .grid {
   height: 100vh;
   text-transform: none;
-  margin-top: calc(var(--line) * -3);
+  top: 0;
   width: 100vw;
-  margin-left: calc(var(--char) * -2);
+  left: 0;
   overflow: hidden;
   white-space: pre;
   cursor: default;
   transform: translateZ(0);
   will-change: transform;
+  position: absolute;
+}
+
+.gridcontainer {
+  height: 100vh;
 }
 
 .fps {

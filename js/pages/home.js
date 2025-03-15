@@ -6,17 +6,19 @@ import wait from '@/js/utils/wait'
 import animate, { lerp, reverseLerp } from '@/js/utils/animate'
 import work from '@/data/work.js'
 import loadimage from '@/js/utils/loadimage'
-import { grayRamp as ascChars } from '../ascii'
-import { create, getCssVariable } from '../utils/dom'
-import { CHARS } from '../grid/grid2'
+import ascii, { grayRamp as ascChars } from '../ascii'
+import { create, getCssVariable, style } from '../utils/dom'
+import { CHARS, fadeChar } from '../grid/grid2'
+import debounce, { throttle } from '../utils/debounce'
+import { smoothScroll } from '../utils/scroll'
 
-const grayRamp = `${ascChars} `
+const grayRamp = `${CHARS}`
 
 export const path = /^\/$/
 
 export default async function home(app) {
   const [gridNode] = q('.grid')
-  const nav = id('nav')
+  const destroyers = []
 
   const {
     canvas,
@@ -34,6 +36,7 @@ export default async function home(app) {
     startRenderLoop,
     stopRenderLoop,
     listen,
+    setOpacity,
   } = grid(gridNode, grayRamp)
 
   const ctx = canvas.getContext('2d')
@@ -93,7 +96,44 @@ export default async function home(app) {
     },
   })
 
-  let textRow = Math.floor(dimensions.rows / 2 + logoHeight / 2)
+  const [firstSection] = q('section.start')
+  let firstImages = []
+  for (const img of q('img', firstSection)) {
+    destroyers.push(ascii(img))
+  }
+  await wait(400)
+  for (const asc of q('.ascii', firstSection)) {
+    style(asc, {
+      display: 'block',
+      opacity: 0,
+    })
+    const line = getCssVariable('line')
+    const ch = getCssVariable('ch')
+    let y = 3
+    const { width, height, left } = asc.getBoundingClientRect()
+    const startX = Math.floor(left / ch)
+    let x = startX
+    const cols = Math.floor(width / ch)
+    const rows = Math.floor(height / line)
+    for (let i = 0; i < asc.innerText.length; i++) {
+      const char = asc.innerText[i]
+      if (char === '\n') {
+        y++
+        x = startX
+      } else {
+        x++
+      }
+      firstImages.push(
+        createPoint({
+          x: lerp(0, cols / dimensions.cols, x / cols),
+          y: lerp(0, rows / dimensions.rows, y / rows),
+          context: 'text',
+          value: char,
+        })
+      )
+    }
+  }
+
   const getValue = (timestamp, duration) => {
     const t = (timestamp % duration) / duration
     return (1 - Math.cos(2 * Math.PI * t)) / 2
@@ -169,22 +209,6 @@ export default async function home(app) {
           }
         }
       }
-      /*
-      const logoCoordinates = new Set()
-      for (const logopoint of logo) {
-        const logoCol = Math.round(logopoint.x * dimensions.cols)
-        const logoRow = Math.round(logopoint.y * dimensions.rows)
-        logoCoordinates.add(`${logoCol},${logoRow}`)
-      }
-      for (const point of intro) {
-        const col = Math.round(point.x * dimensions.cols)
-        const row = Math.round(point.y * dimensions.rows)
-        if (logoCoordinates.has(`${col},${row}`)) {
-          const index = CHARS.indexOf(point.value)
-          point.value = CHARS[Math.min(CHARS.length - 2, index + 20)]
-        }
-      }
-        */
       main = [
         ...intro,
         ...(nextMouseX !== null && nextMouseY !== null
@@ -198,6 +222,23 @@ export default async function home(app) {
           : []),
       ]
       update(main)
+    }
+  })
+
+  let opacity = 1
+
+  listen('render', (points) => {
+    for (const p of points) {
+      p.filter = (value) => {
+        let nextChar = value
+        if (p.context !== 'text') {
+          const index = CHARS.indexOf(value)
+          const n = index / CHARS.length
+          nextChar = ascChars[Math.floor(n * ascChars.length)]
+          return fadeChar(nextChar, opacity, ascChars)
+        }
+        return fadeChar(nextChar, opacity, CHARS)
+      }
     }
   })
 
@@ -304,7 +345,7 @@ export default async function home(app) {
       explode(main, { spread: 0.4 })
       await wait(600)
       morph(main, logo)
-      await wait(2200)
+      await wait(2400)
       gravitate(main, {
         gravity: 1.8,
         damping: 1.005,
@@ -312,30 +353,51 @@ export default async function home(app) {
       await wait(1600)
       morph(main, [
         ...createText({
-          col: 2,
+          col: Math.floor(dimensions.cols / 2),
           row: Math.floor(dimensions.rows / 2) - 2,
           context: 'text',
-          text: 'Ditigal first'.toUpperCase(),
-        }),
-        ...createText({
-          col: getCssVariable('col') + 4,
-          row: Math.floor(dimensions.rows / 2) - 2,
-          context: 'text',
-          text: 'Creative'.toUpperCase(),
-        }),
-        ...createText({
-          col: getCssVariable('col') * 2 + 6,
-          row: Math.floor(dimensions.rows / 2) - 2,
-          context: 'text',
-          text: 'Design'.toUpperCase(),
-        }),
-        ...createText({
-          col: dimensions.cols - 9,
-          row: Math.floor(dimensions.rows / 2) - 2,
-          context: 'text',
-          text: 'Agrency'.toUpperCase(),
+          text: 'Scandinavian Design & Technology Agency'.toUpperCase(),
+          align: 'center',
         }),
       ])
+      await wait(2200)
+      /*
+      for (const p of main) {
+        p.vx = lerp(-0.3, 0.3, Math.random())
+      }
+
+      morph(main, [
+        ...createText({
+          col: Math.floor(dimensions.cols / 2),
+          row: Math.floor(dimensions.rows / 2) - 2,
+          context: 'text',
+          text: ' '.toUpperCase(),
+          align: 'center',
+        }),
+      ])
+      await wait(1400)
+      */
+      morph(main, firstImages)
+
+      await wait(2000)
+
+      //scrollTo(0, innerHeight + getCssVariable('line'))
+
+      // await wait(1600)
+      // morph(main, [
+      //   ...createText({
+      //     col: getCssVariable('col') + 4,
+      //     row: Math.floor(dimensions.rows / 2) - 2,
+      //     context: 'text',
+      //     text: 'Design'.toUpperCase(),
+      //   }),
+      //   ...createText({
+      //     col: getCssVariable('col') * 2 + 6,
+      //     row: Math.floor(dimensions.rows / 2) - 2,
+      //     context: 'text',
+      //     text: 'Technology'.toUpperCase(),
+      //   }),
+      // ])
       // await wait(2400)
       // morph(
       //   main,

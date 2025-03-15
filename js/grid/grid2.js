@@ -27,6 +27,7 @@ function generateUID() {
 }
 
 export function fadeChar(char, opacity, grayRamp = CHARS) {
+  if (opacity === 1) return char
   return grayRamp[
     Math.floor(lerp(grayRamp.indexOf(char), grayRamp.length - 1, 1 - opacity))
   ]
@@ -73,8 +74,6 @@ function findClosestPoint(target, points) {
 export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
   let width,
     height,
-    rem,
-    line,
     cols,
     rows,
     textArr = []
@@ -133,6 +132,9 @@ export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
         const col = Math.round(p.x * cols)
         const row = Math.round(p.y * rows)
         let value = p.value
+        if (p.filter) {
+          value = p.filter(value)
+        }
         if (/^\s$/.test(value)) {
           value = ' '
         }

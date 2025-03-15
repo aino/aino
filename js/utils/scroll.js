@@ -3,7 +3,7 @@ import { outQuint } from './easing'
 
 export const smoothScroll = (() => {
   const defaultOptions = {
-    node: document.body,
+    node: window,
     to: 0,
     duration: 'natural',
     easing: outQuint,
@@ -16,7 +16,7 @@ export const smoothScroll = (() => {
       ...defaultOptions,
       ...options,
     }
-    let start = node.scrollTop
+    let start = node === window ? scrollY : node.scrollTop
     if (animation) {
       animation.stop()
     }

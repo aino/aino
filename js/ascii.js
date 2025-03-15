@@ -80,16 +80,24 @@ export default function ascii(source, filter = (chars) => chars) {
   resizeObserver.observe(source)
 
   const onload = () => {
-    tempImage = new Image()
-    const sets = source.srcset.split(', ')
-    const url = sets[1].split(' ')[0]
-    tempImage.onload = () => {
-      naturalWidth = tempImage.width
-      naturalHeight = tempImage.height
+    const objectFit = getStyle(source, 'object-fit')
+    if (objectFit === 'cover') {
+      tempImage = new Image()
+      const sets = source.srcset.split(', ')
+      const url = sets[1].split(' ')[0]
+      tempImage.onload = () => {
+        naturalWidth = tempImage.width
+        naturalHeight = tempImage.height
+        loaded = true
+        draw()
+      }
+      tempImage.src = url
+    } else {
+      naturalWidth = source.width
+      naturalHeight = source.height
       loaded = true
       draw()
     }
-    tempImage.src = url
   }
 
   switch (source.tagName) {

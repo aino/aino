@@ -20,8 +20,9 @@ export default function pixelate(source, { factor = 1 } = {}) {
     width = box.width
     height = box.height
     const rem = getCssVariable('ch')
+    const line = getCssVariable('line')
     canvas.width = Math.round(width / rem) * factor
-    canvas.height = Math.round(height / (2 * rem)) * factor
+    canvas.height = Math.round(height / line) * factor
     ctx.drawImage(source, 0, 0, canvas.width, canvas.height)
   }
 

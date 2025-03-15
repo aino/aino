@@ -8,9 +8,6 @@ body.contact #app {
       display: flex;
       flex-direction: column;
     }
-    h2 {
-      opacity: 0.4;
-    }
     .bounce {
       position: absolute;
       top: 0;

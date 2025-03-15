@@ -28,7 +28,7 @@ export default async function footer() {
   const { render, paintCanvas, createFromCanvas, listen, canvas } = grid(logo)
 
   const draw = () => {
-    paintCanvas(svg, { alpha: 0.5, x: 0 })
+    paintCanvas(svg, { alpha: 0.02, x: 0 })
     render(createFromCanvas({ context: 'logo' }))
   }
   // document.body.appendChild(canvas)
