@@ -1,0 +1,119 @@
+{
+  "name": "Beyond Medals",
+  "link": {
+    "url": "https://www.beyondmedals.com",
+    "title": "beyondmedals.com"
+  },
+  "services": ["E-commerce", "Design", "Development"],
+  "technologies": ["Centra", "Storyblok", "Aino Commerce Engine"],
+  "reel": {
+    "url": "/assets/work/beyond-medals/case.mp4",
+    "width": 1920,
+    "height": 1080
+  },
+  "sections": [
+    [
+      {
+        "span": 2,
+        "sticky": true,
+        "image": {
+          "url": "/assets/work/beyond-medals/1.png",
+          "width": 1080,
+          "height": 1080
+        }
+      },
+      {
+        "span": 2,
+        "image": {
+          "url": "/assets/work/beyond-medals/2.png",
+          "width": 1080,
+          "height": 1080
+        }
+      }
+    ],
+    [
+      {
+        "span": 1,
+        "sticky": true,
+        "html": "<div class=\"text\"><p>Beyond Medals emerged from a group of riders who sought to push the boundaries of traditional snowboarding culture. Founded by Swedish professional snowboarders Kevin Bäckström and Tor Lundström, Beyond Medals captures an edgy, rebellious spirit that appeals to riders who value creativity and style just as much as raw technical skill. From its origins, Beyond Medals has infused its apparel and media presence with an unapologetically bold flair, celebrating individuality and encouraging riders to express themselves without restraint.</p></div>"
+      },
+      {},
+      {
+        "span": 2,
+        "image": {
+          "url": "/assets/work/beyond-medals/snow.webp",
+          "width": 1920,
+          "height": 2871
+        }
+      }
+    ],
+    [
+      {
+        "span": 3,
+        "sticky": true,
+        "video": {
+          "url": "/assets/work/beyond-medals/5.mp4",
+          "width": 1080,
+          "height": 1080
+        }
+      }
+    ],
+    [
+      {},
+      {
+        "span": 2,
+        "image": {
+          "url": "/assets/work/beyond-medals/3.png",
+          "width": 1000,
+          "height": 1000
+        }
+      },
+      {
+        "span": 1,
+        "image": {
+          "url": "/assets/work/beyond-medals/6.png",
+          "width": 1000,
+          "height": 1000
+        }
+      }
+    ],
+    [
+      {
+        "video": {
+          "url": "/assets/work/beyond-medals/4.mp4",
+          "width": 1000,
+          "height": 1000
+        }
+      },
+      {
+        "span": 1,
+        "image": {
+          "url": "/assets/work/beyond-medals/d5.png",
+          "width": 1000,
+          "height": 1000
+        }
+      },
+      {},
+      {
+        "span": 1,
+        "image": {
+          "url": "/assets/work/beyond-medals/d3.png",
+          "width": 1000,
+          "height": 1000
+        }
+      }
+    ],
+    [
+      {},
+      {},
+      {
+        "span": 2,
+        "video": {
+          "url": "/assets/work/beyond-medals/desk.mp4",
+          "width": 1800,
+          "height": 2250
+        }
+      }
+    ]
+  ]
+}

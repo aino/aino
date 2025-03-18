@@ -33,7 +33,7 @@ export default async function about(app) {
         const li = e.target.closest('li')
         li.classList.add('active')
         li.parentElement.classList.add('out')
-        await wait(400)
+        await wait(200)
         history.pushState(null, '', a.href)
       })
     }

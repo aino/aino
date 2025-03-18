@@ -4,6 +4,7 @@ import site from '@/js/stores/site'
 import { fitHeight } from './global'
 import pixelate from '../pixelate'
 import wait from '../utils/wait'
+import ascii from '../ascii'
 
 export const path = /^\/work\/[^/]+$/
 
@@ -50,16 +51,22 @@ export default async function showcase(app) {
         },
         frame
       )
-      create(
+      const video = create(
         'video',
         {
           autoplay: true,
           controls: false,
           loop: true,
           src: reel.href,
+          muted: true,
         },
         wrapper
       )
+      if (document.documentElement.classList.contains('textmode')) {
+        destroyers.push(ascii(video))
+      } else if (document.documentElement.classList.contains('pixelmode')) {
+        destroyers.push(pixelate(video))
+      }
       const close = create(
         'button',
         {
@@ -83,7 +90,6 @@ export default async function showcase(app) {
   }
 
   return () => {
-    document.documentElement.classList.remove('dark')
     for (const destroy of destroyers) {
       destroy()
     }

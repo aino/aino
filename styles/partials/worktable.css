@@ -29,7 +29,7 @@
       color: var(--white);
     }
     &.active {
-      animation: blinker 0.2s linear infinite;
+      animation: blinker 0.16s linear infinite;
       a:hover {
         background: var(--white);
         color: var(--black);

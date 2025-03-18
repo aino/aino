@@ -113,6 +113,7 @@ const fakeState = async (href, trigger) => {
   if (!config.fakeSPA || href === prevHref) {
     return
   }
+  dispatchEvent(new CustomEvent('historychange', { detail: { href } }))
   const { pathname, search, hash } = new URL(href)
   let prevPathname = '',
     prevSearch = '',

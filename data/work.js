@@ -3,13 +3,6 @@ export default [
     name: 'Nudie Jeans',
     slug: 'nudie-jeans',
     year: '2010',
-    intro: {
-      image: {
-        url: '/images/work/nudie-jeans/n2.avif',
-        width: 2400,
-        height: 2989,
-      },
-    },
   },
   {
     name: 'SanDisk',
@@ -23,13 +16,6 @@ export default [
     name: 'Samsøe Samsøe',
     year: '2023',
     slug: 'samsoe-samsoe',
-    intro: {
-      image: {
-        url: '/images/work/samsoe-samsoe/s1.webp',
-        width: 2048,
-        height: 1638,
-      },
-    },
   },
   {
     name: 'Molo',
@@ -43,25 +29,11 @@ export default [
     name: 'All Blues',
     slug: 'all-blues',
     year: '2020',
-    intro: {
-      image: {
-        url: '/images/work/all-blues/bg.jpg',
-        width: 2400,
-        height: 2400,
-      },
-    },
   },
   {
     name: 'Majblomman',
     slug: 'majblomman',
     year: '2018',
-    intro: {
-      image: {
-        url: '/images/work/majblomman/majblomman.webp',
-        width: 2048,
-        height: 2048,
-      },
-    },
   },
   {
     name: 'Icebug',

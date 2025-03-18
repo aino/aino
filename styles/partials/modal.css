@@ -10,13 +10,6 @@
   justify-content: center;
   .backdrop {
     background: rgba(var(--black-rgb), 0.2);
-    background: repeating-linear-gradient(
-      180deg,
-      var(--white) 0,
-      var(--white) 1px,
-      transparent 1px,
-      transparent 2px
-    );
     backdrop-filter: blur(50px);
     width: 100%;
     height: 100%;

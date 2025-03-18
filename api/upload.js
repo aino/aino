@@ -56,7 +56,7 @@ export default async function handler(req, res) {
       }
 
       // File uploaded successfully
-      const filePath = `/images/${req.file.filename}`
+      const filePath = `/assets/${req.file.filename}`
       return res.status(200).json({ success: true, filePath })
     } catch (err) {
       return res.status(500).json({ success: false, message: err.message })

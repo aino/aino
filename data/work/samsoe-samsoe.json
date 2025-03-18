@@ -9,8 +9,7 @@
     "Architecture",
     "Design",
     "Development",
-    "Replatforming",
-    "Campaigns"
+    "Replatforming"
   ],
   "technologies": [
     "Centra",
@@ -20,7 +19,7 @@
     "Voyado Engage"
   ],
   "reel": {
-    "url": "/samsoe.mp4",
+    "url": "/assets/work/samsoe-samsoe/samsoe.mp4",
     "width": 1920,
     "height": 1080
   },
@@ -29,7 +28,7 @@
       {
         "span": 4,
         "image": {
-          "url": "/images/work/samsoe-samsoe/samsoe_2.png",
+          "url": "/assets/work/samsoe-samsoe/samsoe_2.png",
           "width": 1920,
           "height": 1080
         }
@@ -48,7 +47,7 @@
       {
         "span": 4,
         "image": {
-          "url": "/images/work/samsoe-samsoe/samsoe_4.png",
+          "url": "/assets/work/samsoe-samsoe/samsoe_4.png",
           "width": 1920,
           "height": 1080
         }
@@ -58,7 +57,7 @@
       {
         "span": 4,
         "image": {
-          "url": "/images/work/samsoe-samsoe/samsoe_3.png",
+          "url": "/assets/work/samsoe-samsoe/samsoe_3.png",
           "width": 1920,
           "height": 1080
         }
@@ -68,7 +67,7 @@
       {
         "span": 4,
         "image": {
-          "url": "/images/work/samsoe-samsoe/samsoe_5.png",
+          "url": "/assets/work/samsoe-samsoe/samsoe_5.png",
           "width": 1920,
           "height": 1080
         }
@@ -78,7 +77,7 @@
       {
         "span": 4,
         "image": {
-          "url": "/images/work/samsoe-samsoe/samsoe_6.png",
+          "url": "/assets/work/samsoe-samsoe/samsoe_6.png",
           "width": 1920,
           "height": 1080
         }
@@ -88,7 +87,7 @@
       {
         "span": 4,
         "image": {
-          "url": "/images/work/samsoe-samsoe/samsoe_7.png",
+          "url": "/assets/work/samsoe-samsoe/samsoe_7.png",
           "width": 1920,
           "height": 1080
         }
@@ -98,7 +97,7 @@
       {
         "span": 4,
         "image": {
-          "url": "/images/work/samsoe-samsoe/samsoe_8.png",
+          "url": "/assets/work/samsoe-samsoe/samsoe_8.png",
           "width": 1920,
           "height": 1080
         }
@@ -108,7 +107,7 @@
       {
         "span": 4,
         "image": {
-          "url": "/images/work/samsoe-samsoe/samsoe_9.png",
+          "url": "/assets/work/samsoe-samsoe/samsoe_9.png",
           "width": 1920,
           "height": 1080
         }
@@ -118,7 +117,7 @@
       {
         "span": 4,
         "image": {
-          "url": "/images/work/samsoe-samsoe/samsoe_10.png",
+          "url": "/assets/work/samsoe-samsoe/samsoe_10.png",
           "width": 1920,
           "height": 1080
         }

@@ -1,5 +1,6 @@
 import { create, getCssVariable } from '@/js/utils/dom'
 import { getStyle, style } from './utils/dom'
+import { isVideoPlaying } from './pixelate'
 
 export const toGrayScale = ({ r, g, b }) => 0.21 * r + 0.72 * g + 0.07 * b
 
@@ -26,6 +27,8 @@ export default function ascii(source, filter = (chars) => chars) {
   let naturalHeight = 0
   let tempImage
 
+  const objectFit = getStyle(source, 'object-fit')
+
   const draw = () => {
     if (!loaded || !source) {
       return
@@ -34,10 +37,10 @@ export default function ascii(source, filter = (chars) => chars) {
     width = box.width
     height = box.height
     const ch = getCssVariable('ch')
+    const line = getCssVariable('line')
     canvas.width = Math.round(width / ch)
-    canvas.height = Math.round(height / (2 * ch))
+    canvas.height = Math.round(height / line)
 
-    const objectFit = getStyle(source, 'object-fit')
     if (objectFit === 'cover') {
       const objectPosition = getStyle(source, 'object-position')
       const [posX, posY] = objectPosition.split(' ')
@@ -80,7 +83,6 @@ export default function ascii(source, filter = (chars) => chars) {
   resizeObserver.observe(source)
 
   const onload = () => {
-    const objectFit = getStyle(source, 'object-fit')
     if (objectFit === 'cover') {
       tempImage = new Image()
       const sets = source.srcset.split(', ')
@@ -97,6 +99,43 @@ export default function ascii(source, filter = (chars) => chars) {
       naturalHeight = source.height
       loaded = true
       draw()
+      if (source.tagName === 'VIDEO') {
+        if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
+          const onVideoFrame = () => {
+            draw()
+            source.requestVideoFrameCallback(onVideoFrame)
+          }
+          if (isVideoPlaying(source)) {
+            source.requestVideoFrameCallback(onVideoFrame)
+          } else {
+            source.addEventListener('play', () => {
+              source.requestVideoFrameCallback(onVideoFrame)
+            })
+          }
+        } else {
+          let lastTime = 0
+
+          function onVideoFrameFallback() {
+            if (!source.paused && !source.ended) {
+              const currentTime = source.currentTime
+
+              // Check if enough time has advanced that we can treat it as a new frame
+              // (you can fine-tune how sensitive you want this to be)
+              if (Math.abs(currentTime - lastTime) >= 0.016) {
+                lastTime = currentTime
+                requestAnimationFrame(onVideoFrameFallback)
+              }
+            }
+          }
+          if (isVideoPlaying(source)) {
+            requestAnimationFrame(onVideoFrameFallback)
+          } else {
+            source.addEventListener('play', () => {
+              requestAnimationFrame(onVideoFrameFallback)
+            })
+          }
+        }
+      }
     }
   }
 
@@ -109,7 +148,11 @@ export default function ascii(source, filter = (chars) => chars) {
       }
       break
     case 'VIDEO':
-      console.log('TODO VIDEO')
+      if (source.readyState === 4 || isVideoPlaying(source)) {
+        onload()
+      } else {
+        source.addEventListener('loadeddata', onload, { once: true })
+      }
       break
     case 'CANVAS':
       draw()
@@ -121,5 +164,8 @@ export default function ascii(source, filter = (chars) => chars) {
   return () => {
     text.remove()
     resizeObserver.disconnect()
+    if (source.tagName === 'VIDEO') {
+      source.removeEventListener('loadeddata', onload)
+    }
   }
 }

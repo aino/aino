@@ -9,33 +9,67 @@
     "Architecture",
     "Design",
     "Development",
-    "Replatforming",
     "Campaigns"
   ],
   "technologies": [
     "Centra",
-    "Storyblok",
+    "Contentful",
     "Aino Commerce Engine",
-    "Voyado Elevate",
-    "Voyado Engage"
+    "Voyado Engage",
+    "Google Cloud"
   ],
-  "intro": {
-    "image": {
-      "url": "/images/work/nudie-jeans/download.jpeg",
-      "width": "2400",
-      "height": "2989"
-    }
-  },
   "sections": [
     [
       {
         "span": 2,
-        "html": "",
-        "image": "",
-        "video": ""
+        "image": {
+          "url": "/assets/work/nudie-jeans/i2.jpg",
+          "width": 1080,
+          "height": 1080
+        }
       },
       {
-        "html": "<p>Footwear, accessories</p>"
+        "span": 1,
+        "image": {
+          "url": "/assets/work/nudie-jeans/n1.jpg",
+          "width": 1080,
+          "height": 1080
+        }
+      }
+    ],
+    [
+      {
+        "span": 1,
+        "sticky": true,
+        "html": "<div class=\"text big\"><p>Nudie Jeans is more than just jeans. With an emphasis on reuse and repair, Nudie Jeans Co. delivers and upholds a tradition that is loyal to the history and properties of the fabric. Founded in Gothenburg in 2001, the Swedish denim company has won praise for its efforts to promote environmental sustainability and has played a significant part in the industry’s efforts to live in a more sustainable way thanks to its variety of jeans made from 100% organic cotton and transparent production.</p></div>"
+      },
+      {},
+      {
+        "span": 2,
+        "image": {
+          "url": "/assets/work/nudie-jeans/nudie.webp",
+          "width": 2400,
+          "height": 2989
+        }
+      }
+    ],
+    [
+      {},
+      {
+        "span": 1,
+        "image": {
+          "url": "/assets/work/nudie-jeans/i1.jpg",
+          "width": 1080,
+          "height": 1080
+        }
+      },
+      {
+        "span": 2,
+        "image": {
+          "url": "/assets/work/nudie-jeans/s77.jpg",
+          "width": 1080,
+          "height": 1080
+        }
       }
     ]
   ]

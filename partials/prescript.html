@@ -4,17 +4,26 @@
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
     const setVariables = () => {
       const width = innerWidth
-      let ch = 8
+      const mobile = width < 769
+      let ch = mobile ? 7 : 8
       let cols = Math.round(width / ch)
-      cols -= 18 // 2 gutter, 2 margin
-      // Snap down to multiple of 8
-      cols -= cols % 8
-      // Add 7 back
-      cols += 18
-      // Recalculate charWidth
-      ch = width / cols
-
-      col = Math.ceil((width / ch - 11) / 4)
+      let col = 0
+      if (!mobile) {
+        cols -= 18 // 2 gutter, 2 margin
+        // Snap down to multiple of 8
+        cols -= cols % 8
+        // Add 7 back
+        cols += 18
+        // Recalculate charWidth
+        ch = width / cols
+        col = Math.ceil((width / ch - 11) / 4)
+      } else {
+        cols -= 6
+        cols -= cols % 2
+        cols += 6
+        ch = width / cols
+        col = Math.ceil((width / ch - 5) / 2)
+      }
 
       let fontSize = ch / 0.6 - 0.9
       const lineHeight = ch * 2

@@ -15,13 +15,13 @@ export const path = /.*/
 const html = document.documentElement
 
 export const fitHeight = (node) => {
+  return
   const adjust = () => {
     node.style.height = ''
     const line = getCssVariable('line')
     const { height } = node.getBoundingClientRect()
     const rows = Math.floor(Math.floor(height) / line)
     node.style.height = `${rows * line}px`
-    console.log(height, rows)
   }
   const [img] = q('img', node)
   if (img.complete) {
@@ -58,11 +58,11 @@ export default async function global(app) {
     html.classList.toggle('textmode', mode === 'text')
     html.classList.toggle('pixelmode', mode === 'pixel')
     resetImages()
-    for (const img of q('img')) {
+    for (const source of q('img, video')) {
       if (mode === 'text') {
-        imageDestroyers.push(ascii(img))
+        imageDestroyers.push(ascii(source))
       } else if (mode === 'pixel') {
-        imageDestroyers.push(pixelate(img, { factor: 1 }))
+        imageDestroyers.push(pixelate(source, { factor: 1 }))
       }
     }
   }

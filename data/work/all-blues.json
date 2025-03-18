@@ -6,13 +6,6 @@
   },
   "services": ["E-commerce", "Design", "Development", "Replatforming"],
   "technologies": ["Centra", "Storyblok", "Aino Commerce Engine"],
-  "intro": {
-    "image": {
-      "url": "/images/work/nudie-jeans/download.jpeg",
-      "width": "2400",
-      "height": "2989"
-    }
-  },
   "sections": [
     [
       {
@@ -24,7 +17,7 @@
       {
         "span": 2,
         "image": {
-          "url": "/images/work/all-blues/v241.jpg",
+          "url": "/assets/work/all-blues/v241.jpg",
           "width": 1538,
           "height": 4779
         }
@@ -34,7 +27,7 @@
       {
         "span": 1,
         "image": {
-          "url": "/images/work/all-blues/i8.jpg",
+          "url": "/assets/work/all-blues/i8.jpg",
           "width": 1080,
           "height": 1080
         }
@@ -42,7 +35,7 @@
       {
         "span": 1,
         "image": {
-          "url": "/images/work/all-blues/i9.jpg",
+          "url": "/assets/work/all-blues/i9.jpg",
           "width": 1080,
           "height": 1080
         }

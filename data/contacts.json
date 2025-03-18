@@ -4,7 +4,7 @@
     "title": "Managing Director",
     "email": "julie@aino.agency",
     "image": {
-      "url": "/images/julie.png",
+      "url": "/assets/julie.png",
       "width": 370,
       "height": 512
     }
@@ -14,7 +14,7 @@
     "title": "Founder",
     "email": "david@aino.agency",
     "image": {
-      "url": "/images/david.jpg",
+      "url": "/assets/david.jpg",
       "width": 2129,
       "height": 2129
     }
@@ -24,7 +24,7 @@
     "title": "Pr & Marketing",
     "email": "emelie@aino.agency",
     "image": {
-      "url": "/images/emelie.png",
+      "url": "/assets/emelie.png",
       "width": 1000,
       "height": 1000
     }
@@ -34,7 +34,7 @@
     "title": "Operations Manager",
     "email": "linnea@aino.agency",
     "image": {
-      "url": "/images/linnea.jpeg",
+      "url": "/assets/linnea.jpeg",
       "width": 1000,
       "height": 1000
     }

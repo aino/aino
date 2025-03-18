@@ -10,12 +10,48 @@
   > div {
     display: flex;
     gap: var(--char2);
+    &.last {
+      a:last-child {
+        margin-left: auto;
+      }
+    }
+  }
+  .mobile {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  #nav {
+    z-index: 11;
+    display: flex;
     a {
-      /* white-space: nowrap; */
+      display: none;
+      &.home {
+        display: block;
+      }
     }
-    &:last-child {
-      justify-self: end;
+    .toggler {
+      display: none;
     }
+    .mobile {
+      display: block;
+      margin-left: auto;
+    }
+  }
+}
+
+.mobile-container {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background: var(--white);
+  top: 0;
+  left: 0;
+  z-index: 10;
+  padding: calc(var(--line) * 3) var(--char2);
+  a {
+    display: block;
   }
 }
 
