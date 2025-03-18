@@ -44,7 +44,7 @@
 .mobile-container {
   position: fixed;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   background: var(--white);
   top: 0;
   left: 0;
