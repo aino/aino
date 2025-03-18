@@ -335,6 +335,13 @@ a.button {
   animation: blinker 0.2s linear infinite;
 }
 
+.fonts {
+  .f1 {
+    font-family: 'abc';
+    font-weight: 720;
+  }
+}
+
 @keyframes blinker {
   0% {
     opacity: 0;
