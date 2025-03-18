@@ -161,6 +161,20 @@ section {
   }
 }
 
+@media (max-width: 768px) {
+  section {
+    grid-template-columns: 1fr;
+    gap: var(--line);
+    > div {
+      &.span-2,
+      &.span-3,
+      &.span-4 {
+        grid-column: span 1;
+      }
+    }
+  }
+}
+
 .cols {
   display: flex;
   gap: 2rem;
@@ -181,7 +195,8 @@ html.js .fadein {
 
 p,
 .text h2,
-.text li {
+.text li,
+.text a {
   font-family: abc, helvetica, sans-serif;
   text-transform: none;
   font-feature-settings: 'ss05';
@@ -204,10 +219,12 @@ p,
 .big h1,
 .big h2,
 .big li,
+.big a,
 h2.big,
 p.big,
 li.big,
-h1.big {
+h1.big,
+a.big {
   font-weight: 720;
   font-size: 170%;
   line-height: calc(var(--line) * 1.5);
@@ -218,10 +235,12 @@ h1.big {
 .mega h1,
 .mega h2,
 .mega li,
+.mega a,
 p.mega,
 h1.mega,
 h2.mega,
-li.mega {
+li.mega,
+a.mega {
   font-size: 225%;
   font-weight: 720;
   line-height: calc(var(--line) * 2);

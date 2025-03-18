@@ -10,15 +10,30 @@ export default async function header() {
   const [last] = q('.last', nav)
   const [mobile] = q('.mobile', nav)
   const destroyers = []
+  const { default: nbtemplate } = await import('partials/newbusiness')
   let container
   const open = state(false, (isOpen) => {
     nav.classList.toggle('open', isOpen)
+    mobile.innerText = isOpen ? 'Close' : 'Menu'
     if (isOpen) {
-      const links = q('a:not(.home)', nav).map((a) => a.cloneNode(true))
+      const links = q('a:not(.home)', nav).map((a, i) => {
+        const l = a.cloneNode(true)
+        l.style.opacity = 0
+        l.classList.add('mega')
+        setTimeout(() => {
+          l.style.opacity = 1
+        }, i * 80)
+        return l
+      })
       container = create('div', { className: 'mobile-container' }, nav)
-      container.append(...links)
+      const mnav = create('div', { className: 'mobile-nav text' })
+      mnav.append(...links)
+      container.appendChild(mnav)
       nav.after(container)
       parseLinks(container)
+      const nb = create('div', { className: 'newbusiness' })
+      nb.innerHTML = nbtemplate()
+      container.appendChild(nb)
     } else {
       container?.remove()
     }
@@ -39,9 +54,9 @@ export default async function header() {
     open.set(!open.value)
   })
   const onHistoryState = () => {
-    requestAnimationFrame(() => {
+    setTimeout(() => {
       open.set(false)
-    })
+    }, 50)
   }
   addEventListener('historychange', onHistoryState)
   destroyers.push(() => removeEventListener('historychange', onHistoryState))

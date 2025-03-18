@@ -2,6 +2,7 @@ import { getCssVariable, q } from '@/js/utils/dom'
 import { lerp } from '@/js/utils/animate'
 import { outQuint } from '@/js/utils/easing'
 import { CHARS } from '@/js/grid/grid2'
+import * as detect from '@/js/utils/detect'
 
 const nodeAnimations = new Map()
 
@@ -90,7 +91,7 @@ export default function hoverchar() {
     const dy = hoverchar.dataset.dy || 0
     const dx = hoverchar.dataset.dx || 1
     const duration = hoverchar.dataset.duration || 1000
-    hoverchar.addEventListener('mousemove', (e) => {
+    const onMove = (e) => {
       const rem = getCssVariable('ch')
       const { clientX, clientY } = e
       for (let y = -dy; y <= dy; y++) {
@@ -147,6 +148,14 @@ export default function hoverchar() {
           }
         }
       }
-    })
+    }
+    if (detect.touch) {
+      hoverchar.addEventListener('touchmove', (e) => {
+        console.log(e.touches[0])
+        onMove(e.touches[0])
+      })
+    } else {
+      hoverchar.addEventListener('mousemove', onMove)
+    }
   }
 }

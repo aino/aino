@@ -49,9 +49,14 @@
   top: 0;
   left: 0;
   z-index: 10;
-  padding: calc(var(--line) * 3) var(--char2);
+  padding: calc(var(--line) * 6) var(--char2) var(--line);
   a {
     display: block;
+  }
+  display: flex;
+  flex-direction: column;
+  .newbusiness {
+    margin-top: auto;
   }
 }
 
