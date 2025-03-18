@@ -9,6 +9,7 @@ import loadimage from '@/js/utils/loadimage'
 import { grayRamp as ascChars } from '../ascii'
 import { create, getCssVariable } from '../utils/dom'
 import { CHARS } from '../grid/grid2'
+import * as detect from '../utils/detect'
 
 const grayRamp = `${ascChars} `
 
@@ -41,7 +42,8 @@ export default async function home(app) {
 
   const svg = await loadimage('/aino.svg')
   let scale =
-    Math.min(canvas.width / svg.width, canvas.height / svg.height) / 1.5
+    Math.min(canvas.width / svg.width, canvas.height / svg.height) /
+    (detect.mobile ? 1.1 : 1.5)
   const logoWidth = svg.width * scale
   const logoHeight = svg.height * scale * 0.5
 

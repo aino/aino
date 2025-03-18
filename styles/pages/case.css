@@ -98,3 +98,40 @@ html.pixelmode {
 html.dark body.case .videoframe {
   background: rgba(var(--black-rgb), 0.8);
 }
+
+@media (max-width: 768px) {
+  body.case {
+    .worktitle {
+      padding-top: 0 !important;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .position {
+        display: none;
+      }
+      > div:empty {
+        display: none;
+      }
+    }
+    .meta {
+      grid-template-columns: 1fr 1fr;
+      margin-bottom: var(--line);
+      grid-template-areas:
+        'c1 c1'
+        'c2 c3'
+        'c4 c4';
+      > div:first-child {
+        grid-area: c1;
+      }
+      > div:nth-child(2) {
+        grid-area: c2;
+      }
+      > div:nth-child(3) {
+        grid-area: c3;
+      }
+      > div:last-child {
+        grid-area: c4;
+      }
+    }
+  }
+}

@@ -3,10 +3,15 @@ body.contact #app {
     opacity: 1;
   }
   section {
+    grid-template-areas: 'col1 col1 col2 col2';
     .split {
       position: relative;
       display: flex;
       flex-direction: column;
+      grid-area: col1;
+    }
+    > div:not(.split) {
+      grid-area: col2;
     }
     .bounce {
       position: absolute;
@@ -24,6 +29,21 @@ body.contact #app {
       > div {
         flex: 1;
         margin-top: auto;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  body.contact #app {
+    section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--line);
+      .info {
+        > div {
+          margin-top: 0;
+        }
       }
     }
   }

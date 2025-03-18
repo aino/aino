@@ -22,7 +22,7 @@ export default async function header() {
         l.classList.add('mega')
         setTimeout(() => {
           l.style.opacity = 1
-        }, i * 80)
+        }, i * 60)
         return l
       })
       container = create('div', { className: 'mobile-container' }, nav)
@@ -34,6 +34,7 @@ export default async function header() {
       const nb = create('div', { className: 'newbusiness' })
       nb.innerHTML = nbtemplate()
       container.appendChild(nb)
+      fadein(nb)
     } else {
       container?.remove()
     }

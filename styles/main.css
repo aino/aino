@@ -172,6 +172,12 @@ section {
         grid-column: span 1;
       }
     }
+    &.first {
+      margin-top: calc(var(--line) * 4);
+    }
+    &.space {
+      padding: 0;
+    }
   }
 }
 

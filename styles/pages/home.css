@@ -4,7 +4,7 @@
 }
 
 .grid {
-  height: 100vh;
+  height: 100dvh;
   text-transform: none;
   top: 0;
   width: 100vw;
@@ -18,7 +18,7 @@
 }
 
 .gridcontainer {
-  height: 100vh;
+  height: 100dvh;
 }
 
 .fps {
