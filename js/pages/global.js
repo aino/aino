@@ -1,9 +1,6 @@
-import { q, id, style, create, getCssVariable } from '@/js/utils/dom'
-import grid from '../grid/grid2'
-import loadimage from '@/js/utils/loadimage'
+import { q } from '@/js/utils/dom'
 import hoverchar from '@/js/hoverchar'
-import gridoverlay from '../gridoverlay'
-import { getStyle, observe } from '../utils/dom'
+import { observe } from '../utils/dom'
 import fadein from '@/js/fadein'
 import site from '@/js/stores/site'
 import ascii from '../ascii'
@@ -14,31 +11,8 @@ export const path = /.*/
 
 const html = document.documentElement
 
-export const fitHeight = (node) => {
-  return
-  const adjust = () => {
-    node.style.height = ''
-    const line = getCssVariable('line')
-    const { height } = node.getBoundingClientRect()
-    const rows = Math.floor(Math.floor(height) / line)
-    node.style.height = `${rows * line}px`
-  }
-  const [img] = q('img', node)
-  if (img.complete) {
-    adjust(node)
-  } else {
-    img.onload = () => adjust(node)
-  }
-}
-
 export default async function global(app) {
   const destroyers = []
-  for (const imageSection of q('section .image')) {
-    const [img] = q('img', imageSection)
-    fitHeight(imageSection)
-    const observer = new ResizeObserver(() => fitHeight(imageSection))
-    observer.observe(img)
-  }
 
   hoverchar()
 
@@ -49,6 +23,19 @@ export default async function global(app) {
     }
     imageDestroyers = []
   }
+
+  q('img').forEach((img) => {
+    let retryCount = 0
+    const maxRetries = 3
+    img.addEventListener('error', () => {
+      if (retryCount >= maxRetries) {
+        console.error('Image failed to load after 3 retries.')
+        return
+      }
+      retryCount++
+      img.src = `${img.srct}&t=${Date.now()}`
+    })
+  })
 
   for (const node of q('.fadein')) {
     fadein(node)

@@ -24,10 +24,6 @@
         opacity: 0.4;
       }
     }
-    a:hover {
-      background: var(--black);
-      color: var(--white);
-    }
     &.active {
       animation: blinker 0.16s linear infinite;
       a:hover {
@@ -38,6 +34,13 @@
   }
   ul.out li:not(.active) {
     opacity: 0;
+  }
+}
+
+@media (hover: hover) {
+  .worktable li a:hover {
+    background: var(--black);
+    color: var(--white);
   }
 }
 
