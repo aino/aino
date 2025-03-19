@@ -95,10 +95,6 @@ html.pixelmode {
   }
 }
 
-html.dark body.case .videoframe {
-  background: rgba(var(--black-rgb), 0.8);
-}
-
 @media (max-width: 768px) {
   body.case {
     .worktitle {

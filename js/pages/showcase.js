@@ -26,7 +26,6 @@ export default async function showcase(app) {
     )
   )
 
-  const [firstImage] = q('.image img', app)
   const makePixels = async () => {}
   makePixels()
 
@@ -56,6 +55,7 @@ export default async function showcase(app) {
           loop: true,
           src: reel.href,
           muted: true,
+          preload: 'auto',
         },
         wrapper
       )
