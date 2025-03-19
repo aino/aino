@@ -15,6 +15,9 @@
         margin-left: auto;
       }
     }
+    a.active {
+      animation: blinker 0.16s linear infinite;
+    }
   }
   .mobile {
     display: none;

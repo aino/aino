@@ -4,6 +4,8 @@ import fadein from './fadein'
 import { capitalize } from './utils/string'
 import state from './utils/state'
 import { parseLinks } from './white'
+import * as detect from './utils/detect'
+import wait from './utils/wait'
 
 export default async function header() {
   const nav = id('nav')

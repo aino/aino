@@ -43,7 +43,7 @@ export default async function home(app) {
   const svg = await loadimage('/aino.svg')
   let scale =
     Math.min(canvas.width / svg.width, canvas.height / svg.height) /
-    (detect.mobile ? 1.1 : 1.5)
+    (detect.mobile() ? 1.1 : 1.5)
   const logoWidth = svg.width * scale
   const logoHeight = svg.height * scale * 0.5
 

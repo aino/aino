@@ -149,7 +149,7 @@ export default function hoverchar() {
         }
       }
     }
-    if (detect.touch) {
+    if (detect.touch()) {
       hoverchar.addEventListener('touchmove', (e) => {
         console.log(e.touches[0])
         onMove(e.touches[0])
