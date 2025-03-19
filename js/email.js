@@ -1,6 +1,5 @@
 import ascii from './ascii'
 import hoverchar from './hoverchar'
-import { fitHeight } from './pages/global'
 import pixelate from './pixelate'
 import { create, q } from './utils/dom'
 import contacts from '@/data/contacts'
@@ -24,20 +23,14 @@ export default async function email(link) {
     container.innerHTML = emailTemplate(contact)
     link.after(container)
     const [img] = q('img', container)
-    const [content] = q('.content', container)
     const textmode = html.classList.contains('textmode')
     const pixelmode = html.classList.contains('pixelmode')
     if (textmode || pixelmode) {
-      content.style.opacity = 0
-      fitHeight(img.parentElement)
       if (textmode) {
         destroyers.push(ascii(img))
       } else if (pixelmode) {
         destroyers.push(pixelate(img))
       }
-      setTimeout(() => {
-        content.style.opacity = 1
-      }, 100)
     }
     for (const closer of q('button.close, .backdrop', container)) {
       closer.addEventListener('click', (e) => {
