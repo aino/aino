@@ -1,9 +1,6 @@
-import { q, create, observe, getCssVariable, getStyle } from '../utils/dom'
+import { q, create, observe } from '../utils/dom'
 import fadein from '@/js/fadein'
-import site from '@/js/stores/site'
-import { fitHeight } from './global'
 import pixelate from '../pixelate'
-import wait from '../utils/wait'
 import ascii from '../ascii'
 
 export const path = /^\/work\/[^/]+$/

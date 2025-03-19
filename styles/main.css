@@ -83,6 +83,7 @@ hr {
   position: relative;
   overflow: hidden;
   border-radius: var(--border-radius);
+  background: rgba(var(--black-rgb), 0.05);
   canvas,
   .ascii {
     position: absolute;

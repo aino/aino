@@ -1,10 +1,8 @@
 import { id, q } from '@/js/utils/dom'
 import grid from '@/js/grid/grid2'
 import loadimage from '@/js/utils/loadimage'
-import { create, getCssVariable, resize } from './utils/dom'
-import { fitHeight } from './pages/global'
+import { getCssVariable } from './utils/dom'
 import dateformat from 'dateformat'
-import { parseLinks } from './white'
 import hoverchar from './hoverchar'
 
 const getTime = () => dateformat(new Date(), 'dddd HH:MM:ss')
