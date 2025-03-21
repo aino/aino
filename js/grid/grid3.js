@@ -1,12 +1,10 @@
 import { insertEvery } from '@/js/utils/array'
-import animate, { lerp } from '@/js/utils/animate'
+import { lerp } from '@/js/utils/animate'
 import { getCssVariable } from '@/js/utils/dom'
 import { toGrayScale } from '../ascii'
-import { inQuad, outQuad, inOutCirc, outCirc, inCirc } from '../utils/easing'
-import { create, getStyle, style } from '../utils/dom'
+import { inOutQuad } from '../utils/easing'
 
 const DIFFUSION = 0.001
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
 
 // The character set for ASCII rendering.
 export const CHARS =
@@ -33,16 +31,25 @@ export function fadeChar(char, opacity, grayRamp = CHARS) {
   ]
 }
 
-export function smoothDamp(current, target, currentVelocity, smoothTime, dt) {
-  smoothTime = Math.max(0.0001, smoothTime)
-  const omega = 2 / smoothTime
-  const x = omega * dt
-  const exp = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x)
-  const change = current - target
-  const temp = (currentVelocity + omega * change) * dt
-  const newVelocity = (currentVelocity - omega * temp) * exp
-  const newValue = target + (change + temp) * exp
-  return [newValue, newVelocity]
+export function interpolateChar(char, grayRamp) {
+  const index = CHARS.indexOf(char)
+  if (index === -1) {
+    return char
+  }
+  return grayRamp[
+    Math.floor((grayRamp.length - 1) * (index / (CHARS.length - 1)))
+  ]
+}
+
+function morphChar(from, to, n) {
+  const fromIndex = CHARS.indexOf(from)
+  const toIndex = CHARS.indexOf(to)
+  if (fromIndex === -1 || toIndex === -1) {
+    return to
+  } else {
+    const charIndex = Math.floor(lerp(fromIndex, toIndex, n))
+    return CHARS[charIndex]
+  }
 }
 
 function findClosestPoint(target, points) {
@@ -71,7 +78,7 @@ function findClosestPoint(target, points) {
   return closest
 }
 
-export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
+export default function grid(node) {
   let width,
     height,
     cols,
@@ -79,7 +86,7 @@ export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
     textArr = []
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')
-  const listeners = {}
+  let listeners = {}
 
   const listen = (type, fn) => {
     if (!listeners[type]) {
@@ -151,7 +158,7 @@ export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
   const setOpacity = (points, opacity) => {
     for (let i = 0, len = points.length; i < len; i++) {
       const p = points[i]
-      p.value = fadeChar(p.value, opacity, grayRamp)
+      p.value = fadeChar(p.value, opacity, CHARS)
     }
   }
 
@@ -170,8 +177,8 @@ export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
     for (let i = 0, len = points.length; i < len; i++) {
       const p = points[i]
       const norm = (p.x - minX) / (maxX - minX)
-      p.vx = lerp(-spread, spread, norm) + (Math.random() - 0.5) * spread * 0.5
-      p.vy = lerp(-0.5, -1, Math.random() * (spread * 2))
+      p.vx += lerp(-spread, spread, norm) + (Math.random() - 0.5) * spread * 0.5
+      p.vy += lerp(-0.5, -1, Math.random() * (spread * 2))
     }
   }
 
@@ -192,7 +199,12 @@ export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
       ]
 
       const now = Date.now()
-      if (now > p.morph.start + 1400) {
+      const isDone =
+        Math.abs(p.x - p.morph.target.x) < 0.005 &&
+        Math.abs(p.y - p.morph.target.y) < 0.005 &&
+        Math.abs(p.vx - p.morph.target.vx) < 0.005 &&
+        Math.abs(p.vy - p.morph.target.vy) < 0.005
+      if (isDone) {
         if (p.morph.removeAfter) {
           points[i] = points[points.length - 1]
           points.pop()
@@ -205,7 +217,7 @@ export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
         continue
       }
 
-      const progress = (now - p.morph.start) / 1400
+      const progress = inOutQuad((now - p.morph.start) / 1400)
 
       const bump = (value, destination) => {
         return value + (destination - value) * (dt * lerp(0, 8, progress))
@@ -216,18 +228,8 @@ export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
           p[key] = bump(p[key], p.morph.target[key])
         }
       })
-      const fromIndex = CHARS.indexOf(p.value)
-      const toIndex = CHARS.indexOf(p.morph.target.value)
-      const charIndex = Math.floor(lerp(fromIndex, toIndex, progress))
-      if (
-        fromIndex === -1 ||
-        toIndex === -1 ||
-        p.morph.target.value === p.value
-      ) {
-        p.value = p.morph.target.value
-      } else {
-        p.value = CHARS[charIndex]
-      }
+
+      p.value = morphChar(p.value, p.morph.target.value, progress)
     }
   }
 
@@ -590,7 +592,7 @@ export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
         g = data[i + 1],
         b = data[i + 2]
       const l = toGrayScale({ r, g, b })
-      const value = getCharacterForGrayScale(l, grayRamp)
+      const value = getCharacterForGrayScale(l, CHARS)
       if (value.trim() && l !== 255) {
         const x = xPixel / cols
         const y = yPixel / rows
@@ -601,7 +603,7 @@ export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
     return points
   }
 
-  const blend = (base, layer, { opacity = 1, fallback = null } = {}) => {
+  const blend = (base, layer, { opacity = 1 } = {}) => {
     for (let i = 0, len = base.length; i < len; i++) {
       const p = base[i]
       const col = Math.round(p.x * cols)
@@ -610,16 +612,7 @@ export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
         return Math.round(q.x * cols) === col && Math.round(q.y * rows) === row
       })
       if (top) {
-        const fromIndex = grayRamp.indexOf(p.value)
-        const toIndex = grayRamp.indexOf(top.value)
-        if (fromIndex === -1 || toIndex === -1) {
-          p.value = top.value
-        } else {
-          const charIndex = Math.floor(lerp(fromIndex, toIndex, opacity))
-          p.value = grayRamp[charIndex]
-        }
-      } else if (typeof fallback === 'string') {
-        p.value = fallback
+        p.value = morphChar(p.value, top.value, opacity)
       }
     }
   }
@@ -662,70 +655,23 @@ export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
     return points
   }
 
-  let loggers = create('div')
-  style(loggers, {
-    position: 'fixed',
-    top: 'calc(100vh - 2rem)',
-    left: '1rem',
-    opacity: 0.3,
-  })
-
-  document.body.appendChild(loggers)
-
-  const renderLoop = (fn) => {
-    let lastTimestamp = 0
-    let raf
-    const loop = (timestamp) => {
-      raf = requestAnimationFrame(loop)
-      const delta = timestamp - lastTimestamp
-      const args = {
-        delta,
-        timestamp,
-        fps: 1000 / delta,
-      }
-      emit('frame', args)
-      fn(args)
-      lastTimestamp = timestamp
-    }
+  let raf
+  let lastTimestamp = 0
+  const loop = (timestamp) => {
     raf = requestAnimationFrame(loop)
-    return () => {
-      cancelAnimationFrame(raf)
-    }
+    const delta = timestamp - lastTimestamp
+    emit('frame', {
+      delta,
+      timestamp,
+      fps: 1000 / delta,
+    })
+    lastTimestamp = timestamp
   }
+  raf = requestAnimationFrame(loop)
 
-  const startRenderLoop = (points = []) => {
-    const logger = create('div')
-    loggers.appendChild(logger)
-    let lastTimestamp = 0
-    let raf
-    const loop = (timestamp) => {
-      raf = requestAnimationFrame(loop)
-      setTimeout(() => {
-        const delta = timestamp - lastTimestamp
-        if (lastTimestamp !== 0) {
-          const fps = 1000 / (timestamp - lastTimestamp)
-          logger.textContent = `FPS: ${fps.toFixed(2)}`
-        }
-        emit('frame', {
-          delta,
-          timestamp,
-          points,
-        })
-        applyPhysics(points, delta)
-        render(points)
-        lastTimestamp = timestamp
-      })
-    }
-    raf = requestAnimationFrame(loop)
-    return {
-      update(newPoints) {
-        points = newPoints
-      },
-      destroy() {
-        cancelAnimationFrame(raf)
-        loggers.removeChild(logger)
-      },
-    }
+  const destroy = () => {
+    cancelAnimationFrame(raf)
+    listeners = {}
   }
 
   return {
@@ -741,12 +687,11 @@ export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
     paintCanvas,
     gravitate,
     createPoint,
-    startRenderLoop,
-    renderLoop,
     randomize,
     listen,
     emit,
     setOpacity,
+    destroy,
     dimensions: {
       get width() {
         return width

@@ -1,17 +1,12 @@
 import '@/styles/pages/home.css'
 import grid from '@/js/grid/grid3'
-import { q, id } from '@/js/utils/dom'
-import { outQuad, inQuad, inCirc, outCirc, inOutCirc } from '@/js/utils/easing'
+import { q } from '@/js/utils/dom'
+import { inQuad } from '@/js/utils/easing'
 import wait from '@/js/utils/wait'
-import animate, { lerp, reverseLerp } from '@/js/utils/animate'
-import work from '@/data/work.js'
+import animate, { lerp } from '@/js/utils/animate'
 import loadimage from '@/js/utils/loadimage'
-import { grayRamp as ascChars } from '../ascii'
-import { create, getCssVariable } from '../utils/dom'
-import { CHARS } from '../grid/grid2'
+import { grayRamp } from '@/js/ascii'
 import * as detect from '../utils/detect'
-
-const grayRamp = `${ascChars} `
 
 export const path = /^\/$/
 
@@ -30,9 +25,9 @@ export default async function home(app) {
     morph,
     applyPhysics,
     dimensions,
-    renderLoop,
     listen,
-  } = grid(gridNode, grayRamp)
+    destroy,
+  } = grid(gridNode)
 
   const ctx = canvas.getContext('2d')
 
@@ -49,7 +44,7 @@ export default async function home(app) {
   ctx.drawImage(
     svg,
     canvas.width / 2 - logoWidth / 2,
-    canvas.height / 2 - logoHeight,
+    logoHeight / 2,
     logoWidth,
     logoHeight
   )
@@ -102,88 +97,88 @@ export default async function home(app) {
 
   let forceWidth = null
 
-  destroyers.push(
-    renderLoop(({ delta, timestamp }) => {
-      mouseX += (nextMouseX - mouseX) * (delta / 200)
-      mouseY += (nextMouseY - mouseY) * (delta / 200)
-      dirX += (nextMouseX - dirX) * 0.01
-      intro = []
-      if (!clicked) {
-        for (let r = 0; r < dimensions.rows; r++) {
-          const timeValue = getValue(timestamp, 4000)
-          const ms = timestamp + r * lerp(50, 150, timeValue)
-          const mainValue = getValue(ms, 3000)
-          const widthValue = getValue(timestamp, 8000)
+  destroyers.push(destroy)
 
-          const width = forceWidth || lerp(30, dimensions.cols - 2, widthValue)
-          const len = lerp(0, width, mainValue)
-          const col = Math.floor(dimensions.cols / 2)
+  listen('frame', ({ delta, timestamp }) => {
+    mouseX += (nextMouseX - mouseX) * (delta / 200)
+    mouseY += (nextMouseY - mouseY) * (delta / 200)
+    dirX += (nextMouseX - dirX) * 0.01
+    intro = []
+    if (!clicked) {
+      for (let r = 0; r < dimensions.rows; r++) {
+        const timeValue = getValue(timestamp, 4000)
+        const ms = timestamp + r * lerp(50, 150, timeValue)
+        const mainValue = getValue(ms, 3000)
+        const widthValue = getValue(timestamp, 8000)
 
-          const halfLen = Math.floor(len / 2)
-          for (let i = -halfLen; i <= halfLen; i++) {
-            if (col + i >= 0 && col + i < dimensions.cols) {
-              // `base` runs from 0 (left edge) to 1 (right edge) along the drawn segment.
-              const base = (i + halfLen) / (2 * halfLen)
-              // The time-based phase is preserved.
-              const phase =
-                (timestamp + (r / 6) * lerp(10, 20, timeValue)) * 0.003
+        const width = forceWidth || lerp(30, dimensions.cols - 2, widthValue)
+        const len = lerp(0, width, mainValue)
+        const col = Math.floor(dimensions.cols / 2)
 
-              // Compute the new dome center from the mouse.
-              const mouseTarget = dirX / window.innerWidth
+        const halfLen = Math.floor(len / 2)
+        for (let i = -halfLen; i <= halfLen; i++) {
+          if (col + i >= 0 && col + i < dimensions.cols) {
+            // `base` runs from 0 (left edge) to 1 (right edge) along the drawn segment.
+            const base = (i + halfLen) / (2 * halfLen)
+            // The time-based phase is preserved.
+            const phase =
+              (timestamp + (r / 6) * lerp(10, 20, timeValue)) * 0.003
 
-              const modulated = Math.min(
-                1,
-                (Math.cos(
-                  lerp(3, -3, mouseTarget) * Math.PI * (base - mouseTarget) +
-                    phase
-                ) +
-                  1) /
-                  2 +
-                  (1 - fadeIndex)
-              )
+            // Compute the new dome center from the mouse.
+            const mouseTarget = dirX / window.innerWidth
 
-              const charIndex = !isNaN(modulated)
-                ? Math.floor(
-                    lerp(
-                      0,
-                      grayRamp.length - (fadeIndex < 0.95 ? 1 : 2),
-                      modulated
-                    )
+            const modulated = Math.min(
+              1,
+              (Math.cos(
+                lerp(3, -3, mouseTarget) * Math.PI * (base - mouseTarget) +
+                  phase
+              ) +
+                1) /
+                2 +
+                (1 - fadeIndex)
+            )
+
+            const charIndex = !isNaN(modulated)
+              ? Math.floor(
+                  lerp(
+                    0,
+                    grayRamp.length - (fadeIndex < 0.95 ? 1 : 2),
+                    modulated
                   )
-                : grayRamp.length - 2
-              const value = grayRamp[charIndex]
-              if (value.trim()) {
-                intro.push(
-                  createPoint({
-                    x: (col + i) / dimensions.cols,
-                    y: r / dimensions.rows,
-                    context: 'animation',
-                    value: grayRamp[charIndex],
-                  })
                 )
-              }
+              : grayRamp.length - 2
+            const value = grayRamp[charIndex]
+            if (value.trim()) {
+              intro.push(
+                createPoint({
+                  x: (col + i) / dimensions.cols,
+                  y: r / dimensions.rows,
+                  context: 'animation',
+                  value: grayRamp[charIndex],
+                })
+              )
             }
           }
         }
-        main = [
-          ...intro,
-          ...(nextMouseX !== null &&
-          nextMouseY !== null &&
-          Math.floor((mouseY / dimensions.height) * dimensions.rows) > 2
-            ? createText({
-                col:
-                  Math.floor((mouseX / dimensions.width) * dimensions.cols) - 2,
-                row: Math.floor((mouseY / dimensions.height) * dimensions.rows),
-                context: 'text',
-                text: 'Click'.toUpperCase(),
-              })
-            : []),
-        ]
       }
-      applyPhysics(main, delta)
-      render(main)
-    })
-  )
+      main = [
+        ...intro,
+        ...(nextMouseX !== null &&
+        nextMouseY !== null &&
+        Math.floor((mouseY / dimensions.height) * dimensions.rows) > 2
+          ? createText({
+              col:
+                Math.floor((mouseX / dimensions.width) * dimensions.cols) - 2,
+              row: Math.floor((mouseY / dimensions.height) * dimensions.rows),
+              context: 'text',
+              text: 'Click'.toUpperCase(),
+            })
+          : []),
+      ]
+    }
+    applyPhysics(main, delta)
+    render(main)
+  })
 
   gridNode.addEventListener(
     'mousedown',
@@ -194,17 +189,17 @@ export default async function home(app) {
         damping: 0.9,
       })
       explode(main, { spread: 0.4 })
-      await wait(800)
+      await wait(400)
       gravitate(logo, {
-        gravity: 1.8,
-        damping: 0.9,
+        gravity: 1.1,
+        damping: 1.2,
       })
       morph(main, logo)
-      await wait(1000)
+      await wait(900)
       listen('frame', ({ delta }) => {
         applyPhysics(logo, delta)
       })
-      await wait(1000)
+      await wait(1200)
       gravitate(main, {
         gravity: 1.8,
         damping: 1.005,
@@ -214,35 +209,16 @@ export default async function home(app) {
           col: 2,
           row: Math.floor(dimensions.rows / 2) - 2,
           context: 'text',
-          text: 'Ditigal first'.toUpperCase(),
-        }),
-        ...createText({
-          col: getCssVariable('col') + 4,
-          row: Math.floor(dimensions.rows / 2) - 2,
-          context: 'text',
-          text: 'Creative'.toUpperCase(),
-        }),
-        ...createText({
-          col: getCssVariable('col') * 2 + 6,
-          row: Math.floor(dimensions.rows / 2) - 2,
-          context: 'text',
-          text: 'Design'.toUpperCase(),
-        }),
-        ...createText({
-          col: dimensions.cols - 9,
-          row: Math.floor(dimensions.rows / 2) - 2,
-          context: 'text',
-          text: 'Agrency'.toUpperCase(),
+          align: 'center',
+          text: 'Ditigal first creative design agency'.toUpperCase(),
         }),
       ]
-      gravitate(texts, {
-        damping: 1.1,
-      })
       listen('frame', ({ delta }) => {
         applyPhysics(texts, delta)
       })
-      await wait(2000)
       morph(main, texts)
+      await wait(2000)
+      // explode(main)
     },
     { once: true }
   )
