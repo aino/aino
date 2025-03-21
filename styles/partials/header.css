@@ -30,6 +30,16 @@
     display: flex;
     a {
       display: none;
+      position: relative;
+      &:before {
+        content: '';
+        position: absolute;
+        top: calc(var(--line) * -1);
+        bottom: calc(var(--line) * -1);
+        left: calc(var(--char2) * -1);
+        right: calc(var(--char2) * -1);
+        /* no background or border, so it won't show visually */
+      }
       &.home {
         display: block;
       }

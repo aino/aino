@@ -179,99 +179,54 @@ export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
     for (let i = points.length - 1; i >= 0; i--) {
       const p = points[i]
       if (!p.morph) continue
-      if (p.morph.targetRef) {
-        p.morph.toX = p.morph.targetRef.x
-        p.morph.toY = p.morph.targetRef.y
-      }
 
-      const dx = p.morph.toX - p.x
-      const dy = p.morph.toY - p.y
+      const props = [
+        'x',
+        'y',
+        'vx',
+        'vy',
+        'gravity',
+        'spring',
+        'friction',
+        'damping',
+      ]
 
-      if (
-        Math.abs(dx) < 0.01 &&
-        Math.abs(dy) < 0.01 &&
-        p.morph.toValue === p.value
-      ) {
+      const now = Date.now()
+      if (now > p.morph.start + 1400) {
         if (p.morph.removeAfter) {
           points[i] = points[points.length - 1]
           points.pop()
-          continue
         } else {
-          p.x = p.morph.targetRef.x
-          p.y = p.morph.targetRef.y
-          p.vx = p.morph.targetRef.vx
-          p.vy = p.morph.targetRef.vy
-          p.value = p.morph.toValue
+          ;[...props, 'value', 'context'].forEach((key) => {
+            p[key] = p.morph.target[key]
+          })
           delete p.morph
         }
+        continue
+      }
+
+      const progress = (now - p.morph.start) / 1400
+
+      const bump = (value, destination) => {
+        return value + (destination - value) * (dt * lerp(0, 8, progress))
+      }
+
+      props.forEach((key) => {
+        if (p.morph.target[key] !== undefined) {
+          p[key] = bump(p[key], p.morph.target[key])
+        }
+      })
+      const fromIndex = CHARS.indexOf(p.value)
+      const toIndex = CHARS.indexOf(p.morph.target.value)
+      const charIndex = Math.floor(lerp(fromIndex, toIndex, progress))
+      if (
+        fromIndex === -1 ||
+        toIndex === -1 ||
+        p.morph.target.value === p.value
+      ) {
+        p.value = p.morph.target.value
       } else {
-        const ax = dx * p.spring
-        const ay = dy * p.spring
-        const now = performance.now()
-        const smoothTime = 0.5
-        if (!p.morph.startTime) {
-          p.morph.startTime = now
-          p.morph.duration = smoothTime * lerp(2.2, 3.2, Math.random()) * 1000
-        }
-        const elapsed = now - p.morph.startTime
-        let progress = elapsed / p.morph.duration
-        progress = Math.max(0, Math.min(1, progress))
-        if (p.morph.anim === undefined) {
-          p.morph.anim = {
-            x: p.x,
-            y: p.y,
-            vx: p.vx,
-            vy: p.vy,
-            nextVx: 0,
-            nextVy: 0,
-          }
-        }
-        const [newX, newVx] = smoothDamp(
-          p.morph.anim.x,
-          p.morph.toX,
-          p.morph.anim.vx,
-          smoothTime,
-          dt
-        )
-        const [newY, newVy] = smoothDamp(
-          p.morph.anim.y,
-          p.morph.toY,
-          p.morph.anim.vy,
-          smoothTime,
-          dt
-        )
-        p.morph.anim = {
-          x: newX,
-          y: newY,
-          vx: newVx,
-          vy: newVy,
-          nextVx: (p.vx + ax) * p.friction,
-          nextVy: (p.vy + ay) * p.friction,
-        }
-        p.vx += (p.morph.anim.nextVx - p.vx) / 20
-        p.vy += (p.morph.anim.nextVy - p.vy) / 20
-        p.x = lerp(
-          p.x + p.vx * dt,
-          p.morph.anim.x,
-          inCirc(elapsed / (p.morph.duration * 1.5))
-        )
-        p.y = lerp(
-          p.y + p.vy * dt,
-          p.morph.anim.y,
-          inCirc(elapsed / (p.morph.duration * 1.5))
-        )
-        const fromIndex = grayRamp.indexOf(p.morph.fromValue)
-        const toIndex = grayRamp.indexOf(p.morph.toValue)
-        const charIndex = Math.floor(lerp(fromIndex, toIndex, progress))
-        if (
-          fromIndex === -1 ||
-          toIndex === -1 ||
-          p.morph.fromValue === p.morph.toValue
-        ) {
-          p.value = p.morph.toValue
-        } else {
-          p.value = grayRamp[charIndex]
-        }
+        p.value = CHARS[charIndex]
       }
     }
   }
@@ -309,36 +264,26 @@ export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
         points.pop()
         continue
       }
-      if (!p.morph) {
-        if (!dots[row]) {
-          dots[row] = []
-        }
-        if (dots[row][col]) {
-          collisions.push([p, dots[row][col]])
-        } else {
-          dots[row][col] = p
-        }
-        if (atFloor(p) && !p.removeAt) {
-          p.removeAt = now + 800
-        }
-        if (p.removeAt && now > p.removeAt && atFloor(p)) {
-          points[i] = points[points.length - 1]
-          points.pop()
-          console.log('removed')
-          continue
-        }
-        p.vy += p.gravity * dt
-        p.x += p.vx * dt
-        p.y += p.vy * dt
-      } else if (p.morph.targetRef) {
-        const np = p.morph.targetRef
-        np.vy += p.gravity * dt
-        np.x += np.vx * dt
-        np.y += np.vy * dt
-        if (np.x <= 0 || np.x >= 1) {
-          np.x = Math.max(0, Math.min(1, np.x))
-        }
+      if (!dots[row]) {
+        dots[row] = []
       }
+      if (dots[row][col]) {
+        collisions.push([p, dots[row][col]])
+      } else {
+        dots[row][col] = p
+      }
+      if (atFloor(p) && !p.removeAt) {
+        p.removeAt = now + 800
+      }
+      if (p.removeAt && now > p.removeAt && atFloor(p)) {
+        points[i] = points[points.length - 1]
+        points.pop()
+        console.log('removed')
+        continue
+      }
+      p.vy += p.gravity * dt
+      p.x += p.vx * dt
+      p.y += p.vy * dt
       if (p.x <= 0 || p.x >= 1) {
         p.vx *= -p.damping
         p.x = Math.max(0, Math.min(1, p.x))
@@ -454,17 +399,10 @@ export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
         }
       }
       Object.assign(point, {
-        gravity: 0,
-        context: candidate.context,
         morph: {
-          toX: candidate.x,
-          toY: candidate.y,
-          fromX: point.x,
-          fromY: point.y,
-          fromValue: point.value,
-          toValue: candidate.value,
           removeAfter: allMarked,
-          targetRef: candidate,
+          target: candidate,
+          start: Date.now(),
         },
       })
     }
@@ -499,13 +437,9 @@ export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
           x,
           y,
           morph: {
-            toX: targetPoint.x,
-            toY: targetPoint.y,
-            fromX: x,
-            fromY: y,
-            fromValue: ' ',
-            toValue: targetPoint.value,
-            targetRef: targetPoint,
+            target: targetPoint,
+            removeAfter: false,
+            start: Date.now(),
           },
         }
         from.push(newPoint)
@@ -738,6 +672,27 @@ export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
 
   document.body.appendChild(loggers)
 
+  const renderLoop = (fn) => {
+    let lastTimestamp = 0
+    let raf
+    const loop = (timestamp) => {
+      raf = requestAnimationFrame(loop)
+      const delta = timestamp - lastTimestamp
+      const args = {
+        delta,
+        timestamp,
+        fps: 1000 / delta,
+      }
+      emit('frame', args)
+      fn(args)
+      lastTimestamp = timestamp
+    }
+    raf = requestAnimationFrame(loop)
+    return () => {
+      cancelAnimationFrame(raf)
+    }
+  }
+
   const startRenderLoop = (points = []) => {
     const logger = create('div')
     loggers.appendChild(logger)
@@ -787,6 +742,7 @@ export default function grid(node, grayRamp = CHARS.replace(' ', ' ')) {
     gravitate,
     createPoint,
     startRenderLoop,
+    renderLoop,
     randomize,
     listen,
     emit,

@@ -109,6 +109,14 @@ html.textmode .video video {
   opacity: 0 !important;
 }
 
+html.textmode,
+html.pixelmode {
+  .image,
+  .video {
+    background: transparent;
+  }
+}
+
 html:not(.textmode) .image .ascii {
   display: none;
 }
