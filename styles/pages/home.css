@@ -1,29 +1,28 @@
-.list {
-  max-width: 30rem;
-  text-align: justify;
-}
+body.home {
+  .list {
+    max-width: 30rem;
+    text-align: justify;
+  }
 
-.grid {
-  height: 100dvh;
-  text-transform: none;
-  top: 0;
-  width: 100vw;
-  left: 0;
-  overflow: hidden;
-  white-space: pre;
-  cursor: default;
-  transform: translateZ(0);
-  will-change: transform;
-  position: absolute;
-}
+  .grid {
+    height: 100dvh;
+    text-transform: none;
+    top: 0;
+    width: 100vw;
+    left: 0;
+    overflow: hidden;
+    white-space: pre;
+    cursor: default;
+    transform: translateZ(0);
+    will-change: transform;
+    position: absolute;
+  }
 
-.gridcontainer {
-  height: 100dvh;
-}
+  .gridcontainer {
+    height: 100dvh;
+  }
 
-.fps {
-  position: fixed;
-  top: calc(100vh - calc(var(--line) * 3));
-  right: var(--char2);
-  opacity: 0.3;
+  #nav {
+    opacity: 0 !important;
+  }
 }

@@ -5,19 +5,33 @@ import { inQuad } from '@/js/utils/easing'
 import wait from '@/js/utils/wait'
 import animate, { lerp } from '@/js/utils/animate'
 import loadimage from '@/js/utils/loadimage'
-import { grayRamp } from '@/js/ascii'
+import { grayRamp as asciiChars } from '@/js/ascii'
 import * as detect from '../utils/detect'
+import { interpolateChar } from '../grid/grid3'
+import {
+  inCirc,
+  inOutCubic,
+  inOutQuad,
+  inOutQuint,
+  inQuint,
+  linear,
+  outQuad,
+} from '../utils/easing'
+import { getCssVariable, id } from '../utils/dom'
 
 export const path = /^\/$/
 
+const grayRamp = `${asciiChars} `
+
 export default async function home(app) {
   const [gridNode] = q('.grid', app)
+  const navNode = id('nav')
   const destroyers = []
 
   const {
-    canvas,
     createPoint,
     createText,
+    createCanvas,
     createFromCanvas,
     gravitate,
     explode,
@@ -27,35 +41,18 @@ export default async function home(app) {
     dimensions,
     listen,
     destroy,
+    createVideo,
+    paintCanvas,
   } = grid(gridNode)
 
-  const ctx = canvas.getContext('2d')
-
+  const logoCanvas = createCanvas()
   const svg = await loadimage('/aino.svg')
-  let scale =
-    Math.min(canvas.width / svg.width, canvas.height / svg.height) /
-    (detect.mobile() ? 1.1 : 1.5)
-  const logoWidth = svg.width * scale
-  const logoHeight = svg.height * scale * 0.5
 
-  ctx.fillStyle = '#fff'
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
-  ctx.globalAlpha = 0.4
-  ctx.drawImage(
-    svg,
-    canvas.width / 2 - logoWidth / 2,
-    logoHeight / 2,
-    logoWidth,
-    logoHeight
-  )
+  paintCanvas(logoCanvas, svg, { alpha: 0.25, scale: 0.7 })
 
-  const logo = createFromCanvas({
+  const logo = createFromCanvas(logoCanvas, {
     context: 'logo',
   })
-
-  ctx.globalAlpha = 1
-  ctx.fillStyle = '#fff'
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
 
   let intro = []
 
@@ -78,14 +75,6 @@ export default async function home(app) {
 
   let fadeIndex = 0
 
-  animate({
-    duration: 3000,
-    easing: inQuad,
-    onFrame: (n) => {
-      fadeIndex = n
-    },
-  })
-
   const getValue = (timestamp, duration) => {
     const t = (timestamp % duration) / duration
     return (1 - Math.cos(2 * Math.PI * t)) / 2
@@ -98,6 +87,82 @@ export default async function home(app) {
   let forceWidth = null
 
   destroyers.push(destroy)
+
+  const createMenu = () => {
+    const col = getCssVariable('col')
+    return [
+      ...createText({
+        col: 2,
+        row: 1,
+        context: 'text',
+        text: 'Aino',
+      }),
+      ...(!detect.mobile()
+        ? createText({
+            col: col + 4,
+            row: 1,
+            context: 'text',
+            text: 'Work  lab',
+          })
+        : []),
+      ...(!detect.mobile()
+        ? createText({
+            col: col * 2 + 6,
+            row: 1,
+            context: 'text',
+            text: 'About  services  careers',
+          })
+        : []),
+      ...(detect.mobile()
+        ? createText({
+            col: dimensions.cols - 6,
+            row: 1,
+            context: 'text',
+            text: 'Menu',
+          })
+        : createText({
+            col: dimensions.cols - 9,
+            row: 1,
+            context: 'text',
+            text: 'Contact',
+          })),
+    ]
+  }
+
+  let menuFade
+  let menu
+  let nav = createMenu()
+
+  animate({
+    duration: 1000,
+    easing: outQuad,
+    onFrame: (n) => {
+      menuFade = n
+    },
+    onComplete: async () => {
+      morph(menu, nav, {
+        duration: 1000,
+      })
+      animate({
+        duration: 3000,
+        easing: inQuad,
+        onFrame: (n) => {
+          fadeIndex = n
+        },
+      })
+    },
+  })
+
+  const video = await createVideo('/assets/work/samsoe-samsoe/samsoe.mp4')
+
+  listen('resize', () => {
+    if (menuFade === 1) {
+      nav = createMenu()
+    } else {
+      menu = createMenu()
+    }
+    video.resize()
+  })
 
   listen('frame', ({ delta, timestamp }) => {
     mouseX += (nextMouseX - mouseX) * (delta / 200)
@@ -176,48 +241,116 @@ export default async function home(app) {
           : []),
       ]
     }
+    if (menuFade < 0.998) {
+      menu = [
+        ...createText({
+          col: 2,
+          row: 1,
+          context: 'text',
+          text: Array(Math.ceil((dimensions.cols - 4) * menuFade))
+            .fill('X')
+            .join(''),
+        }),
+      ]
+    }
     applyPhysics(main, delta)
-    render(main)
+    applyPhysics(menu, delta)
+    render(main, menu)
   })
 
   gridNode.addEventListener(
     'mousedown',
     async () => {
       clicked = true
+      listen('frame', ({ delta }) => {
+        // video.blend(main)
+        // video.blend(logo)
+      })
       gravitate(main, {
         gravity: 2,
         damping: 0.9,
       })
       explode(main, { spread: 0.4 })
-      await wait(400)
-      gravitate(logo, {
-        gravity: 1.1,
-        damping: 1.2,
-      })
+      await wait(200)
+
       morph(main, logo)
-      await wait(900)
-      listen('frame', ({ delta }) => {
-        applyPhysics(logo, delta)
+
+      let videoFade = 0
+
+      await wait(1400)
+
+      video.play()
+      animate({
+        easing: inQuad,
+        onFrame: (n) => {
+          videoFade = n
+        },
+        duration: 4000,
       })
-      await wait(1200)
+      let blendVideo = Date.now()
+      await wait(1000)
+
+      main = logo
+
+      let logoScale = 0
+
+      animate({
+        easing: inQuint,
+        onFrame: (n) => {
+          logoScale = n
+        },
+        duration: 2000,
+      })
+
+      let x = undefined
+      let showFinale = Date.now()
+
+      listen('frame', ({ delta }) => {
+        if (Date.now() - showFinale < 4000) {
+          const { w } = paintCanvas(logoCanvas, svg, {
+            alpha: 0.2,
+            scale: lerp(0.7, 20, logoScale),
+            x,
+          })
+          x = (logoCanvas.width / 2 - w / 2) * lerp(1, 0.9, logoScale)
+          main = createFromCanvas(logoCanvas, {
+            context: 'logo',
+          })
+        }
+        if (Date.now() - blendVideo < 4000) {
+          video.blend(main, videoFade)
+        }
+      })
+
+      // listen('frame', ({ delta }) => {
+      //   applyPhysics(logo, delta)
+      // })
+      // await wait(1200)
+      // gravitate(main, {
+      //   gravity: 1.8,
+      //   damping: 1.005,
+      // })
+      // await wait(2000)
+
+      await wait(4000)
+      video.pause()
       gravitate(main, {
-        gravity: 1.8,
-        damping: 1.005,
+        damping: 0.9,
       })
-      const texts = [
-        ...createText({
-          col: 2,
-          row: Math.floor(dimensions.rows / 2) - 2,
-          context: 'text',
-          align: 'center',
-          text: 'Ditigal first creative design agency'.toUpperCase(),
-        }),
-      ]
-      listen('frame', ({ delta }) => {
-        applyPhysics(texts, delta)
+
+      const final = createText({
+        col: Math.floor(dimensions.cols / 2),
+        row: Math.floor(dimensions.rows / 2),
+        context: 'text',
+        text: 'Aino',
       })
-      morph(main, texts)
-      await wait(2000)
+
+      await wait(1400)
+
+      morph(main, final)
+
+      // main.length = 0
+      // main.push(...video.points)
       // explode(main)
     },
     { once: true }

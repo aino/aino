@@ -2,13 +2,21 @@ import { insertEvery } from '@/js/utils/array'
 import { lerp } from '@/js/utils/animate'
 import { getCssVariable } from '@/js/utils/dom'
 import { toGrayScale } from '../ascii'
-import { inOutQuad } from '../utils/easing'
+import {
+  inOutQuad,
+  inOutQuint,
+  inQuad,
+  inQuint,
+  outQuad,
+} from '../utils/easing'
+import { isVideoPlaying } from '../pixelate'
+import onVideoFrame from '../utils/video'
 
 const DIFFUSION = 0.001
 
 // The character set for ASCII rendering.
 export const CHARS =
-  '$MBNQØW@&R8GD6S9ÖOH#ÉE5UK0ÄÅA2XP34ZC%VIF17YTJL[]?}{()<>|=+\\/^!";*_:~,\'-.·\\` '
+  '$MBNQØW@&R8GD6S9ÖOH#ÉE5UK0ÄÅA2XP34ZC%VIF17YTJL[]?}{()<>|=+\\/^!";*_:~,\'-.·\\`  '
 
 const getCharacterForGrayScale = (grayScale, grayRamp) =>
   grayRamp[Math.ceil(((grayRamp.length - 1) * grayScale) / 255)]
@@ -84,9 +92,8 @@ export default function grid(node) {
     cols,
     rows,
     textArr = []
-  const canvas = document.createElement('canvas')
-  const ctx = canvas.getContext('2d')
   let listeners = {}
+  const canvases = []
 
   const listen = (type, fn) => {
     if (!listeners[type]) {
@@ -114,8 +121,10 @@ export default function grid(node) {
     height = rect.height
     cols = Math.round(width / ch)
     rows = Math.round(height / line)
-    canvas.width = cols
-    canvas.height = rows
+    for (const canvas of canvases) {
+      canvas.width = cols
+      canvas.height = rows
+    }
     const length = rows * cols
     if (length !== textArr.length) {
       textArr = new Array(length).fill(' ')
@@ -153,6 +162,58 @@ export default function grid(node) {
     }
     const next = insertEvery(textArr, '\n', cols)
     node.textContent = next.join('')
+  }
+
+  const createVideo = async (src) => {
+    const points = []
+    const createPoints = () => {
+      points.length = 0
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          points.push(createPoint({ x: c / cols, y: r / rows, value: ' ' }))
+        }
+      }
+    }
+    createPoints()
+    const video = document.createElement('video')
+    video.src = src
+    video.muted = true
+    video.loop = true
+    video.playsInline = true
+
+    const canvas = createCanvas()
+
+    return {
+      blend: (frame, opacity = 1) => {
+        paintCanvas(canvas, video, { cover: true })
+        const canvasPoints = createFromCanvas(canvas, { includeEmpty: true })
+
+        const pointMap = new Map()
+        for (const c of canvasPoints) {
+          const cCol = Math.round(c.x * cols)
+          const cRow = Math.round(c.y * rows)
+          const key = cRow * cols + cCol
+          pointMap.set(key, c.value)
+        }
+
+        for (const p of frame) {
+          const col = Math.round(p.x * cols)
+          const row = Math.round(p.y * rows)
+          const key = row * cols + col
+
+          const videoChar = pointMap.get(key)
+          if (videoChar) {
+            p.value = morphChar(p.value, videoChar, opacity)
+          }
+        }
+      },
+      resize: () => {
+        createPoints()
+      },
+      points,
+      play: () => video.play(),
+      pause: () => video.pause(),
+    }
   }
 
   const setOpacity = (points, opacity) => {
@@ -200,27 +261,29 @@ export default function grid(node) {
 
       const now = Date.now()
       const isDone =
-        Math.abs(p.x - p.morph.target.x) < 0.005 &&
-        Math.abs(p.y - p.morph.target.y) < 0.005 &&
-        Math.abs(p.vx - p.morph.target.vx) < 0.005 &&
-        Math.abs(p.vy - p.morph.target.vy) < 0.005
+        Math.abs(p.x - p.morph.target.x) < 0.001 &&
+        Math.abs(p.y - p.morph.target.y) < 0.001 &&
+        Math.abs(p.vx - p.morph.target.vx) < 0.001 &&
+        Math.abs(p.vy - p.morph.target.vy) < 0.001 &&
+        p.value === p.morph.target.value
       if (isDone) {
         if (p.morph.removeAfter) {
           points[i] = points[points.length - 1]
           points.pop()
         } else {
-          ;[...props, 'value', 'context'].forEach((key) => {
-            p[key] = p.morph.target[key]
-          })
+          // ;[...props, 'value', 'context'].forEach((key) => {
+          //   p[key] = p.morph.target[key]
+          // })
+          points[i] = { ...p.morph.target }
           delete p.morph
         }
         continue
       }
 
-      const progress = inOutQuad((now - p.morph.start) / 1400)
+      const progress = inOutQuad((now - p.morph.start) / p.morph.duration)
 
       const bump = (value, destination) => {
-        return value + (destination - value) * (dt * lerp(0, 8, progress))
+        return value + (destination - value) * (dt * lerp(0, 10, progress))
       }
 
       props.forEach((key) => {
@@ -229,7 +292,14 @@ export default function grid(node) {
         }
       })
 
-      p.value = morphChar(p.value, p.morph.target.value, progress)
+      const fromIndex = CHARS.indexOf(p.value)
+      const toIndex = CHARS.indexOf(p.morph.target.value)
+      if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) {
+        p.value = p.morph.target.value
+      } else {
+        const charIndex = Math.round(lerp(fromIndex, toIndex, progress))
+        p.value = CHARS[charIndex]
+      }
     }
   }
 
@@ -332,7 +402,7 @@ export default function grid(node) {
   const morph = (
     from,
     to,
-    { discardUnused = true, contextFilter = null } = {}
+    { discardUnused = true, contextFilter = null, duration = 1700 } = {}
   ) => {
     const now = Date.now()
     ;[to, from].forEach((frame, i) => {
@@ -405,6 +475,7 @@ export default function grid(node) {
           removeAfter: allMarked,
           target: candidate,
           start: Date.now(),
+          duration,
         },
       })
     }
@@ -428,26 +499,21 @@ export default function grid(node) {
           availableFrom.pop()
         }
 
-        const x = candidate.x
-        const y = candidate.y
-
         const newPoint = {
           ...candidate,
-          gravity: 0,
           context: targetPoint.context,
-          value: ' ',
-          x,
-          y,
+          value: ' ',
           morph: {
             target: targetPoint,
             removeAfter: false,
             start: Date.now(),
+            duration,
           },
         }
         from.push(newPoint)
       }
     }
-    console.log(`Morphed in ${Date.now() - now}ms`)
+    console.log(`Morphed in ${Date.now() - now}ms`, { ...from }, { ...to })
   }
 
   const randomize = (points, { spread = 1 } = {}) => {
@@ -476,6 +542,7 @@ export default function grid(node) {
   }) => {
     const points = []
     if (!text || !cols || !rows) return []
+    text = text.toUpperCase()
 
     const tokens = text.split(/(\n)/)
     const lines = []
@@ -552,6 +619,7 @@ export default function grid(node) {
   }
 
   const paintCanvas = (
+    canvas,
     src,
     { cover = false, scale = 1, alpha = 1, x, y } = {}
   ) => {
@@ -564,12 +632,13 @@ export default function grid(node) {
       ) * scale
     const w = srcWidth * s
     const h = srcHeight * s * 0.5
+    const ctx = canvas.getContext('2d')
     ctx.globalAlpha = 1
     ctx.fillStyle = '#fff'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     ctx.globalAlpha = alpha
-    x = typeof x === 'number' ? x : canvas.width / 2 - w / 2
-    y = typeof y === 'number' ? y : canvas.height / 2 - h / 2
+    x = Math.round(typeof x === 'number' ? x : canvas.width / 2 - w / 2)
+    y = Math.round(typeof y === 'number' ? y : canvas.height / 2 - h / 2)
     ctx.drawImage(src, x, y, w, h)
     return {
       x,
@@ -579,7 +648,19 @@ export default function grid(node) {
     }
   }
 
-  const createFromCanvas = ({ context = 'canvas' } = {}) => {
+  const createCanvas = () => {
+    const canvas = document.createElement('canvas')
+    canvas.width = cols
+    canvas.height = rows
+    canvases.push(canvas)
+    return canvas
+  }
+
+  const createFromCanvas = (
+    canvas,
+    { context = 'canvas', includeEmpty = false } = {}
+  ) => {
+    const ctx = canvas.getContext('2d')
     const points = []
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
     const data = imageData.data
@@ -593,7 +674,7 @@ export default function grid(node) {
         b = data[i + 2]
       const l = toGrayScale({ r, g, b })
       const value = getCharacterForGrayScale(l, CHARS)
-      if (value.trim() && l !== 255) {
+      if ((value.trim() && l !== 255) || includeEmpty) {
         const x = xPixel / cols
         const y = yPixel / rows
         const point = createPoint({ x, y, value, context })
@@ -641,6 +722,7 @@ export default function grid(node) {
     align = 'left',
   }) => {
     if (!text) return []
+    text = text.toUpperCase()
     const points = []
     if (align === 'center') {
       col = Math.floor((cols - text.length) / 2)
@@ -650,7 +732,9 @@ export default function grid(node) {
       const index = col + i
       const x = index / cols
       const y = row / rows
-      points.push(createPoint({ x, y, value, context }))
+      if (value.trim()) {
+        points.push(createPoint({ x, y, value, context }))
+      }
     }
     return points
   }
@@ -679,7 +763,7 @@ export default function grid(node) {
     morph,
     blend,
     explode,
-    canvas,
+    createCanvas,
     applyPhysics,
     createText,
     createParagraph,
@@ -692,6 +776,7 @@ export default function grid(node) {
     emit,
     setOpacity,
     destroy,
+    createVideo,
     dimensions: {
       get width() {
         return width
