@@ -48,11 +48,13 @@ export default async function header() {
       toggleMode()
     },
   })
-  last.prepend(toggler)
+  // last.prepend(toggler)
   site.subscribe((newValue) => {
     toggler.textContent = `${capitalize(newValue.mode)} mode`
   })
-  fadein(nav)
+  if (!document.body.classList.contains('home')) {
+    fadein(nav)
+  }
   mobile.addEventListener('click', () => {
     open.set(!open.value)
   })

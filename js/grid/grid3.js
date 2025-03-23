@@ -178,7 +178,6 @@ export default function grid(node) {
     const video = document.createElement('video')
     video.src = src
     video.muted = true
-    video.loop = true
     video.playsInline = true
 
     const canvas = createCanvas()
@@ -211,8 +210,7 @@ export default function grid(node) {
         createPoints()
       },
       points,
-      play: () => video.play(),
-      pause: () => video.pause(),
+      video,
     }
   }
 

@@ -43,6 +43,7 @@ export default async function home(app) {
     destroy,
     createVideo,
     paintCanvas,
+    setOpacity,
   } = grid(gridNode)
 
   const logoCanvas = createCanvas()
@@ -150,10 +151,15 @@ export default async function home(app) {
           fadeIndex = n
         },
       })
+      await wait(1100)
+      navNode.style.opacity = 1
+      for (const p of menu) {
+        p.value = ' '
+      }
     },
   })
 
-  const video = await createVideo('/assets/work/samsoe-samsoe/samsoe.mp4')
+  const video = await createVideo('/assets/reel5.mp4')
 
   listen('resize', () => {
     if (menuFade === 1) {
@@ -213,7 +219,7 @@ export default async function home(app) {
                 )
               : grayRamp.length - 2
             const value = grayRamp[charIndex]
-            if (value.trim()) {
+            if (value.trim() && fadeIndex) {
               intro.push(
                 createPoint({
                   x: (col + i) / dimensions.cols,
@@ -230,6 +236,7 @@ export default async function home(app) {
         ...intro,
         ...(nextMouseX !== null &&
         nextMouseY !== null &&
+        fadeIndex &&
         Math.floor((mouseY / dimensions.height) * dimensions.rows) > 2
           ? createText({
               col:
@@ -248,7 +255,7 @@ export default async function home(app) {
           row: 1,
           context: 'text',
           text: Array(Math.ceil((dimensions.cols - 4) * menuFade))
-            .fill('X')
+            .fill('=')
             .join(''),
         }),
       ]
@@ -279,16 +286,14 @@ export default async function home(app) {
 
       await wait(1400)
 
-      video.play()
+      video.video.play()
       animate({
         easing: inQuad,
         onFrame: (n) => {
           videoFade = n
         },
-        duration: 4000,
+        duration: 2000,
       })
-      let blendVideo = Date.now()
-      await wait(1000)
 
       main = logo
 
@@ -304,6 +309,52 @@ export default async function home(app) {
 
       let x = undefined
       let showFinale = Date.now()
+      let videoStopped = false
+
+      video.video.addEventListener('ended', async () => {
+        videoStopped = true
+        main = main.filter((p) => p.value.trim())
+        explode(main)
+        gravitate(main)
+        const col = getCssVariable('col')
+
+        const finalText1 = createText({
+          col: col + 4,
+          row: Math.floor(dimensions.rows / 2) - 2,
+          context: 'text',
+          text: 'Aino.agency',
+        })
+
+        const finalText2 = createText({
+          col: col * 2 + 6,
+          row: Math.floor(dimensions.rows / 2) - 2,
+          context: 'text',
+          text: 'Design & Technology',
+        })
+
+        const final1 = createText({
+          col: col + 4,
+          row: Math.floor(dimensions.rows / 2) - 2,
+          context: 'text',
+          text: 'Aino',
+        })
+        const final2 = createText({
+          col: col * 2 + 6,
+          row: Math.floor(dimensions.rows / 2) - 2,
+          context: 'text',
+          text: 'D',
+        })
+
+        await wait(2000)
+
+        morph(final1, finalText1)
+
+        main = [...main, ...final1]
+
+        await wait(2000)
+        morph(final2, finalText2, { duration: 2000 })
+        main = [...main, ...final2]
+      })
 
       listen('frame', ({ delta }) => {
         if (Date.now() - showFinale < 4000) {
@@ -317,7 +368,7 @@ export default async function home(app) {
             context: 'logo',
           })
         }
-        if (Date.now() - blendVideo < 4000) {
+        if (!videoStopped) {
           video.blend(main, videoFade)
         }
       })
@@ -331,23 +382,6 @@ export default async function home(app) {
       //   damping: 1.005,
       // })
       // await wait(2000)
-
-      await wait(4000)
-      video.pause()
-      gravitate(main, {
-        damping: 0.9,
-      })
-
-      const final = createText({
-        col: Math.floor(dimensions.cols / 2),
-        row: Math.floor(dimensions.rows / 2),
-        context: 'text',
-        text: 'Aino',
-      })
-
-      await wait(1400)
-
-      morph(main, final)
 
       // main.length = 0
       // main.push(...video.points)
