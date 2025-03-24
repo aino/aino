@@ -33,3 +33,17 @@ export function insertEvery(arr, item, interval) {
   }
   return result
 }
+
+export function getRandomItems(arr, x) {
+  // Step 1: Make an array of all indices.
+  const indices = [...Array(arr.length).keys()]
+
+  // Step 2: Partially Fisher–Yates shuffle for x picks.
+  for (let i = 0; i < x; i++) {
+    const j = i + Math.floor(Math.random() * (indices.length - i))
+    ;[indices[i], indices[j]] = [indices[j], indices[i]]
+  }
+
+  // Step 3: Pull out the first x indices and map them to the original array.
+  return indices.slice(0, x).map((i) => arr[i])
+}

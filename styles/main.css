@@ -197,6 +197,9 @@ section {
 .cols {
   display: flex;
   gap: 2rem;
+  > div {
+    flex: 0.5;
+  }
   .col2 {
     grid-column: span 2;
   }
@@ -214,6 +217,7 @@ html.js .fadein {
 
 p,
 .text h2,
+.text h1,
 .text li,
 .text a {
   font-family: abc, helvetica, sans-serif;
@@ -260,9 +264,9 @@ h1.mega,
 h2.mega,
 li.mega,
 a.mega {
-  font-size: 225%;
+  font-size: 290%;
   font-weight: 720;
-  line-height: calc(var(--line) * 2);
+  line-height: calc(var(--line) * 2.5);
   letter-spacing: -0.03em;
 }
 

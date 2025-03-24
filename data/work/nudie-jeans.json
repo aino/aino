@@ -29,7 +29,7 @@
         }
       },
       {
-        "span": 1,
+        "span": 2,
         "image": {
           "url": "/assets/work/nudie-jeans/n1.jpg",
           "width": 1080,
@@ -54,9 +54,8 @@
       }
     ],
     [
-      {},
       {
-        "span": 1,
+        "span": 2,
         "image": {
           "url": "/assets/work/nudie-jeans/i1.jpg",
           "width": 1080,

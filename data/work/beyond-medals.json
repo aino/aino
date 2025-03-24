@@ -49,17 +49,14 @@
     ],
     [
       {
-        "span": 3,
+        "span": 2,
         "sticky": true,
         "video": {
           "url": "/assets/work/beyond-medals/5.mp4",
           "width": 1080,
           "height": 1080
         }
-      }
-    ],
-    [
-      {},
+      },
       {
         "span": 2,
         "image": {
@@ -67,11 +64,21 @@
           "width": 1000,
           "height": 1000
         }
-      },
+      }
+    ],
+    [
       {
-        "span": 1,
+        "span": 2,
         "image": {
           "url": "/assets/work/beyond-medals/6.png",
+          "width": 1000,
+          "height": 1000
+        }
+      },
+      {
+        "span": 2,
+        "video": {
+          "url": "/assets/work/beyond-medals/4.mp4",
           "width": 1000,
           "height": 1000
         }
@@ -79,23 +86,15 @@
     ],
     [
       {
-        "video": {
-          "url": "/assets/work/beyond-medals/4.mp4",
-          "width": 1000,
-          "height": 1000
-        }
-      },
-      {
-        "span": 1,
+        "span": 2,
         "image": {
           "url": "/assets/work/beyond-medals/d5.png",
           "width": 1000,
           "height": 1000
         }
       },
-      {},
       {
-        "span": 1,
+        "span": 2,
         "image": {
           "url": "/assets/work/beyond-medals/d3.png",
           "width": 1000,
@@ -104,8 +103,6 @@
       }
     ],
     [
-      {},
-      {},
       {
         "span": 2,
         "video": {

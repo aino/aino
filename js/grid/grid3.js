@@ -45,7 +45,7 @@ export function interpolateChar(char, newGrayRamp) {
   ]
 }
 
-function morphChar(from, to, n) {
+export function morphChar(from, to, n) {
   const fromIndex = grayRamp.indexOf(from)
   const toIndex = grayRamp.indexOf(to)
   if (fromIndex === -1 || toIndex === -1) {

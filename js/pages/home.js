@@ -22,7 +22,7 @@ import hoverchar from '../hoverchar'
 
 export const path = /^\/$/
 
-const grayRamp = `${asciiChars} `
+const grayRamp = `${asciiChars}`
 
 const { wait, timers } = waitingList()
 
@@ -55,12 +55,6 @@ export default async function home(app) {
 
   const logoCanvas = createCanvas()
   const svg = await loadimage('/aino.svg')
-
-  paintCanvas(logoCanvas, svg, { alpha: 0.25, scale: 0.7 })
-
-  const logo = createFromCanvas(logoCanvas, {
-    context: 'logo',
-  })
 
   let intro = []
 
@@ -101,7 +95,7 @@ export default async function home(app) {
 
   const createMenu = () => {
     const col = getCssVariable('col')
-    return [
+    const points = [
       ...createText({
         col: 2,
         row: 1,
@@ -117,12 +111,20 @@ export default async function home(app) {
           })
         : []),
       ...(!detect.mobile()
-        ? createText({
-            col: col * 2 + 6,
-            row: 1,
-            context: 'text',
-            text: 'About  services  careers',
-          })
+        ? [
+            ...createText({
+              col: col * 2 + 6,
+              row: 1,
+              context: 'text',
+              text: 'About  services  careers',
+            }),
+            ...createText({
+              col: col * 3 + 8,
+              row: 1,
+              context: 'text',
+              text: 'Settings',
+            }),
+          ]
         : []),
       ...(detect.mobile()
         ? createText({
@@ -138,6 +140,12 @@ export default async function home(app) {
             text: 'Contact',
           })),
     ]
+    if (window._visited) {
+      for (const p of points) {
+        p.value = ' '
+      }
+    }
+    return points
   }
 
   let menuFade = 0
@@ -172,9 +180,6 @@ export default async function home(app) {
     })
   } else {
     menu = createMenu()
-    for (const p of menu) {
-      p.value = ' '
-    }
     animate({
       duration: 3000,
       easing: inQuad,
@@ -303,9 +308,12 @@ export default async function home(app) {
         damping: 0.9,
       })
       explode(main, { spread: 0.4 })
-      console.log('waiting', Date.now())
       await wait(200)
-      console.log('waited', Date.now())
+      paintCanvas(logoCanvas, svg, { alpha: 0.25, scale: 0.7 })
+
+      const logo = createFromCanvas(logoCanvas, {
+        context: 'logo',
+      })
 
       morph(main, logo)
 
@@ -363,7 +371,7 @@ export default async function home(app) {
           col: col + 4,
           row: Math.floor(dimensions.rows / 2) - 2,
           context: 'text',
-          text: 'Aino',
+          text: 'A',
         })
         const final2 = createText({
           col: col * 2 + 6,
@@ -374,12 +382,10 @@ export default async function home(app) {
 
         await wait(2000)
 
-        morph(final1, finalText1, { duration: 800 })
+        morph(final1, finalText1, { duration: 2000 })
 
         main = [...main, ...final1]
 
-        await wait(1000)
-        morph(final1, finalText2, { duration: 1200 })
         await wait(2000)
         const chars = main.map((p) => p.value)
         animate({

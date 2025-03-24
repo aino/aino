@@ -42,7 +42,7 @@ export default async function header() {
     }
   })
   const toggler = create('button', {
-    textContent: `${capitalize(site.value.mode)} mode`,
+    textContent: `Settings`,
     className: 'toggler ghost',
     onclick() {
       toggleMode()
@@ -50,7 +50,7 @@ export default async function header() {
   })
   last.prepend(toggler)
   site.subscribe((newValue) => {
-    toggler.textContent = `${capitalize(newValue.mode)} mode`
+    // toggler.textContent = `${capitalize(newValue.mode)} mode`
   })
   if (!document.body.classList.contains('home')) {
     fadein(nav)

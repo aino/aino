@@ -4,7 +4,7 @@ import { isVideoPlaying } from './pixelate'
 
 export const toGrayScale = ({ r, g, b }) => 0.21 * r + 0.72 * g + 0.07 * b
 
-export const grayRamp = 'NO0A869452I3?!<>=+/:-·'
+export const grayRamp = 'NO0A869452I3?!<>=+/:-· '
 
 export const getCharacterForGrayScale = (grayScale) =>
   grayRamp[Math.ceil(((grayRamp.length - 1) * grayScale) / 255)]
@@ -36,10 +36,18 @@ export default function ascii(source, filter = (chars) => chars) {
     const box = source.getBoundingClientRect()
     width = box.width
     height = box.height
+    if (!width || !height) {
+      return
+    }
     const ch = getCssVariable('ch')
     const line = getCssVariable('line')
     canvas.width = Math.round(width / ch)
     canvas.height = Math.round(height / line)
+
+    if (source.src.endsWith('.svg')) {
+      ctx.fillStyle = '#fff'
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+    }
 
     if (objectFit === 'cover') {
       const objectPosition = getStyle(source, 'object-position')

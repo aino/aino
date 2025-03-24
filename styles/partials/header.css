@@ -2,7 +2,7 @@
   position: fixed;
   top: var(--char2);
   left: var(--char2);
-  z-index: 2;
+  z-index: 10;
   width: calc(100vw - var(--char) * 4);
   display: grid;
   grid-template-columns: repeat(4, 1fr);

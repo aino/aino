@@ -20,6 +20,12 @@
   }
 }
 
+@media (max-width: 800px) {
+  #footer .shortcuts {
+    margin-top: calc(var(--line) * -1);
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   #footer .image {
     img,

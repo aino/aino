@@ -8,9 +8,6 @@ import hoverchar from './hoverchar'
 const getTime = () => dateformat(new Date(), 'dddd HH:MM:ss')
 
 export default async function footer() {
-  if (document.body.classList.contains('home')) {
-    return
-  }
   const destroyers = []
   const footer = id('footer')
   const [shortcuts] = q('.shortcuts', footer)
