@@ -1,7 +1,7 @@
 import { getCssVariable, q } from '@/js/utils/dom'
 import { lerp } from '@/js/utils/animate'
 import { outQuint } from '@/js/utils/easing'
-import { CHARS } from '@/js/grid/grid2'
+import { CHARS } from '@/js/grid/grid3'
 import wait from '@/js/utils/wait'
 import { inOutQuad, inQuad, inQuint } from './utils/easing'
 

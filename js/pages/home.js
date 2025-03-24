@@ -2,12 +2,12 @@ import '@/styles/pages/home.css'
 import grid from '@/js/grid/grid3'
 import { q } from '@/js/utils/dom'
 import { inQuad } from '@/js/utils/easing'
-import wait from '@/js/utils/wait'
+import { waitingList } from '@/js/utils/wait'
 import animate, { lerp } from '@/js/utils/animate'
 import loadimage from '@/js/utils/loadimage'
 import { grayRamp as asciiChars } from '@/js/ascii'
 import * as detect from '../utils/detect'
-import { interpolateChar } from '../grid/grid3'
+import { fadeChar, interpolateChar } from '../grid/grid3'
 import {
   inCirc,
   inOutCubic,
@@ -18,15 +18,22 @@ import {
   outQuad,
 } from '../utils/easing'
 import { getCssVariable, id } from '../utils/dom'
+import hoverchar from '../hoverchar'
 
 export const path = /^\/$/
 
 const grayRamp = `${asciiChars} `
 
+const { wait, timers } = waitingList()
+
 export default async function home(app) {
   const [gridNode] = q('.grid', app)
   const navNode = id('nav')
-  const destroyers = []
+  const destroyers = [
+    () => {
+      timers.forEach((timer) => clearTimeout(timer))
+    },
+  ]
 
   const {
     createPoint,
@@ -63,7 +70,7 @@ export default async function home(app) {
   let mouseY = 0
   let nextMouseY = null
 
-  window.addEventListener('mousemove', (event) => {
+  const onMouseMove = (event) => {
     nextMouseX = event.clientX
     nextMouseY = event.clientY
     if (!mouseX) {
@@ -72,7 +79,10 @@ export default async function home(app) {
     if (!mouseY) {
       mouseY = nextMouseY
     }
-  })
+  }
+
+  addEventListener('mousemove', onMouseMove)
+  destroyers.push(() => removeEventListener('mousemove', onMouseMove))
 
   let fadeIndex = 0
 
@@ -130,34 +140,49 @@ export default async function home(app) {
     ]
   }
 
-  let menuFade
+  let menuFade = 0
   let menu
   let nav = createMenu()
 
-  animate({
-    duration: 1000,
-    easing: outQuad,
-    onFrame: (n) => {
-      menuFade = n
-    },
-    onComplete: async () => {
-      morph(menu, nav, {
-        duration: 1000,
-      })
-      animate({
-        duration: 3000,
-        easing: inQuad,
-        onFrame: (n) => {
-          fadeIndex = n
-        },
-      })
-      await wait(1100)
-      navNode.style.opacity = 1
-      for (const p of menu) {
-        p.value = ' '
-      }
-    },
-  })
+  if (!window._visited) {
+    animate({
+      duration: 1000,
+      easing: outQuad,
+      onFrame: (n) => {
+        menuFade = n
+      },
+      onComplete: async () => {
+        morph(menu, nav, {
+          duration: 1000,
+        })
+        animate({
+          duration: 3000,
+          easing: inQuad,
+          onFrame: (n) => {
+            fadeIndex = n
+          },
+        })
+        await wait(1400)
+        navNode.style.opacity = 1
+        for (const p of menu) {
+          p.value = ' '
+        }
+        console.log(menu)
+      },
+    })
+  } else {
+    menu = createMenu()
+    for (const p of menu) {
+      p.value = ' '
+    }
+    animate({
+      duration: 3000,
+      easing: inQuad,
+      onFrame: (n) => {
+        fadeIndex = n
+      },
+    })
+  }
 
   const video = await createVideo('/assets/reel5.mp4')
 
@@ -248,7 +273,7 @@ export default async function home(app) {
           : []),
       ]
     }
-    if (menuFade < 0.998) {
+    if (menuFade < 0.998 && !window._visited) {
       menu = [
         ...createText({
           col: 2,
@@ -278,7 +303,9 @@ export default async function home(app) {
         damping: 0.9,
       })
       explode(main, { spread: 0.4 })
+      console.log('waiting', Date.now())
       await wait(200)
+      console.log('waited', Date.now())
 
       morph(main, logo)
 
@@ -311,7 +338,7 @@ export default async function home(app) {
       let showFinale = Date.now()
       let videoStopped = false
 
-      video.video.addEventListener('ended', async () => {
+      const onVideoEnd = async () => {
         videoStopped = true
         main = main.filter((p) => p.value.trim())
         explode(main)
@@ -347,13 +374,32 @@ export default async function home(app) {
 
         await wait(2000)
 
-        morph(final1, finalText1)
+        morph(final1, finalText1, { duration: 800 })
 
         main = [...main, ...final1]
 
-        await wait(2000)
-        morph(final2, finalText2, { duration: 2000 })
+        await wait(1000)
+        morph(final2, finalText2, { duration: 1200 })
         main = [...main, ...final2]
+        await wait(2000)
+        const chars = main.map((p) => p.value)
+        animate({
+          easing: inOutCubic,
+          onFrame: (n) => {
+            for (let i = 0; i < main.length; i++) {
+              main[i].value = fadeChar(chars[i], 1 - n)
+            }
+          },
+          duration: 1300,
+          onComplete: async () => {
+            history.pushState({}, '', '/work')
+          },
+        })
+      }
+
+      video.video.addEventListener('ended', onVideoEnd)
+      destroyers.push(() => {
+        video.video.removeEventListener('ended', onVideoEnd)
       })
 
       listen('frame', ({ delta }) => {
@@ -391,6 +437,7 @@ export default async function home(app) {
   )
 
   return () => {
+    window._visited = true
     destroyers.forEach((destroy) => destroy())
   }
 }

@@ -12,6 +12,10 @@ export const path = /.*/
 const html = document.documentElement
 
 export default async function global(app) {
+  const isHome = document.body.classList.contains('home')
+  if (!isHome) {
+    window._visited = true
+  }
   const destroyers = []
 
   hoverchar()

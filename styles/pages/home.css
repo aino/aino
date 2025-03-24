@@ -25,4 +25,14 @@ body.home {
   #nav {
     opacity: 0;
   }
+  #footer {
+    display: none;
+  }
+  .our-work {
+    position: fixed;
+    left: calc((var(--col) * 2 + 6) * var(--char));
+    span {
+      animation: blinker 0.2s linear infinite;
+    }
+  }
 }

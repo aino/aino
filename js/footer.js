@@ -1,5 +1,5 @@
 import { id, q } from '@/js/utils/dom'
-import grid from '@/js/grid/grid2'
+import grid from '@/js/grid/grid3'
 import loadimage from '@/js/utils/loadimage'
 import { getCssVariable } from './utils/dom'
 import dateformat from 'dateformat'
@@ -8,6 +8,9 @@ import hoverchar from './hoverchar'
 const getTime = () => dateformat(new Date(), 'dddd HH:MM:ss')
 
 export default async function footer() {
+  if (document.body.classList.contains('home')) {
+    return
+  }
   const destroyers = []
   const footer = id('footer')
   const [logo] = q('.logo', footer)
@@ -23,10 +26,12 @@ export default async function footer() {
   }
   setLogoSize()
 
-  const { render, paintCanvas, createFromCanvas, listen, canvas } = grid(logo)
+  const { render, paintCanvas, createFromCanvas, listen, createCanvas } =
+    grid(logo)
 
+  const canvas = createCanvas()
   const draw = () => {
-    paintCanvas(svg, { alpha: 0.02, x: 0 })
+    paintCanvas(canvas, svg, { alpha: 0.02, x: 0 })
     render(createFromCanvas({ context: 'logo' }))
   }
   // document.body.appendChild(canvas)

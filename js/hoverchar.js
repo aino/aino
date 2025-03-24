@@ -1,7 +1,7 @@
 import { getCssVariable, q } from '@/js/utils/dom'
 import { lerp } from '@/js/utils/animate'
 import { outQuint } from '@/js/utils/easing'
-import { CHARS } from '@/js/grid/grid2'
+import { CHARS } from '@/js/grid/grid3'
 import * as detect from '@/js/utils/detect'
 
 const nodeAnimations = new Map()

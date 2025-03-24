@@ -2,13 +2,7 @@ import { insertEvery } from '@/js/utils/array'
 import { lerp } from '@/js/utils/animate'
 import { getCssVariable } from '@/js/utils/dom'
 import { toGrayScale } from '../ascii'
-import {
-  inOutQuad,
-  inOutQuint,
-  inQuad,
-  inQuint,
-  outQuad,
-} from '../utils/easing'
+import { inOutQuad } from '../utils/easing'
 import { isVideoPlaying } from '../pixelate'
 import onVideoFrame from '../utils/video'
 
@@ -16,9 +10,11 @@ const DIFFUSION = 0.001
 
 // The character set for ASCII rendering.
 export const CHARS =
-  '$MBNQØW@&R8GD6S9ÖOH#ÉE5UK0ÄÅA2XP34ZC%VIF17YTJL[]?}{()<>|=+\\/^!";*_:~,\'-.·\\`  '
+  '$MBNQØW@&R8GD6S9ÖOH#ÉE5UK0ÄÅA2XP34ZC%VIF17YTJL[]?}{()<>|=+\\/^!";*_:~,\'-.·\\` '
 
-const getCharacterForGrayScale = (grayScale, grayRamp) =>
+const grayRamp = `${CHARS} `
+
+const getCharacterForGrayScale = (grayScale) =>
   grayRamp[Math.ceil(((grayRamp.length - 1) * grayScale) / 255)]
 
 function generateUID() {
@@ -32,31 +28,31 @@ function generateUID() {
   return uid
 }
 
-export function fadeChar(char, opacity, grayRamp = CHARS) {
+export function fadeChar(char, opacity) {
   if (opacity === 1) return char
   return grayRamp[
     Math.floor(lerp(grayRamp.indexOf(char), grayRamp.length - 1, 1 - opacity))
   ]
 }
 
-export function interpolateChar(char, grayRamp) {
-  const index = CHARS.indexOf(char)
+export function interpolateChar(char, newGrayRamp) {
+  const index = grayRamp.indexOf(char)
   if (index === -1) {
     return char
   }
-  return grayRamp[
-    Math.floor((grayRamp.length - 1) * (index / (CHARS.length - 1)))
+  return newGrayRamp[
+    Math.floor((newGrayRamp.length - 1) * (index / (newGrayRamp.length - 1)))
   ]
 }
 
 function morphChar(from, to, n) {
-  const fromIndex = CHARS.indexOf(from)
-  const toIndex = CHARS.indexOf(to)
+  const fromIndex = grayRamp.indexOf(from)
+  const toIndex = grayRamp.indexOf(to)
   if (fromIndex === -1 || toIndex === -1) {
     return to
   } else {
     const charIndex = Math.floor(lerp(fromIndex, toIndex, n))
-    return CHARS[charIndex]
+    return grayRamp[charIndex]
   }
 }
 
@@ -217,7 +213,7 @@ export default function grid(node) {
   const setOpacity = (points, opacity) => {
     for (let i = 0, len = points.length; i < len; i++) {
       const p = points[i]
-      p.value = fadeChar(p.value, opacity, CHARS)
+      p.value = fadeChar(p.value, opacity)
     }
   }
 
@@ -290,13 +286,13 @@ export default function grid(node) {
         }
       })
 
-      const fromIndex = CHARS.indexOf(p.value)
-      const toIndex = CHARS.indexOf(p.morph.target.value)
+      const fromIndex = grayRamp.indexOf(p.value)
+      const toIndex = grayRamp.indexOf(p.morph.target.value)
       if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) {
         p.value = p.morph.target.value
       } else {
         const charIndex = Math.round(lerp(fromIndex, toIndex, progress))
-        p.value = CHARS[charIndex]
+        p.value = grayRamp[charIndex]
       }
     }
   }
@@ -511,7 +507,7 @@ export default function grid(node) {
         from.push(newPoint)
       }
     }
-    console.log(`Morphed in ${Date.now() - now}ms`, { ...from }, { ...to })
+    // console.log(`Morphed in ${Date.now() - now}ms`, { ...from }, { ...to })
   }
 
   const randomize = (points, { spread = 1 } = {}) => {
@@ -671,7 +667,7 @@ export default function grid(node) {
         g = data[i + 1],
         b = data[i + 2]
       const l = toGrayScale({ r, g, b })
-      const value = getCharacterForGrayScale(l, CHARS)
+      const value = getCharacterForGrayScale(l)
       if ((value.trim() && l !== 255) || includeEmpty) {
         const x = xPixel / cols
         const y = yPixel / rows

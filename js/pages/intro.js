@@ -1,5 +1,5 @@
 import '@/styles/pages/home.css'
-import grid from '@/js/grid/grid2'
+import grid from '@/js/grid/grid3'
 import { q, id } from '@/js/utils/dom'
 import { outQuad, inQuad, inCirc, outCirc, inOutCirc } from '@/js/utils/easing'
 import wait from '@/js/utils/wait'
