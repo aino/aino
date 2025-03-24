@@ -114,6 +114,10 @@ html.pixelmode {
   .image,
   .video {
     background: transparent;
+    img,
+    video {
+      opacity: 0;
+    }
   }
 }
 

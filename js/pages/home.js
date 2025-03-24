@@ -379,8 +379,7 @@ export default async function home(app) {
         main = [...main, ...final1]
 
         await wait(1000)
-        morph(final2, finalText2, { duration: 1200 })
-        main = [...main, ...final2]
+        morph(final1, finalText2, { duration: 1200 })
         await wait(2000)
         const chars = main.map((p) => p.value)
         animate({

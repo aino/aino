@@ -6,5 +6,32 @@
   }
   .shortcuts {
     margin-top: calc(var(--line) * -3);
+    z-index: 2;
+    position: relative;
+  }
+  .image {
+    background: transparent;
+  }
+}
+
+@media (max-width: 1200px) {
+  #footer .shortcuts {
+    margin-top: calc(var(--line) * -2);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  #footer .image {
+    img,
+    canvas {
+      filter: invert(100%);
+      opacity: 0.9;
+    }
+  }
+  html.textmode,
+  html.pixelmode {
+    #footer .image img {
+      opacity: 0;
+    }
   }
 }
