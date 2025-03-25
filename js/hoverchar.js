@@ -86,7 +86,7 @@ export default function hoverchar() {
   clearTimeout(timer)
   loop()
   for (const hoverchar of q('a, button, .hoverchar')) {
-    if (hoverchar.dataset.active) continue
+    if (hoverchar.dataset.active || hoverchar.closest('p')) continue
     hoverchar.dataset.active = 'true'
     const dy = hoverchar.dataset.dy || 0
     const dx = hoverchar.dataset.dx || 1

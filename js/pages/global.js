@@ -91,8 +91,6 @@ export default async function global(app) {
 
   destroyers.push(sidegallery(app))
 
-  console.log(destroyers)
-
   for (const copy of q('a.copy')) {
     const onClick = (e) => {
       e.preventDefault()
@@ -107,10 +105,10 @@ export default async function global(app) {
     destroyers.push(() => copy.removeEventListener('click', onClick))
   }
 
-  return () => {
+  return async () => {
     for (const destroy of [...destroyers, ...imageDestroyers]) {
       if (destroy) {
-        destroy()
+        await destroy()
       }
     }
   }

@@ -7,7 +7,8 @@ export default function sidegallery(app) {
 
   const instances = []
 
-  sideGalleries.forEach((sidegallery, i) => {
+  sideGalleries.forEach((sidegallery) => {
+    const direction = sidegallery.dataset.direction || 'forward'
     const [images] = q('.images', sidegallery)
     const imageElements = q('.image', images)
     if (imageElements.length === 1) {
@@ -23,7 +24,7 @@ export default function sidegallery(app) {
       speed: 1,
       startDelay: 0,
       stopOnInteraction: false,
-      direction: i % 2 ? 'backward' : 'forward',
+      direction,
     })
     const embla = EmblaCarousel(
       sidegallery,

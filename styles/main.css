@@ -167,11 +167,11 @@ section {
       top: calc(var(--line) * 3);
     }
     &.border {
-      padding-top: calc(var(--line) * 0.6);
+      padding-top: calc(var(--line) * 0.5);
       border-top: 1px solid rgba(var(--black-rgb), 0.1);
       > .big:first-child,
       .text > .big:first-child {
-        margin-top: calc(var(--line) * -0.2);
+        margin-top: calc(var(--line) * -0.25);
       }
       margin-top: var(--line);
     }
@@ -189,19 +189,23 @@ section {
 
 .sidegallery {
   margin-left: calc(var(--char2) * -1);
+  margin-bottom: calc(var(--line));
   width: 100vw;
+  overflow-x: hidden;
   .images {
     padding: 0 var(--char2);
     display: flex;
+    height: calc(var(--col) * var(--char));
     gap: var(--char2);
-    flex-shrink: 0;
+
     .image {
-      min-width: calc(var(--col) * var(--char));
-      flex: 1;
-    }
-    img {
-      width: 100%;
+      flex-shrink: 0;
+      position: relative;
       border-radius: var(--border-radius);
+      img {
+        max-height: 100%;
+        width: auto;
+      }
     }
   }
 }
@@ -255,7 +259,7 @@ p,
   font-family: abc, helvetica, sans-serif;
   text-transform: none;
   font-feature-settings: 'ss05';
-  font-size: 120%;
+  font-size: calc(var(--font-size) * 1.2);
   letter-spacing: 0;
   line-height: calc(var(--line) * 1.2);
   letter-spacing: -0.01em;
@@ -281,7 +285,7 @@ li.big,
 h1.big,
 a.big {
   font-weight: 720;
-  font-size: 170%;
+  font-size: calc(var(--font-size) * 1.7);
   line-height: calc(var(--line) * 1.5);
   letter-spacing: -0.02em;
 }
@@ -296,7 +300,7 @@ h1.mega,
 h2.mega,
 li.mega,
 a.mega {
-  font-size: 250%;
+  font-size: calc(var(--font-size) * 2.5);
   font-weight: 720;
   line-height: calc(var(--line) * 2.1);
   letter-spacing: -0.03em;
