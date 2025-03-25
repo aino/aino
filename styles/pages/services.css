@@ -1,0 +1,12 @@
+body.services {
+  .container {
+    position: relative;
+    .grid {
+      position: absolute;
+      top: var(--line);
+      left: 0;
+      height: 100%;
+      width: calc(var(--col) * var(--char));
+    }
+  }
+}

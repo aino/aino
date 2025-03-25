@@ -1,15 +1,12 @@
 #footer {
   padding: calc(var(--line) * 4) var(--char2) 0;
   cursor: default;
-  .logo {
-    height: 0;
-  }
   .shortcuts {
     margin-top: calc(var(--line) * -3);
     z-index: 2;
     position: relative;
   }
-  .image {
+  .logo {
     background: transparent;
   }
 }
@@ -27,7 +24,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  #footer .image {
+  #footer .logo {
     img,
     canvas {
       filter: invert(100%);
@@ -36,7 +33,7 @@
   }
   html.textmode,
   html.pixelmode {
-    #footer .image img {
+    #footer .logo img {
       opacity: 0;
     }
   }

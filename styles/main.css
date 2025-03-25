@@ -8,6 +8,7 @@
 @import 'pages/work.css';
 @import 'pages/case.css';
 @import 'pages/position.css';
+@import 'pages/services.css';
 
 :root {
   color-scheme: light dark;
@@ -151,6 +152,9 @@ section {
   > div {
     &.span-2 {
       grid-column: span 2;
+      p {
+        padding-right: calc(var(--col) / 2 * var(--char));
+      }
     }
     &.span-3 {
       grid-column: span 3;
@@ -162,6 +166,15 @@ section {
       position: sticky;
       top: calc(var(--line) * 3);
     }
+    &.border {
+      padding-top: calc(var(--line) * 0.6);
+      border-top: 1px solid rgba(var(--black-rgb), 0.1);
+      > .big:first-child,
+      .text > .big:first-child {
+        margin-top: calc(var(--line) * -0.2);
+      }
+      margin-top: var(--line);
+    }
   }
   &.space {
     padding: calc(var(--line) * 2) 0;
@@ -171,6 +184,25 @@ section {
   }
   &.first {
     margin-top: calc(var(--line) * 6);
+  }
+}
+
+.sidegallery {
+  margin-left: calc(var(--char2) * -1);
+  width: 100vw;
+  .images {
+    padding: 0 var(--char2);
+    display: flex;
+    gap: var(--char2);
+    flex-shrink: 0;
+    .image {
+      min-width: calc(var(--col) * var(--char));
+      flex: 1;
+    }
+    img {
+      width: 100%;
+      border-radius: var(--border-radius);
+    }
   }
 }
 
@@ -264,9 +296,9 @@ h1.mega,
 h2.mega,
 li.mega,
 a.mega {
-  font-size: 290%;
+  font-size: 250%;
   font-weight: 720;
-  line-height: calc(var(--line) * 2.5);
+  line-height: calc(var(--line) * 2.1);
   letter-spacing: -0.03em;
 }
 
@@ -276,6 +308,9 @@ hr {
   margin: calc(var(--line)) 0;
   opacity: 0.1;
   display: block;
+  &.small {
+    margin: calc(var(--line) * 0.5) 0;
+  }
 }
 
 hr + .big {

@@ -48,7 +48,7 @@ export function interpolateChar(char, newGrayRamp) {
 export function morphChar(from, to, n) {
   const fromIndex = grayRamp.indexOf(from)
   const toIndex = grayRamp.indexOf(to)
-  if (fromIndex === -1 || toIndex === -1) {
+  if (fromIndex === -1 || toIndex === -1 || n === 1 || fromIndex === toIndex) {
     return to
   } else {
     const charIndex = Math.floor(lerp(fromIndex, toIndex, n))
@@ -333,7 +333,13 @@ export default function grid(node) {
       if (!dots[row]) {
         dots[row] = []
       }
-      if (dots[row][col]) {
+      if (
+        dots[row][col] &&
+        p.vx &&
+        p.vy &&
+        dots[row][col].vy &&
+        dots[row][col].vx
+      ) {
         collisions.push([p, dots[row][col]])
       } else {
         dots[row][col] = p
