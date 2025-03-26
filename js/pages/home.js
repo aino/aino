@@ -345,6 +345,7 @@ export default async function home(app) {
       let x = undefined
       let showFinale = Date.now()
       let videoStopped = false
+      let lastClick = false
 
       const onVideoEnd = async () => {
         videoStopped = true
@@ -402,25 +403,39 @@ export default async function home(app) {
         })
       }
 
+      const onLastClick = () => {
+        lastClick = true
+        videoStopped = true
+        video.video.pause()
+        requestAnimationFrame(() => {
+          onVideoEnd()
+        })
+      }
+
+      addEventListener('mousedown', onLastClick, { once: true })
+
       video.video.addEventListener('ended', onVideoEnd)
       destroyers.push(() => {
+        removeEventListener('mousedown', onLastClick)
         video.video.removeEventListener('ended', onVideoEnd)
       })
 
       listen('frame', ({ delta }) => {
-        if (Date.now() - showFinale < 4000) {
-          const { w } = paintCanvas(logoCanvas, svg, {
-            alpha: 0.2,
-            scale: lerp(0.7, 20, logoScale),
-            x,
-          })
-          x = (logoCanvas.width / 2 - w / 2) * lerp(1, 0.9, logoScale)
-          main = createFromCanvas(logoCanvas, {
-            context: 'logo',
-          })
-        }
-        if (!videoStopped) {
-          video.blend(main, videoFade)
+        if (!lastClick) {
+          if (Date.now() - showFinale < 4000) {
+            const { w } = paintCanvas(logoCanvas, svg, {
+              alpha: 0.2,
+              scale: lerp(0.7, 20, logoScale),
+              x,
+            })
+            x = (logoCanvas.width / 2 - w / 2) * lerp(1, 0.9, logoScale)
+            main = createFromCanvas(logoCanvas, {
+              context: 'logo',
+            })
+          }
+          if (!videoStopped) {
+            video.blend(main, videoFade)
+          }
         }
       })
 
