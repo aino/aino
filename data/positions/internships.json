@@ -1,0 +1,19 @@
+{
+  "title": "Internships",
+  "slug": "internships",
+  "subtitle": "Designers + Developers",
+  "location": "Gothenburg, Sweden",
+  "active": true,
+  "hiring": false,
+  "image": {
+    "url": "/assets/about/Aino-10.jpg",
+    "width": 2400,
+    "height": 2989
+  },
+  "description": "<p class=\"big\">If you are a talented designer or developer student who wants to continue learning hands-on at Aino, we accept a few interns every year for mutual benefit and having a great time together!</p><p>We have collaborations with several higher educations in Sweden — such as Yrgo, Brobygrafiska and Hyper Island — where students can apply for their LIA (learning at work) at Aino.</p><p>We also accept internship applications from students at other schools (in Sweden or abroad) and can sometimes offer paid internships for students that aren’t eligible for government-funded financial aid.</p><p>We expect you to be passionate about your craft and hungry to learn more at an agency that has a very high technical and creative level. We always take our time with our interns and make sure they are fully included in our team. If everything works out great we might be able to offer employment after the internship.</p>",
+  "details": [
+    "Full-time, 3-6 months",
+    "On-site in Gothenburg (with flexible remote)",
+    "Fluent in English & Swedish"
+  ]
+}

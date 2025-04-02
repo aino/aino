@@ -44,7 +44,9 @@ export const routes = {
     data: async ({ slug }) => {
       const position = positions.find((p) => p.slug === slug)
       return {
+        positions,
         position,
+        title: position?.title,
       }
     },
   },

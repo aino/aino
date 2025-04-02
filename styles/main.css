@@ -7,7 +7,7 @@
 @import 'pages/apply.css';
 @import 'pages/work.css';
 @import 'pages/case.css';
-@import 'pages/position.css';
+@import 'partials/positions.css';
 @import 'pages/services.css';
 
 :root {
@@ -168,7 +168,7 @@ section {
     }
     &.border {
       padding-top: calc(var(--line) * 0.5);
-      border-top: 1px solid rgba(var(--black-rgb), 0.1);
+      border-top: 1px solid rgba(var(--black-rgb), 0.15);
       > .big:first-child,
       .text > .big:first-child {
         margin-top: calc(var(--line) * -0.25);
@@ -359,7 +359,7 @@ a.button {
     display: inline-block;
     vertical-align: middle;
     height: calc(var(--line) * 2);
-    display: flex;
+    display: inline-flex;
     align-items: center;
     padding: var(--line-padding) var(--char);
     background: rgba(var(--black-rgb), 0.1);
@@ -378,7 +378,7 @@ a.button {
   }
   &.arrow {
     position: relative;
-    padding-right: calc(var(--char) * 2);
+    padding-right: calc(var(--char) * 3);
     &::after {
       content: '→';
       position: absolute;

@@ -86,7 +86,7 @@ export default function hoverchar() {
   clearTimeout(timer)
   loop()
   for (const hoverchar of q('a, button, .hoverchar')) {
-    if (hoverchar.dataset.active || hoverchar.closest('p')) continue
+    if (hoverchar.dataset.active || hoverchar.closest('.text')) continue
     hoverchar.dataset.active = 'true'
     const dy = hoverchar.dataset.dy || 0
     const dx = hoverchar.dataset.dx || 1
@@ -132,7 +132,8 @@ export default function hoverchar() {
           if (
             node &&
             node.nodeType === Node.TEXT_NODE &&
-            hoverchar.contains(node)
+            hoverchar.contains(node) &&
+            !node.parentNode.closest('.big, .mega')
           ) {
             const text = (node.textContent || '').split('')
             // Make sure offset is valid:

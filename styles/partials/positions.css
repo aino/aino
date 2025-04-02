@@ -1,0 +1,14 @@
+.positions {
+  .position {
+    position: relative;
+    height: calc(6 * var(--line));
+    display: flex;
+    flex-direction: column;
+    h2 {
+      line-height: calc(var(--line) * 1.3);
+    }
+    ul {
+      margin-top: auto;
+    }
+  }
+}
