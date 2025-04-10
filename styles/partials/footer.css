@@ -23,14 +23,7 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  #footer .logo {
-    img,
-    canvas {
-      filter: invert(100%);
-      opacity: 0.9;
-    }
-  }
+html.dark {
   html.textmode,
   html.pixelmode {
     #footer .logo img {

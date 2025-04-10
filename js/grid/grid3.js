@@ -3,8 +3,6 @@ import { lerp } from '@/js/utils/animate'
 import { getCssVariable } from '@/js/utils/dom'
 import { toGrayScale } from '../ascii'
 import { inOutQuad } from '../utils/easing'
-import { isVideoPlaying } from '../pixelate'
-import onVideoFrame from '../utils/video'
 
 const DIFFUSION = 0.001
 

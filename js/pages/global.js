@@ -54,7 +54,12 @@ export default async function global(app) {
       if (mode === 'text') {
         imageDestroyers.push(ascii(source))
       } else if (mode === 'pixel') {
-        imageDestroyers.push(pixelate(source, { factor: 1 }))
+        imageDestroyers.push(
+          pixelate(source, {
+            factor: 1,
+            invertOnDarkMode: !!source.closest('#footer'),
+          })
+        )
       }
     }
   }

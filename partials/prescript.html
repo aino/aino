@@ -1,13 +1,44 @@
 <script type="text/javascript">
   ;((html) => {
+    const lerp = (v0, v1, t) => v0 * (1 - t) + v1 * t
+    function hslToRgb(h, s, l) {
+      s /= 100
+      l /= 100
+
+      const k = (n) => (n + h / 30) % 12
+      const a = s * Math.min(l, 1 - l)
+      const f = (n) =>
+        Math.round(
+          255 * (l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1)))
+        )
+
+      return [f(0), f(8), f(4)]
+    }
     html.classList.add('js')
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+    const hue = 220
+    const c = []
+    const steps = 8
+    const minL = 10
+    const maxL = 90
+    for (let i = 0; i < steps; i++) {
+      const lightness = minL + ((maxL - minL) / (steps - 1)) * i
+      c.push(
+        hslToRgb(
+          lerp(hue - 10, hue + 10, Math.random()),
+          lerp(20, 40, Math.random()),
+          lightness
+        )
+      )
+    }
     const setVariables = () => {
       const width = innerWidth
       const mobile = width < 769
       let ch = mobile ? 8 : 8
       let cols = Math.round(width / ch)
       let col = 0
+      const light = [245, 245, 240]
+      const dark = [24, 24, 24]
       if (!mobile) {
         cols -= 18 // 2 gutter, 2 margin
         // Snap down to multiple of 8
@@ -39,7 +70,11 @@
         'line-height': `${lineHeight}px`,
         line: `${line}px`,
         'screen-height': screen.availHeight,
+        light: light.join(','),
+        dark: dark.join(','),
+        steps,
       })
+        .concat(c.map((rgb, i) => [`c${i}`, rgb.join(',')]))
         .map(([key, value]) => `--${key}:${value}`)
         .join(';')
     }

@@ -1,11 +1,8 @@
 import { create, id, q } from './utils/dom'
-import site, { toggleMode } from './stores/site'
 import fadein from './fadein'
-import { capitalize } from './utils/string'
 import state from './utils/state'
 import { parseLinks } from './white'
-import * as detect from './utils/detect'
-import wait from './utils/wait'
+import createSettings from './settings'
 
 export default async function header() {
   const nav = id('nav')
@@ -14,6 +11,15 @@ export default async function header() {
   const destroyers = []
   const { default: nbtemplate } = await import('partials/newbusiness')
   let container
+  const settingState = state(false, (isOpen) => {
+    if (isOpen) {
+      toggler.innerText = 'Close'
+      nav.classList.add('open-settings')
+    } else {
+      toggler.innerText = 'Settings'
+      nav.classList.remove('open-settings')
+    }
+  })
   const open = state(false, (isOpen) => {
     nav.classList.toggle('open', isOpen)
     mobile.innerText = isOpen ? 'Close' : 'Menu'
@@ -45,13 +51,10 @@ export default async function header() {
     textContent: `Settings`,
     className: 'toggler ghost',
     onclick() {
-      toggleMode()
+      settingState.set(!settingState.value)
     },
   })
   last.prepend(toggler)
-  site.subscribe((newValue) => {
-    // toggler.textContent = `${capitalize(newValue.mode)} mode`
-  })
   if (!document.body.classList.contains('home')) {
     fadein(nav)
   }
@@ -65,7 +68,9 @@ export default async function header() {
   }
   addEventListener('historychange', onHistoryState)
   destroyers.push(() => removeEventListener('historychange', onHistoryState))
-
+  const settings = createSettings()
+  destroyers.push(settings.destroy)
+  nav.appendChild(settings.container)
   return () => {
     destroyers.forEach((destroy) => destroy())
   }

@@ -59,8 +59,8 @@
       },
       {
         "span": 2,
-        "image": {
-          "url": "/assets/work/beyond-medals/3.png",
+        "video": {
+          "url": "/assets/work/beyond-medals/4.mp4",
           "width": 1000,
           "height": 1000
         }
@@ -77,8 +77,8 @@
       },
       {
         "span": 2,
-        "video": {
-          "url": "/assets/work/beyond-medals/4.mp4",
+        "image": {
+          "url": "/assets/work/beyond-medals/3.png",
           "width": 1000,
           "height": 1000
         }

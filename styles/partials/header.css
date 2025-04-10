@@ -24,6 +24,28 @@
   }
 }
 
+#nav.open-settings .settings {
+  display: flex;
+}
+
+#nav .settings {
+  display: none;
+  width: calc(var(--char) * var(--col));
+  position: absolute;
+  right: 0;
+  top: calc(var(--line) * 2);
+  gap: var(--char2);
+  ul button {
+    white-space: nowrap;
+    &:before {
+      content: '○ ';
+    }
+  }
+  ul li.active button:before {
+    content: '● ';
+  }
+}
+
 @media (max-width: 768px) {
   #nav {
     z-index: 11;

@@ -1,46 +1,85 @@
 import { create, getCssVariable } from '@/js/utils/dom'
+import { getStyle, style } from './utils/dom'
+import site, { themes } from './stores/site'
 
-const steps = [0, 32, 64, 96, 128, 160, 192, 224, 255]
+let palette = themes[site.value.theme]
 
-function create4x4x4Palette() {
-  const palette = []
-  for (let r of steps) {
-    for (let g of steps) {
-      for (let b of steps) {
-        palette.push([r, g, b])
-      }
+const getColorFromVariable = (variable) => {
+  const rgb = getStyle(document.documentElement, `--${variable}`)
+  return rgb.split(',').map(Number)
+}
+
+const pushColor = (variable) => {
+  palette.push(getColorFromVariable(variable))
+}
+
+pushColor('dark')
+pushColor('light')
+
+function getSaturation(r, g, b) {
+  const max = Math.max(r, g, b)
+  const min = Math.min(r, g, b)
+  return max === 0 ? 0 : (max - min) / max // range: 0 (grey) to 1 (saturated)
+}
+
+function getNearestColor(inputColor, invert) {
+  const [ir, ig, ib, ia] = inputColor
+  const alpha = ia / 255
+  const bg = getColorFromVariable(invert ? 'dark' : 'light')
+
+  const blendedInput = [
+    ir * alpha + bg[0] * (1 - alpha),
+    ig * alpha + bg[1] * (1 - alpha),
+    ib * alpha + bg[2] * (1 - alpha),
+  ]
+
+  let nearestColor = null
+  let minDistance = Infinity
+
+  for (const color of palette) {
+    const [r, g, b] = color
+    const distance = Math.sqrt(
+      Math.pow(r - blendedInput[0], 2) +
+        Math.pow(g - blendedInput[1], 2) +
+        Math.pow(b - blendedInput[2], 2)
+    )
+
+    const saturation = getSaturation(r, g, b)
+    const penalty = (1 - saturation) * 50
+    const adjustedDistance = distance + penalty
+
+    if (adjustedDistance < minDistance) {
+      minDistance = adjustedDistance
+      nearestColor = color
     }
   }
-  return palette
+
+  return nearestColor
 }
 
-function approximateToStep(value) {
-  const index = Math.min(8, Math.round(value / 32))
-  return steps[index]
-}
-
-function getNearestColor(r, g, b) {
-  return [approximateToStep(r), approximateToStep(g), approximateToStep(b)]
-}
-
-// Then in your dithering code:
-const uniform64 = create4x4x4Palette()
-
-function applyPalette(ctx, width, height) {
+function applyPalette(ctx, width, height, invert = false) {
   if (width && height) {
     const imageData = ctx.getImageData(0, 0, width, height)
-    const data = imageData.data // [r, g, b, a, r, g, b, a, ...]
+    const { data } = imageData
 
     for (let i = 0; i < data.length; i += 4) {
-      const r = data[i]
-      const g = data[i + 1]
-      const b = data[i + 2]
-      // find nearest color in C64 palette
-      const [nr, ng, nb] = getNearestColor(r, g, b, uniform64)
-      data[i] = nr // replace R
-      data[i + 1] = ng // replace G
-      data[i + 2] = nb // replace B
-      // alpha remains unchanged, or you could do data[i + 3] = 255
+      let r = data[i]
+      let g = data[i + 1]
+      let b = data[i + 2]
+      const a = data[i + 3]
+
+      if (invert) {
+        r = 255 - r
+        g = 255 - g
+        b = 255 - b
+      }
+
+      const [nr, ng, nb] = getNearestColor([r, g, b, a], invert) // match to original palette
+
+      data[i] = nr
+      data[i + 1] = ng
+      data[i + 2] = nb
+      data[i + 3] = 255
     }
 
     ctx.putImageData(imageData, 0, 0)
@@ -55,17 +94,25 @@ export const isVideoPlaying = (video) =>
     video.readyState > 2
   )
 
-export default function pixelate(source, { factor = 1 } = {}) {
+export default function pixelate(
+  source,
+  { factor = 1, invertOnDarkMode = false } = {}
+) {
   let width = 0
   let height = 0
   let loaded = false
+  const destroyers = []
 
   const canvas = create('canvas', {
     class: 'pixelate',
   })
+  const overlay = create('div', {
+    class: 'overlay',
+  })
   const ctx = canvas.getContext('2d')
 
   source.parentNode.appendChild(canvas)
+  source.parentNode.appendChild(overlay)
 
   const draw = () => {
     if (!loaded) {
@@ -78,10 +125,14 @@ export default function pixelate(source, { factor = 1 } = {}) {
     const line = getCssVariable('line')
     canvas.width = Math.round(width / rem) * factor
     canvas.height = Math.round(height / line) * factor
-    canvas.style.width = `${width}px`
-    canvas.style.height = `${height}px`
+    canvas.style.width = `${canvas.width * rem}px`
+    canvas.style.height = `${canvas.height * line}px`
+    overlay.style.width = `${canvas.width * rem}px`
+    overlay.style.height = `${canvas.height * line}px`
     ctx.drawImage(source, 0, 0, canvas.width, canvas.height)
-    applyPalette(ctx, canvas.width, canvas.height)
+    const invert = invertOnDarkMode && site.value.appearance === 'dark'
+    console.log(source, invert)
+    applyPalette(ctx, canvas.width, canvas.height, invert)
   }
 
   const onload = () => {
@@ -149,8 +200,19 @@ export default function pixelate(source, { factor = 1 } = {}) {
       throw new Error(`Unsupported source: ${source.tagName}`)
   }
 
+  destroyers.push(
+    site.subscribe((newValue) => {
+      palette = themes[newValue.theme]
+      pushColor('dark')
+      pushColor('light')
+      draw()
+    })
+  )
+
   return () => {
     resizeObserver.disconnect()
     canvas.remove()
+    overlay.remove()
+    destroyers.forEach((destroy) => destroy())
   }
 }

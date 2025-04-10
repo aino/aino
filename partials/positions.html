@@ -1,18 +1,23 @@
 {{#each positions}}
-<a href="/careers/{{ slug }}">
+<a href="/careers/{{ slug }}" data-dy="2">
   <section>
     <div></div>
-    <div class="text border">
-      <h2 class="big">
-        {{ title }}{{#if subtitle}}<br /><span class="light">{{subtitle}}</span
-        >{{/if}}
-      </h2>
-    </div>
-    <div class="border">
-      <ul>
-        <li>{{lookup details 0}}</li>
-        <li>{{ location }}</li>
-      </ul>
+    <div class="border span-2">
+      <div class="cols">
+        <div>
+          <h2>
+            {{ title }}{{#if subtitle}}<br /><span class="light"
+              >{{subtitle}}</span
+            >{{/if}}
+          </h2>
+        </div>
+        <div>
+          <ul>
+            <li>{{lookup details 0}}</li>
+            <li>{{ location }}</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </section>
 </a>

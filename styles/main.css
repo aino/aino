@@ -12,8 +12,8 @@
 
 :root {
   color-scheme: light dark;
-  --white-rgb: 245, 245, 240;
-  --black-rgb: 24, 24, 24;
+  --black-rgb: var(--dark);
+  --white-rgb: var(--light);
   --black: rgb(var(--black-rgb));
   --white: rgb(var(--white-rgb));
   --char: calc(var(--ch) * 1px);
@@ -25,11 +25,9 @@
   --tablet: 1024px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --black-rgb: 245, 245, 240;
-    --white-rgb: 24, 24, 24;
-  }
+html.dark {
+  --black-rgb: var(--light);
+  --white-rgb: var(--dark);
 }
 
 html {
@@ -86,7 +84,8 @@ hr {
   border-radius: var(--border-radius);
   background: rgba(var(--black-rgb), 0.05);
   canvas,
-  .ascii {
+  .ascii,
+  .overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -102,6 +101,26 @@ hr {
   video {
     opacity: 1;
     width: 100%;
+  }
+}
+
+.image,
+.video,
+.videoframe {
+  .overlay {
+    background-image: radial-gradient(
+        closest-side at center,
+        transparent 0%,
+        transparent 99%,
+        rgba(var(--white-rgb), 1) 100%
+      ),
+      linear-gradient(to right, rgba(var(--white-rgb), 1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(var(--white-rgb), 1) 1px, transparent 1px),
+      linear-gradient(to left, rgba(var(--white-rgb), 1) 1px, transparent 1px),
+      linear-gradient(to top, rgba(var(--white-rgb), 1) 1px, transparent 1px);
+    background-size: var(--char) var(--line);
+    background-repeat: repeat;
+    z-index: 2;
   }
 }
 
@@ -135,12 +154,10 @@ html:not(.textmode) .image .ascii {
   }
 }
 
-@media (prefers-color-scheme: light) {
-  html:not(.dark) {
-    .video video,
-    .image img {
-      mix-blend-mode: multiply;
-    }
+html.light {
+  .video video,
+  .image img {
+    mix-blend-mode: multiply;
   }
 }
 
@@ -167,7 +184,7 @@ section {
       top: calc(var(--line) * 3);
     }
     &.border {
-      padding-top: calc(var(--line) * 0.5);
+      padding-top: calc(var(--line) * 0.2);
       border-top: 1px solid rgba(var(--black-rgb), 0.15);
       > .big:first-child,
       .text > .big:first-child {
@@ -251,7 +268,7 @@ html.js .fadein {
   opacity: 0;
 }
 
-p,
+.text p,
 .text h2,
 .text h1,
 .text li,
@@ -326,7 +343,7 @@ h2.big + p {
   margin-top: calc(var(--line) * 1.2);
 }
 
-.light {
+body .light {
   opacity: 0.4;
   font-weight: inherit;
 }
