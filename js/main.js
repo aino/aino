@@ -12,6 +12,7 @@ export default async function main() {
 
   const setAppearance = () => {
     html.classList.toggle('dark', site.value.appearance === 'dark')
+    html.classList.toggle('light', site.value.appearance === 'light')
   }
   site.subscribe((newValue, oldValue) => {
     if (oldValue.appearance !== newValue.appearance) {

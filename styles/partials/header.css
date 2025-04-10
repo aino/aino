@@ -1,16 +1,21 @@
 #nav {
   position: fixed;
-  top: var(--char2);
+  top: 0;
   left: var(--char2);
   z-index: 10;
   width: calc(100vw - var(--char) * 4);
+  height: calc(var(--line) * 3);
+  padding-top: var(--line);
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--char2);
   > div {
     display: flex;
     gap: var(--char2);
+    position: relative;
     &.last {
+      position: relative;
+      z-index: 5;
       a:last-child {
         margin-left: auto;
       }
@@ -30,11 +35,13 @@
 
 #nav .settings {
   display: none;
-  width: calc(var(--char) * var(--col));
+  width: calc(var(--char) * var(--col) + var(--char2));
   position: absolute;
   right: 0;
-  top: calc(var(--line) * 2);
-  gap: var(--char2);
+  top: calc(var(--line) * -1);
+  gap: calc(var(--char2) * 1.5);
+  border-bottom-left-radius: var(--border-radius);
+  padding: calc(var(--line) * 4) var(--char2) var(--line);
   ul button {
     white-space: nowrap;
     &:before {
@@ -73,6 +80,20 @@
       display: block;
       margin-left: auto;
     }
+    .settings {
+      display: block;
+      top: calc(var(--line) * 21);
+      left: calc(var(--char2) * -1);
+      padding-top: 0;
+      ul {
+        margin-top: calc(var(--line));
+        &.themes {
+          position: absolute;
+          top: var(--line);
+          left: calc(var(--char2) * 6);
+        }
+      }
+    }
   }
 }
 
@@ -84,7 +105,7 @@
   top: 0;
   left: 0;
   z-index: 10;
-  padding: calc(var(--line) * 7) var(--char2) var(--line);
+  padding: calc(var(--line) * 6) var(--char2) var(--line);
   a {
     display: block;
   }
