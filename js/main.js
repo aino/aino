@@ -9,11 +9,15 @@ export async function pageTransition(oldApp, newApp) {
 
 export default async function main() {
   const html = document.documentElement
+
   const setAppearance = () => {
     html.classList.toggle('dark', site.value.appearance === 'dark')
-    html.classList.toggle('light', site.value.appearance === 'light')
   }
-  site.subscribe(setAppearance)
+  site.subscribe((newValue, oldValue) => {
+    if (oldValue.appearance !== newValue.appearance) {
+      setAppearance()
+    }
+  })
   window
     .matchMedia('(prefers-color-scheme: dark)')
     .addEventListener('change', (e) => {

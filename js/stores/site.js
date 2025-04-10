@@ -35,6 +35,13 @@ export const themes = {
     [0, 136, 255],
     [187, 187, 187],
   ],
+  ansi: [
+    [0, 128, 128], // Dark cyan
+    [0, 192, 192], // Medium cyan
+    [0, 255, 255], // Bright cyan (main text)
+    [128, 255, 255], // Light cyan (highlight)
+    [192, 255, 255],
+  ],
   nes: [
     [124, 124, 124],
     [0, 0, 252],

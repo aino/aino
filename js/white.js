@@ -222,7 +222,7 @@ const white = () => {
     location.pathname += '/'
     return
   }
-  cachedPages.set(location.pathname, document.documentElement.outerHTML)
+  // cachedPages.set(location.pathname, document.documentElement.outerHTML)
   const app = id('app')
 
   runScripts(location.pathname, app)

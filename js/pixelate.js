@@ -131,7 +131,6 @@ export default function pixelate(
     overlay.style.height = `${canvas.height * line}px`
     ctx.drawImage(source, 0, 0, canvas.width, canvas.height)
     const invert = invertOnDarkMode && site.value.appearance === 'dark'
-    console.log(source, invert)
     applyPalette(ctx, canvas.width, canvas.height, invert)
   }
 
@@ -141,7 +140,6 @@ export default function pixelate(
     if (source.tagName === 'VIDEO') {
       if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
         const onVideoFrame = () => {
-          console.log('onframe')
           draw()
           source.requestVideoFrameCallback(onVideoFrame)
         }

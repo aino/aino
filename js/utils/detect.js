@@ -5,7 +5,7 @@ export const tablet = () => innerWidth < 1024
 export const desktop = () => innerWidth >= 1024
 export const landscape = () => innerWidth > innerHeight
 export const portrait = () => innerWidth < innerHeight
-export const darkmode = () => matchMedia('(prefers-color-scheme: dark)').matches
+export const darkmode = () => html.classList.contains('dark')
 export const textmode = () => html.classList.contains('textmode')
 export const pixelmode = () => html.classList.contains('pixelmode')
 export const touch = () => matchMedia('(hover: none)').matches

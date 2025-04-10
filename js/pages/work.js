@@ -40,6 +40,5 @@ export default async function about(app) {
   }
   return () => {
     destroyers.forEach((destroy) => destroy())
-    document.documentElement.classList.remove('dark')
   }
 }
