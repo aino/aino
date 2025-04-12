@@ -33,6 +33,10 @@
   display: flex;
 }
 
+#nav.open .settings {
+  display: block;
+}
+
 #nav .settings {
   display: none;
   width: calc(var(--char) * var(--col) + var(--char2));
@@ -81,7 +85,6 @@
       margin-left: auto;
     }
     .settings {
-      display: block;
       top: calc(var(--line) * 21);
       left: calc(var(--char2) * -1);
       padding-top: 0;

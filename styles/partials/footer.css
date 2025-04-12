@@ -24,6 +24,12 @@
 }
 
 html.dark {
+  #footer .logo {
+    img {
+      filter: invert(100%);
+      opacity: 0.9;
+    }
+  }
   html.textmode,
   html.pixelmode {
     #footer .logo img {

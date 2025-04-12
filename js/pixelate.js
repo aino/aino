@@ -1,6 +1,23 @@
 import { create, getCssVariable } from '@/js/utils/dom'
 import { getStyle, style } from './utils/dom'
 import site, { themes } from './stores/site'
+import { darkmode } from './utils/detect'
+
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+    this.beginPath()
+    this.moveTo(x + r, y)
+    this.lineTo(x + w - r, y)
+    this.quadraticCurveTo(x + w, y, x + w, y + r)
+    this.lineTo(x + w, y + h - r)
+    this.quadraticCurveTo(x + w, y + h, x + w - r, y + h)
+    this.lineTo(x + r, y + h)
+    this.quadraticCurveTo(x, y + h, x, y + h - r)
+    this.lineTo(x, y + r)
+    this.quadraticCurveTo(x, y, x + r, y)
+    this.closePath()
+  }
+}
 
 let palette = themes[site.value.theme]
 
@@ -38,11 +55,10 @@ function getNearestColor(inputColor, invert) {
 
   for (const color of palette) {
     const [r, g, b] = color
-    const distance = Math.sqrt(
-      Math.pow(r - blendedInput[0], 2) +
-        Math.pow(g - blendedInput[1], 2) +
-        Math.pow(b - blendedInput[2], 2)
-    )
+    const distance =
+      (r - blendedInput[0]) ** 2 +
+      (g - blendedInput[1]) ** 2 +
+      (b - blendedInput[2]) ** 2
 
     const saturation = getSaturation(r, g, b)
     const penalty = (1 - saturation) * 50
@@ -109,34 +125,93 @@ export default function pixelate(
   const overlay = create('div', {
     class: 'overlay',
   })
+  const pillCanvas = create('canvas')
+  overlay.appendChild(pillCanvas)
   const ctx = canvas.getContext('2d')
 
   source.parentNode.appendChild(canvas)
   source.parentNode.appendChild(overlay)
 
+  function drawGrid() {
+    const ch = getCssVariable('ch')
+    const line = getCssVariable('line')
+    const rgb = getStyle(
+      document.documentElement,
+      site.value.appearance === 'dark' ? `--dark` : '--light'
+    )
+
+    pillCanvas.width = canvas.width * ch
+    pillCanvas.height = canvas.height * line
+    pillCanvas.style.width = `${canvas.width * ch}px`
+    pillCanvas.style.height = `${canvas.height * line}px`
+
+    const ctx = pillCanvas.getContext('2d')
+
+    const dpr = window.devicePixelRatio || 1
+    pillCanvas.width = pillCanvas.offsetWidth * dpr
+    pillCanvas.height = pillCanvas.offsetHeight * dpr
+    ctx.scale(dpr, dpr)
+
+    const width = pillCanvas.offsetWidth
+    const height = pillCanvas.offsetHeight
+
+    ctx.clearRect(0, 0, width, height)
+
+    const pillWidth = ch - 2
+    const pillHeight = line - 2
+    const pillRadius = Math.min(pillWidth, pillHeight) / 3
+
+    // First: fill the whole canvas with background color
+    ctx.fillStyle = `rgb(${rgb})`
+
+    ctx.fillRect(0, 0, width, height)
+
+    // Then: set composite mode to cut out
+    ctx.globalCompositeOperation = 'destination-out'
+
+    // Now draw pill shapes to erase them from the overlay
+    for (let y = 0.5; y < height; y += line) {
+      for (let x = 0.5; x < width; x += ch) {
+        ctx.beginPath()
+        ctx.roundRect(x, y, pillWidth, pillHeight, pillRadius)
+        ctx.fill()
+      }
+    }
+
+    // Reset composite mode back to normal (optional, for later drawing)
+    ctx.globalCompositeOperation = 'source-over'
+  }
+
   const draw = () => {
     if (!loaded) {
       return
     }
-    const box = source.getBoundingClientRect()
-    width = box.width
-    height = box.height
-    const rem = getCssVariable('ch')
-    const line = getCssVariable('line')
-    canvas.width = Math.round(width / rem) * factor
-    canvas.height = Math.round(height / line) * factor
-    canvas.style.width = `${canvas.width * rem}px`
-    canvas.style.height = `${canvas.height * line}px`
-    overlay.style.width = `${canvas.width * rem}px`
-    overlay.style.height = `${canvas.height * line}px`
     ctx.drawImage(source, 0, 0, canvas.width, canvas.height)
     const invert = invertOnDarkMode && site.value.appearance === 'dark'
     applyPalette(ctx, canvas.width, canvas.height, invert)
   }
 
+  const resize = () => {
+    const box = source.getBoundingClientRect()
+    width = box.width
+    height = box.height
+    const ch = getCssVariable('ch')
+    const line = getCssVariable('line')
+    const newWidth = Math.round(width / ch) * factor
+    const newHeight = Math.round(height / line) * factor
+    canvas.width = newWidth
+    canvas.height = newHeight
+    canvas.style.width = `${newWidth * ch}px`
+    canvas.style.height = `${newHeight * line}px`
+    overlay.style.width = `${newWidth * ch}px`
+    overlay.style.height = `${newHeight * line}px`
+  }
+
   const onload = () => {
     loaded = true
+    resize()
     draw()
+    drawGrid()
     if (source.tagName === 'VIDEO') {
       if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
         const onVideoFrame = () => {
@@ -176,7 +251,12 @@ export default function pixelate(
     }
   }
 
-  const resizeObserver = new ResizeObserver(() => draw())
+  const resizeObserver = new ResizeObserver(() => {
+    resize()
+    draw()
+    drawGrid()
+  })
+
   resizeObserver.observe(source)
 
   switch (source.tagName) {
@@ -199,18 +279,29 @@ export default function pixelate(
   }
 
   destroyers.push(
-    site.subscribe((newValue) => {
-      palette = themes[newValue.theme]
-      pushColor('dark')
-      pushColor('light')
+    site.subscribe((newValue, oldValue) => {
+      if (newValue.theme !== oldValue.theme) {
+        palette = themes[newValue.theme]
+        pushColor('dark')
+        pushColor('light')
+      }
+      resize()
       draw()
+      drawGrid()
     })
   )
-
-  return () => {
+  destroyers.push(() => {
     resizeObserver.disconnect()
+    source.removeEventListener('load', onload)
+    source.removeEventListener('loadeddata', onload)
+    if (source.tagName === 'VIDEO') {
+      source.removeEventListener('play', onload)
+    }
     canvas.remove()
     overlay.remove()
+  })
+
+  return () => {
     destroyers.forEach((destroy) => destroy())
   }
 }

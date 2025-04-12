@@ -64,6 +64,7 @@ export default async function header() {
   const onHistoryState = () => {
     setTimeout(() => {
       open.set(false)
+      settingState.set(false)
     }, 50)
   }
   addEventListener('historychange', onHistoryState)

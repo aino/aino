@@ -23,6 +23,7 @@
   --line-padding: calc(var(--line) * 0.43923331);
   --mobile: 768px;
   --tablet: 1024px;
+  --step: calc((100vw - var(--char2)) / 4);
 }
 
 html.dark {
@@ -108,6 +109,7 @@ hr {
 .video,
 .videoframe {
   .overlay {
+    /*
     background-image: radial-gradient(
         closest-side at center,
         transparent 0%,
@@ -120,12 +122,15 @@ hr {
       linear-gradient(to top, rgba(var(--white-rgb), 1) 1px, transparent 1px);
     background-size: var(--char) var(--line);
     background-repeat: repeat;
+    */
     z-index: 2;
   }
 }
 
 html.textmode .image img,
-html.textmode .video video {
+html.textmode .video video,
+html.pixelmode .image img,
+html.pixelmode .video video {
   opacity: 0 !important;
 }
 
@@ -433,5 +438,76 @@ a.button {
   }
   99% {
     opacity: 1;
+  }
+}
+
+body:after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+  pointer-events: none;
+  background-image:
+    /* Red lines every char2 */ repeating-linear-gradient(
+      to right,
+      rgba(255, 0, 0, 0.3),
+      rgba(255, 0, 0, 0.3) 1px,
+      transparent 1px,
+      transparent var(--char2)
+    ),
+    /* White lines: one after char2, and three more evenly spaced */
+      linear-gradient(
+        to right,
+
+        transparent var(--char2),
+        white calc(var(--char2)),
+        transparent calc(var(--char2) + 1px),
+        transparent var(--step),
+        white var(--step),
+        transparent calc(var(--step) * 1 + 1px),
+        transparent calc(var(--char2) + var(--step) * 1),
+        white calc(var(--char2) + var(--step) * 1),
+        transparent calc(var(--char2) + var(--step) * 1 + 1px),
+        transparent calc(var(--step) * 2),
+        white calc(var(--step) * 2),
+        transparent calc(var(--step) * 2 + 1px),
+        transparent calc(var(--char2) + var(--step) * 2),
+        white calc(var(--char2) + var(--step) * 2),
+        transparent calc(var(--char2) + var(--step) * 2 + 1px),
+        transparent calc(var(--step) * 3),
+        white calc(var(--step) * 3),
+        transparent calc(var(--step) * 3 + 1px),
+        transparent calc(var(--char2) + var(--step) * 3),
+        white calc(var(--char2) + var(--step) * 3),
+        transparent calc(var(--char2) + var(--step) * 3 + 1px),
+        transparent calc(var(--step) * 4),
+        white calc(var(--step) * 4),
+        transparent calc(var(--step) * 4 + 1px)
+      );
+}
+
+@media (max-width: 768px) {
+  body:after {
+    background-image:
+      /* Red lines every char2 */ repeating-linear-gradient(
+        to right,
+        rgba(255, 0, 0, 0.3),
+        rgba(255, 0, 0, 0.3) 1px,
+        transparent 1px,
+        transparent var(--char2)
+      ),
+      linear-gradient(
+        to right,
+
+        transparent var(--char2),
+        white calc(var(--char2)),
+        transparent calc(var(--char2) + 1px),
+        transparent calc(var(--step) * 4),
+        white calc(var(--step) * 4),
+        transparent calc(var(--step) * 4 + 1px)
+      );
   }
 }

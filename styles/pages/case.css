@@ -43,7 +43,7 @@ body.case {
       overflow: hidden;
     }
     .ascii,
-    canvas,
+    .wrapper > canvas,
     .overlay {
       position: absolute;
       top: 50%;
@@ -51,7 +51,7 @@ body.case {
       transform: translate(-50%, -50%);
       white-space: pre;
     }
-    canvas {
+    .wrapper > canvas {
       z-index: 1;
       image-rendering: pixelated;
     }

@@ -65,6 +65,9 @@ export default async function home(app) {
   let nextMouseY = null
 
   const onMouseMove = (event) => {
+    if (event.target.closest('.settings')) {
+      return
+    }
     nextMouseX = event.clientX
     nextMouseY = event.clientY
     if (!mouseX) {
