@@ -1,4 +1,5 @@
-{{#each this }} {{#column span=span sticky=sticky }} {{#if image }}
+{{#each this }} {{#column className=className top=top left=left width=width}}
+{{#if image }}
 <div class="image"><img {{ img image }} /></div>
 {{/if}} {{#if html}}
 <div class="html">{{{ html }}}</div>

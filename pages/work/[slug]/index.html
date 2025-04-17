@@ -39,9 +39,13 @@
     {{/if}}
   </div>
 </section>
-{{# each data.sections}}
-<section>{{> columns this }}</section>
-{{/ each }}
+
+<div class="sections" {{data data.sections}}>
+  {{# each data.sections}}
+  <section class="{{ className }}">{{> columns columns }}</section>
+  {{/ each }}
+</div>
+
 <section class="casefooter fadein">
   <div class="span-4">{{> worktable }}</div>
 </section>

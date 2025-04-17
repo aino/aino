@@ -1,12 +1,81 @@
-import { q, create, observe } from '../utils/dom'
+import { q, create, observe, getRenderData } from '../utils/dom'
 import fadein from '@/js/fadein'
 import pixelate from '../pixelate'
 import ascii from '../ascii'
+import site from '@/js/stores/site'
 
 export const path = /^\/work\/[^/]+$/
 
 export default async function showcase(app) {
   const destroyers = []
+  const [sections] = q('.sections', app)
+  let data = getRenderData(sections)
+
+  let imageDestroyers = []
+  const resetImages = () => {
+    for (const destroy of imageDestroyers) {
+      destroy()
+    }
+    imageDestroyers = []
+  }
+
+  const parseMedia = () => {
+    const mode = site.value.mode
+    resetImages()
+    for (const source of q('img, video', app)) {
+      if (mode === 'text') {
+        imageDestroyers.push(ascii(source))
+      } else if (mode === 'pixel') {
+        imageDestroyers.push(pixelate(source))
+      }
+    }
+  }
+
+  destroyers.push(
+    site.subscribe((newValue, oldValue) => {
+      if (newValue.mode !== oldValue.mode) {
+        parseMedia()
+      }
+    })
+  )
+
+  const { default: columns } = await import('partials/columns')
+  const render = () => {
+    let html = ''
+    for (const section of data) {
+      html += `<section class="${section.className}">${columns(
+        section.columns
+      )}</section>`
+    }
+    sections.innerHTML = html
+    parseMedia()
+  }
+  render()
+
+  const admin = create('div', { id: 'admin' })
+  sections.before(admin)
+
+  const setData = (newData) => {
+    data = newData
+    render()
+  }
+
+  console.log('secgtions', sections)
+
+  Promise.all([
+    import('react'),
+    import('react-dom/client'),
+    import('../admin/App'),
+  ]).then(([React, ReactDOM, AdminApp]) => {
+    ReactDOM.createRoot(admin).render(
+      React.createElement(AdminApp.default, {
+        data,
+        setData,
+        sections,
+      })
+    )
+  })
+
   for (const d of q('.link, .services li, .technologies li', app)) {
     fadein(d)
   }
@@ -87,7 +156,7 @@ export default async function showcase(app) {
   }
 
   return () => {
-    for (const destroy of destroyers) {
+    for (const destroy of [...destroyers, ...imageDestroyers]) {
       destroy()
     }
   }

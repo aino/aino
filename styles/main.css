@@ -9,6 +9,7 @@
 @import 'pages/case.css';
 @import 'partials/positions.css';
 @import 'pages/services.css';
+@import 'admin.css';
 
 :root {
   color-scheme: light dark;
@@ -24,6 +25,18 @@
   --mobile: 768px;
   --tablet: 1024px;
   --step: calc((100vw - var(--char2)) / 4);
+  --s1: calc(var(--strip-1) * var(--char));
+  --s2: calc(var(--strip-2) * var(--char));
+  --s3: calc(var(--strip-3) * var(--char));
+  --s4: calc(var(--strip-4) * var(--char));
+  --s5: calc(var(--strip-5) * var(--char));
+  --s6: calc(var(--strip-6) * var(--char));
+  --s7: calc(var(--strip-7) * var(--char));
+  --s8: calc(var(--strip-8) * var(--char));
+  --s9: calc(var(--strip-9) * var(--char));
+  --s10: calc(var(--strip-10) * var(--char));
+  --s11: calc(var(--strip-11) * var(--char));
+  --s12: calc(var(--strip-12) * var(--char));
 }
 
 html.dark {
@@ -206,6 +219,76 @@ section {
   }
   &.first {
     margin-top: calc(var(--line) * 6);
+  }
+  &.free {
+    display: flex;
+    gap: var(--char2);
+    margin-left: calc(var(--char2) * -1);
+    width: 100vw;
+    &.between {
+      justify-content: space-between;
+    }
+    &.center {
+      justify-content: center;
+    }
+    &.end {
+      justify-content: flex-end;
+    }
+    &.margin {
+      width: calc(100vw - var(--char2) * 2);
+      margin-left: 0;
+    }
+    > div {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .middle {
+      justify-content: center;
+    }
+    .bottom {
+      justify-content: flex-end;
+    }
+    .w1 {
+      width: var(--s1);
+    }
+    .w2 {
+      width: var(--s2);
+    }
+    .w3 {
+      width: var(--s3);
+    }
+    .w4 {
+      width: var(--s4);
+    }
+    .w5 {
+      width: var(--s5);
+    }
+    .w6 {
+      width: var(--s6);
+    }
+    .w7 {
+      width: var(--s7);
+    }
+    .w8 {
+      width: var(--s8);
+    }
+    .w9 {
+      width: var(--s9);
+    }
+    .w10 {
+      width: var(--s10);
+    }
+    .w11 {
+      width: var(--s11);
+    }
+    .w12 {
+      width: var(--s12);
+    }
+    .full {
+      justify-content: center;
+      width: calc(100vw - var(--char2) * 2);
+    }
   }
 }
 
@@ -442,7 +525,8 @@ a.button {
 }
 
 body:after {
-  content: '';
+  display: none;
+  content: ' ';
   position: fixed;
   top: 0;
   left: 0;
@@ -450,43 +534,41 @@ body:after {
   height: 100vh;
   z-index: 100;
   pointer-events: none;
-  background-image:
-    /* Red lines every char2 */ repeating-linear-gradient(
+  background-image: repeating-linear-gradient(
       to right,
       rgba(255, 0, 0, 0.3),
       rgba(255, 0, 0, 0.3) 1px,
       transparent 1px,
       transparent var(--char2)
     ),
-    /* White lines: one after char2, and three more evenly spaced */
-      linear-gradient(
-        to right,
+    linear-gradient(
+      to right,
 
-        transparent var(--char2),
-        white calc(var(--char2)),
-        transparent calc(var(--char2) + 1px),
-        transparent var(--step),
-        white var(--step),
-        transparent calc(var(--step) * 1 + 1px),
-        transparent calc(var(--char2) + var(--step) * 1),
-        white calc(var(--char2) + var(--step) * 1),
-        transparent calc(var(--char2) + var(--step) * 1 + 1px),
-        transparent calc(var(--step) * 2),
-        white calc(var(--step) * 2),
-        transparent calc(var(--step) * 2 + 1px),
-        transparent calc(var(--char2) + var(--step) * 2),
-        white calc(var(--char2) + var(--step) * 2),
-        transparent calc(var(--char2) + var(--step) * 2 + 1px),
-        transparent calc(var(--step) * 3),
-        white calc(var(--step) * 3),
-        transparent calc(var(--step) * 3 + 1px),
-        transparent calc(var(--char2) + var(--step) * 3),
-        white calc(var(--char2) + var(--step) * 3),
-        transparent calc(var(--char2) + var(--step) * 3 + 1px),
-        transparent calc(var(--step) * 4),
-        white calc(var(--step) * 4),
-        transparent calc(var(--step) * 4 + 1px)
-      );
+      transparent var(--char2),
+      white calc(var(--char2)),
+      transparent calc(var(--char2) + 1px),
+      transparent var(--step),
+      white var(--step),
+      transparent calc(var(--step) * 1 + 1px),
+      transparent calc(var(--char2) + var(--step) * 1),
+      white calc(var(--char2) + var(--step) * 1),
+      transparent calc(var(--char2) + var(--step) * 1 + 1px),
+      transparent calc(var(--step) * 2),
+      white calc(var(--step) * 2),
+      transparent calc(var(--step) * 2 + 1px),
+      transparent calc(var(--char2) + var(--step) * 2),
+      white calc(var(--char2) + var(--step) * 2),
+      transparent calc(var(--char2) + var(--step) * 2 + 1px),
+      transparent calc(var(--step) * 3),
+      white calc(var(--step) * 3),
+      transparent calc(var(--step) * 3 + 1px),
+      transparent calc(var(--char2) + var(--step) * 3),
+      white calc(var(--char2) + var(--step) * 3),
+      transparent calc(var(--char2) + var(--step) * 3 + 1px),
+      transparent calc(var(--step) * 4),
+      white calc(var(--step) * 4),
+      transparent calc(var(--step) * 4 + 1px)
+    );
 }
 
 @media (max-width: 768px) {

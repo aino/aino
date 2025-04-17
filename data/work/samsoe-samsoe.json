@@ -24,104 +24,71 @@
     "height": 1080
   },
   "sections": [
-    [
-      {
-        "span": 4,
-        "image": {
-          "url": "/assets/work/samsoe-samsoe/samsoe_2.png",
-          "width": 1920,
-          "height": 1080
+    {
+      "className": "space"
+    },
+    {
+      "className": "free between",
+      "columns": [
+        {
+          "width": 8,
+          "image": {
+            "url": "/assets/work/samsoe-samsoe/samsoe_1.png",
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "className": "middle",
+          "width": 3,
+          "left": -2,
+          "image": {
+            "url": "/assets/work/samsoe-samsoe/samsoe_4.png",
+            "width": 1920,
+            "height": 1080
+          }
         }
-      }
-    ],
-    [
-      {
-        "span": 4,
-        "html": "<div class=\"space text\"><p class=\"big\">Samsøe Samsøe <span class=\"light\">is a Danish fashion brand founded in 1993. Known for its minimalistic and Scandinavian design, Samsøe Samsøe has a strong presence in the Nordic countries and is expanding globally.</span></p></div>"
-      },
-      {
-        "span": 1
-      }
-    ],
-    [
-      {
-        "span": 4,
-        "image": {
-          "url": "/assets/work/samsoe-samsoe/samsoe_4.png",
-          "width": 1920,
-          "height": 1080
+      ]
+    },
+    {
+      "className": "space"
+    },
+    {
+      "className": "free center",
+      "columns": [
+        {
+          "width": 8,
+          "image": {
+            "url": "/assets/work/samsoe-samsoe/samsoe_5.png",
+            "width": 1920,
+            "height": 1080
+          }
         }
-      }
-    ],
-    [
-      {
-        "span": 4,
-        "image": {
-          "url": "/assets/work/samsoe-samsoe/samsoe_3.png",
-          "width": 1920,
-          "height": 1080
+      ]
+    },
+    {
+      "className": "space"
+    },
+    {
+      "className": "free margin between",
+      "columns": [
+        {
+          "width": 4,
+          "video": {
+            "url": "/assets/work/samsoe-samsoe/cphfw.mp4",
+            "width": 1800,
+            "height": 2250
+          }
+        },
+        {
+          "width": 6,
+          "image": {
+            "url": "/assets/work/samsoe-samsoe/samsoe_6.png",
+            "width": 1920,
+            "height": 1080
+          }
         }
-      }
-    ],
-    [
-      {
-        "span": 4,
-        "image": {
-          "url": "/assets/work/samsoe-samsoe/samsoe_5.png",
-          "width": 1920,
-          "height": 1080
-        }
-      }
-    ],
-    [
-      {
-        "span": 4,
-        "image": {
-          "url": "/assets/work/samsoe-samsoe/samsoe_6.png",
-          "width": 1920,
-          "height": 1080
-        }
-      }
-    ],
-    [
-      {
-        "span": 4,
-        "image": {
-          "url": "/assets/work/samsoe-samsoe/samsoe_7.png",
-          "width": 1920,
-          "height": 1080
-        }
-      }
-    ],
-    [
-      {
-        "span": 4,
-        "image": {
-          "url": "/assets/work/samsoe-samsoe/samsoe_8.png",
-          "width": 1920,
-          "height": 1080
-        }
-      }
-    ],
-    [
-      {
-        "span": 4,
-        "image": {
-          "url": "/assets/work/samsoe-samsoe/samsoe_9.png",
-          "width": 1920,
-          "height": 1080
-        }
-      }
-    ],
-    [
-      {
-        "span": 4,
-        "image": {
-          "url": "/assets/work/samsoe-samsoe/samsoe_10.png",
-          "width": 1920,
-          "height": 1080
-        }
-      }
-    ]
+      ]
+    }
   ]
 }

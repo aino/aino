@@ -26,6 +26,11 @@
         col = Math.ceil((width / ch - 5) / 2)
       }
 
+      let strips = {}
+      for (let i = 1; i <= 12; i += 1) {
+        strips[`strip-${i}`] = Math.floor((cols * (i / 12)) / 2) * 2
+      }
+
       let fontSize = ch / 0.6 - 0.9
       const lineHeight = ch * 2
       const letterSpacing = (ch / 0.6 - fontSize) * 0.6
@@ -34,7 +39,6 @@
         ch,
         cols,
         col,
-        strip: cols / 12,
         rows: Math.floor(innerHeight / (ch * 2)),
         'letter-spacing': `${letterSpacing}px`,
         'font-size': `${fontSize}px`,
@@ -43,6 +47,7 @@
         'screen-height': screen.availHeight,
         light: light.join(','),
         dark: dark.join(','),
+        ...strips,
       })
         .map(([key, value]) => `--${key}:${value}`)
         .join(';')
