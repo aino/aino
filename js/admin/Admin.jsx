@@ -1,8 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react'
 import Section from './Section.jsx'
 
-const Admin = ({ data, setData, sections }) => {
-  const [position, setPosition] = useState({ x: 100, y: 100 }) // initial position
+const Admin = ({ data, setData, sections, slug }) => {
+  const html = document.documentElement
+  const [position, setPosition] = useState({
+    x: localStorage.getItem('admin-x') || 100,
+    y: localStorage.getItem('admin-y') || 100,
+  }) // initial position
   const [draggingAdmin, setDraggingAdmin] = useState(false)
   const [dragIndex, setDragIndex] = useState(null)
   const offset = useRef({ x: 0, y: 0 })
@@ -10,6 +14,7 @@ const Admin = ({ data, setData, sections }) => {
   const mouseDownTargetRef = useRef(null)
   const [open, setOpen] = useState([])
   const [controls, setControls] = useState(true)
+  const [grid, setGrid] = useState(localStorage.getItem('grid') === 'true')
   const toggleOpen = (index, force) => {
     const nextOpen = [...open]
     const i = open.indexOf(index)
@@ -19,6 +24,11 @@ const Admin = ({ data, setData, sections }) => {
     if (!shouldBeOpen && i > -1) nextOpen.splice(i, 1)
     setOpen(nextOpen)
   }
+
+  useEffect(() => {
+    html.classList.toggle('grid', grid)
+    localStorage.setItem('grid', grid)
+  }, [grid])
 
   useEffect(() => {
     const onClick = (e) => {
@@ -46,6 +56,11 @@ const Admin = ({ data, setData, sections }) => {
       sections.removeEventListener('click', onClick)
     }
   }, [])
+
+  useEffect(() => {
+    localStorage.setItem('admin-x', position.x)
+    localStorage.setItem('admin-y', position.y)
+  }, [position])
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -102,11 +117,22 @@ const Admin = ({ data, setData, sections }) => {
 
   const handleSectionDragEnter = (hoverIndex) => {
     if (dragIndex === null || dragIndex === hoverIndex) return
-    const updated = [...data]
+    const updated = [...data.sections]
     const [removed] = updated.splice(dragIndex, 1)
     updated.splice(hoverIndex, 0, removed)
     setDragIndex(hoverIndex)
-    setData(updated)
+    setData({ ...data, sections: updated })
+  }
+
+  const save = (e) => {
+    e.preventDefault()
+    fetch('/api/save', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
   }
 
   return (
@@ -121,12 +147,20 @@ const Admin = ({ data, setData, sections }) => {
     >
       <h2 className="maintitle" onMouseDown={startDrag}>
         <span>Admin</span>
-        <button class="ghost" onClick={() => setControls(!controls)}>
-          {controls ? '–' : '+'}
-        </button>
+        <div>
+          <button className="ghost grid" onClick={() => setGrid(!grid)}>
+            G
+          </button>
+          <button className="ghost grsaveid" onClick={save}>
+            S
+          </button>
+          <button className="ghost open" onClick={() => setControls(!controls)}>
+            {controls ? '–' : '+'}
+          </button>
+        </div>
       </h2>
       <div className="controls">
-        {data.map((section, i) => {
+        {data.sections.map((section, i) => {
           return (
             <div
               key={i}
@@ -149,13 +183,16 @@ const Admin = ({ data, setData, sections }) => {
                 open={open.includes(i)}
                 section={section}
                 onChange={(newSection) => {
-                  const newData = data.map((s) => {
+                  const newData = data.sections.map((s) => {
                     if (s === section) {
                       return newSection
                     }
                     return s
                   })
-                  setData(newData)
+                  setData({
+                    ...data,
+                    sections: newData,
+                  })
                 }}
               />
             </div>
@@ -164,14 +201,17 @@ const Admin = ({ data, setData, sections }) => {
         <button
           className="addsection"
           onClick={() => {
-            setData([
+            setData({
               ...data,
-              {
-                className: 'free',
-              },
-            ])
+              sections: [
+                ...data.sections,
+                {
+                  className: '',
+                },
+              ],
+            })
             requestAnimationFrame(() => {
-              toggleOpen(data.length, true)
+              toggleOpen(data.sections.length, true)
             })
           }}
         >

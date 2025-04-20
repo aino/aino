@@ -5,19 +5,22 @@
     const setVariables = () => {
       const width = innerWidth
       const mobile = width < 769
-      let ch = mobile ? 8 : 8
+      let ch = mobile ? 8 : 7.5
       let cols = Math.round(width / ch)
       let col = 0
+      let halfCol = 0
       const light = [245, 245, 240]
       const dark = [24, 24, 24]
       if (!mobile) {
         cols -= 18 // 2 gutter, 2 margin
         // Snap down to multiple of 8
-        cols -= cols % 8
+        cols -= cols % 16
         cols += 18
         // Recalculate charWidth
         ch = width / cols
-        col = Math.ceil((width / ch - 11) / 4)
+        halfCol = Math.ceil((width / ch - 18) / 8)
+        console.log('halfCol', halfCol)
+        col = halfCol * 2 + 2
       } else {
         cols -= 6
         cols -= cols % 2
@@ -27,8 +30,8 @@
       }
 
       let strips = {}
-      for (let i = 1; i <= 12; i += 1) {
-        strips[`strip-${i}`] = Math.floor((cols * (i / 12)) / 2) * 2
+      for (let i = 0; i < 8; i++) {
+        strips[`strip-${i + 1}`] = halfCol + i * (halfCol + 2)
       }
 
       let fontSize = ch / 0.6 - 0.9

@@ -16,7 +16,7 @@ export function runMiddleware(req, res, fn) {
 }
 
 // Multer setup
-const assetsDir = path.join(process.cwd(), 'public/images')
+const assetsDir = path.join(process.cwd(), 'public/assets')
 
 // Ensure the assets directory exists
 if (!fs.existsSync(assetsDir)) {

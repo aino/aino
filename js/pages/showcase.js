@@ -8,8 +8,8 @@ export const path = /^\/work\/[^/]+$/
 
 export default async function showcase(app) {
   const destroyers = []
-  const [sections] = q('.sections', app)
-  let data = getRenderData(sections)
+  const [sectionsNode] = q('.sections', app)
+  let data = getRenderData(sectionsNode)
 
   let imageDestroyers = []
   const resetImages = () => {
@@ -42,25 +42,23 @@ export default async function showcase(app) {
   const { default: columns } = await import('partials/columns')
   const render = () => {
     let html = ''
-    for (const section of data) {
-      html += `<section class="${section.className}">${columns(
+    for (const section of data.sections) {
+      html += `<section class="section ${section.className}">${columns(
         section.columns
       )}</section>`
     }
-    sections.innerHTML = html
+    sectionsNode.innerHTML = html
     parseMedia()
   }
   render()
 
   const admin = create('div', { id: 'admin' })
-  sections.before(admin)
+  sectionsNode.before(admin)
 
   const setData = (newData) => {
     data = newData
     render()
   }
-
-  console.log('secgtions', sections)
 
   Promise.all([
     import('react'),
@@ -71,7 +69,7 @@ export default async function showcase(app) {
       React.createElement(AdminApp.default, {
         data,
         setData,
-        sections,
+        sections: sectionsNode,
       })
     )
   })

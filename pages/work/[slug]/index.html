@@ -1,32 +1,32 @@
 {{#> layout bodyclass="case" }}
 <section
-  class="first worktitle"
+  class="first worktitle section"
   style="padding-top: calc(var(--line) * {{index}})"
 >
-  <div class="position">{{ zeropad index }}</div>
-  <div class="title"><h1>{{data.name}}</h1></div>
-  <div></div>
-  <div class="year">{{year}}</div>
+  <div class="position col">{{ zeropad index }}</div>
+  <div class="title col"><h1>{{data.name}}</h1></div>
+  <div class="col"></div>
+  <div class="year col">{{year}}</div>
 </section>
-<section class="meta">
-  <div class="link">
+<section class="section meta">
+  <div class="col link">
     <a href="{{ data.link.url }}" target="_blank">{{ data.link.title }}</a>
   </div>
-  <div class="services">
+  <div class="col services">
     <ul>
       {{#each data.services }}
       <li>{{ this }}</li>
       {{/each }}
     </ul>
   </div>
-  <div class="technologies">
+  <div class="col technologies">
     <ul>
       {{#each data.technologies }}
       <li>{{ this }}</li>
       {{/each }}
     </ul>
   </div>
-  <div class="watch">
+  <div class="col watch">
     {{#if data.reel}}
     <a
       href="{{data.reel.url}}"
@@ -40,11 +40,7 @@
   </div>
 </section>
 
-<div class="sections" {{data data.sections}}>
-  {{# each data.sections}}
-  <section class="{{ className }}">{{> columns columns }}</section>
-  {{/ each }}
-</div>
+{{> sections}}
 
 <section class="casefooter fadein">
   <div class="span-4">{{> worktable }}</div>

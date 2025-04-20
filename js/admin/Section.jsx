@@ -40,7 +40,7 @@ export default function Section({ section, onChange, toggleOpen, open }) {
   }
 
   useEffect(() => {
-    if (open && classInput.current && classInput.current.value === 'free') {
+    if (open && classInput.current && classInput.current.value === '') {
       classInput.current.focus()
       classInput.current.select()
     }

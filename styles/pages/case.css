@@ -4,7 +4,7 @@ body.case {
     > div {
       display: block;
       &:last-child {
-        justify-self: end;
+        text-align: right;
       }
     }
   }

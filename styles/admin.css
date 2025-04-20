@@ -15,9 +15,15 @@
       cursor: move;
       display: flex;
       justify-content: space-between;
+      > div {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: -0.2rem;
+      }
       button {
-        padding: 0 0.35rem;
-        background: #181818;
+        background: #222;
+        line-height: 1;
+        padding: 0.3rem 0.4rem;
         color: #888;
         border-radius: var(--border-radius);
       }
@@ -32,18 +38,53 @@
     display: flex;
     gap: 0.5rem;
   }
+  .texteditor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    background: #222;
+    textarea {
+      width: 100%;
+      height: calc(100% - (var(--line) * 2.5));
+      padding: 1rem;
+      background: #222;
+      color: #fff;
+      border-radius: var(--border-radius);
+      resize: none;
+      text-align: left;
+      text-transform: none;
+      letter-spacing: 0;
+      cursor: text;
+    }
+    button {
+      width: 100%;
+      background: #111;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      border-radius: 0;
+      padding: 1.2rem 1rem 1rem;
+      background: #181818;
+    }
+  }
   .controls {
     display: none;
     background: #222;
     border-radius: var(--border-radius);
+    position: relative;
     input,
-    label.file {
+    label.file,
+    button.edit {
       appearance: none;
       border: none;
       background: #333;
-      padding: 0.5rem 0.7rem;
+      padding: 0.4rem 0.7rem;
       border-radius: var(--border-radius);
       width: 100%;
+      height: auto;
 
       &:focus {
         outline: none;
@@ -53,6 +94,9 @@
       font-size: 1.1rem;
       text-transform: none;
       letter-spacing: 0;
+    }
+    button.edit {
+      margin-bottom: 0.5rem;
     }
     label.file {
       position: relative;
@@ -66,6 +110,16 @@
       input {
         position: absolute;
         top: -10000rem;
+      }
+      button {
+        position: absolute;
+        right: 0.5rem;
+        margin-top: -1.3rem;
+        height: 1.3rem;
+        display: flex;
+        line-height: 1;
+        background: rgba(0, 0, 0, 0.1);
+        color: #888;
       }
     }
     input::selection {
@@ -82,7 +136,7 @@
       flex: 1;
       span {
         position: absolute;
-        top: 0.55rem;
+        top: 0.45rem;
         left: 0.7rem;
         opacity: 0.5;
       }
@@ -130,6 +184,9 @@
     .section {
       margin-left: -0.5rem;
       padding: 1rem;
+      margin: 0;
+      flex-direction: column;
+      gap: 0;
       > .content {
         display: none;
         padding: 1rem 0 0 1rem;
@@ -171,4 +228,9 @@
       }
     }
   }
+}
+
+html.grid #admin .container .maintitle button.grid {
+  color: #fff;
+  background: #444;
 }

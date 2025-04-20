@@ -1,8 +1,10 @@
 import React, { useState, useMemo, useRef } from 'react'
+import { stripHtml } from '../utils/string'
 
 export default function Column({ column, onChange }) {
   const [open, setData] = useState(false)
   const file = useRef(null)
+  const [edit, setEdit] = useState(false)
   const onFileUpload = (e) => {
     const input = e.target
     const file = input.files[0]
@@ -49,6 +51,34 @@ export default function Column({ column, onChange }) {
     return name.url.slice(0, 17).toLowerCase() + '...'
   }, [column.image, column.video])
 
+  const text = useMemo(() => {
+    if (column.html) {
+      return stripHtml(column.html).slice(0, 17) + '...'
+    }
+    return 'Click to add html'
+  })
+
+  if (edit) {
+    return (
+      <div className="texteditor">
+        <textarea
+          autoFocus
+          onChange={(e) => {
+            const value = e.target.value
+            onChange({
+              ...column,
+              html: value,
+            })
+          }}
+          defaultValue={column.html}
+        ></textarea>
+        <button onClick={() => setEdit(false)}>
+          <span>Done</span>
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div className={['column', open ? 'open' : ''].join(' ')}>
       <div className="title">
@@ -73,7 +103,26 @@ export default function Column({ column, onChange }) {
         <label className="file">
           <div>{fileName}</div>
           <input type="file" ref={file} value="" onChange={onFileUpload} />
+          {column.image || column.video ? (
+            <button
+              className="ghost delete small"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                onChange({
+                  ...column,
+                  image: null,
+                  video: null,
+                })
+              }}
+            >
+              ×
+            </button>
+          ) : null}
         </label>
+        <button className="edit" onClick={() => setEdit(true)}>
+          {text}
+        </button>
         <div className="minis">
           <label className="mini">
             <span>W</span>
@@ -81,7 +130,7 @@ export default function Column({ column, onChange }) {
               onFocus={(e) => e.target.select()}
               type="number"
               min={1}
-              max={12}
+              max={8}
               value={column.width}
               onChange={(e) => {
                 onChange({

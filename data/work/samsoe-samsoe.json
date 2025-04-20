@@ -1,5 +1,6 @@
 {
   "name": "Samsøe Samsøe",
+  "slug": "samsoe-samsoe",
   "link": {
     "url": "https://www.samsoe.com/",
     "title": "samsoe.com"
@@ -25,39 +26,41 @@
   },
   "sections": [
     {
-      "className": "space"
+      "className": "space",
+      "columns": []
     },
     {
-      "className": "free between",
+      "className": "between",
       "columns": [
         {
-          "width": 8,
-          "image": {
-            "url": "/assets/work/samsoe-samsoe/samsoe_1.png",
-            "width": 1920,
-            "height": 1080
-          }
+          "width": "2",
+          "image": null,
+          "left": "0",
+          "html": "<div class=\"text\">\n<h2 class=\"big\">Nudie Jeans provides more than just jeans. With an emphasis on reuse and repair, Nudie Jeans Co. delivers and upholds a tradition that is loyal to the history and properties of the fabric.</h2>\n</div>",
+          "video": null
         },
         {
           "className": "middle",
-          "width": 3,
-          "left": -2,
+          "width": "4",
+          "left": "0",
           "image": {
             "url": "/assets/work/samsoe-samsoe/samsoe_4.png",
             "width": 1920,
             "height": 1080
-          }
+          },
+          "top": "0"
         }
       ]
     },
     {
-      "className": "space"
+      "className": "space",
+      "columns": []
     },
     {
-      "className": "free center",
+      "className": "center",
       "columns": [
         {
-          "width": 8,
+          "width": "7",
           "image": {
             "url": "/assets/work/samsoe-samsoe/samsoe_5.png",
             "width": 1920,
@@ -67,26 +70,29 @@
       ]
     },
     {
-      "className": "space"
+      "className": "space",
+      "columns": []
     },
     {
-      "className": "free margin between",
+      "className": "between",
       "columns": [
         {
-          "width": 4,
+          "width": "2",
           "video": {
             "url": "/assets/work/samsoe-samsoe/cphfw.mp4",
             "width": 1800,
             "height": 2250
-          }
+          },
+          "left": "-1"
         },
         {
-          "width": 6,
+          "width": "4",
           "image": {
             "url": "/assets/work/samsoe-samsoe/samsoe_6.png",
             "width": 1920,
             "height": 1080
-          }
+          },
+          "left": "1"
         }
       ]
     }

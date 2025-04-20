@@ -2,7 +2,7 @@
   padding: calc(var(--line) * 4) var(--char2) 0;
   cursor: default;
   .shortcuts {
-    margin-top: calc(var(--line) * -3);
+    margin-top: calc(var(--line) * -2);
     z-index: 2;
     position: relative;
   }
