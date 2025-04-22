@@ -53,6 +53,9 @@ export default async function showcase(app) {
         }>${columns(section.columns)}</section>`
       }
       sectionsNode.innerHTML = html
+      for (const fadeNode of q('.fadein', sectionsNode)) {
+        fadeNode.style.opacity = 1
+      }
       parseMedia()
     }
     render()

@@ -200,6 +200,7 @@ body.login .container {
     letter-spacing: inherit;
     text-transform: inherit;
     border: none;
+    color: inherit;
     &:focus {
       outline: none;
     }
