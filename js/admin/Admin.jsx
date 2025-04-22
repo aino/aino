@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
 import Section from './Section.jsx'
+import { upload } from '@vercel/blob/client'
 
 const Admin = ({ data, setData, sections, slug, revert }) => {
   const html = document.documentElement
@@ -128,44 +129,44 @@ const Admin = ({ data, setData, sections, slug, revert }) => {
   const save = async (e) => {
     e.preventDefault()
     setSaving(true)
-    const uploads = []
-    for (const section of data.sections) {
-      for (const column of section.columns || []) {
-        if (column.image?.file) {
-          uploads.push({
-            file: column.image.file,
-            destination: column.image,
-          })
-        }
-        if (column.video?.file) {
-          uploads.push({
-            file: column.video.file,
-            destination: column.video,
-          })
+    try {
+      const uploads = []
+      for (const section of data.sections) {
+        for (const column of section.columns || []) {
+          if (column.image?.file) {
+            uploads.push({
+              file: column.image.file,
+              destination: column.image,
+            })
+          }
+          if (column.video?.file) {
+            uploads.push({
+              file: column.video.file,
+              destination: column.video,
+            })
+          }
         }
       }
+      for (const { file, destination } of uploads) {
+        const blob = await upload(file.name, file, {
+          access: 'public',
+          handleUploadUrl: '/api/upload',
+        })
+        destination.url = blob.url
+        delete destination.file
+      }
+      await fetch('/api/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ data, slug, table: 'work' }),
+      })
+    } catch (error) {
+      alert('Error saving data: ' + error.message)
+    } finally {
+      setSaving(false)
     }
-    for (const { file, destination } of uploads) {
-      const filename = file.name
-      const res = await fetch(
-        `/api/upload?filename=${encodeURIComponent(filename)}`,
-        {
-          method: 'POST',
-          body: file,
-        }
-      )
-      const blob = await res.json()
-      destination.url = blob.url
-      delete destination.file
-    }
-    await fetch('/api/save', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ data, slug, table: 'work' }),
-    })
-    setSaving(false)
   }
 
   const deploy = async (e) => {

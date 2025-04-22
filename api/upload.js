@@ -1,25 +1,37 @@
-import { config } from 'dotenv'
-config()
-import { put } from '@vercel/blob'
+import { handleUpload } from '@vercel/blob/client'
 
 export default async function handler(req, res) {
-  if (req.method === 'POST') {
-    try {
-      const { filename } = req.query
-      const contentType =
-        req.headers['content-type'] || 'application/octet-stream'
-      const blob = await put(filename, req, {
-        access: 'public',
-        addRandomSuffix: true,
-        contentType,
-      })
-      return res.status(200).json(blob)
-    } catch (err) {
-      return res.status(500).json({ error: err.message })
-    }
-  } else {
-    // Handle other HTTP methods
-    res.setHeader('Allow', ['POST'])
-    return res.status(405).json({ error: `Method ${req.method} Not Allowed` })
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' })
+  }
+
+  const body = req.body
+
+  try {
+    const jsonResponse = await handleUpload({
+      body,
+      request: req,
+      onBeforeGenerateToken: async () => {
+        return {
+          allowedContentTypes: [
+            'image/jpeg',
+            'image/png',
+            'image/gif',
+            'image/avif',
+            'image/webp',
+            'video/mp4',
+          ],
+          addRandomSuffix: true,
+          tokenPayload: JSON.stringify({}),
+        }
+      },
+      onUploadCompleted: async ({ blob, tokenPayload }) => {
+        console.log('blob upload completed', blob, tokenPayload)
+      },
+    })
+
+    res.status(200).json(jsonResponse)
+  } catch (error) {
+    res.status(400).json({ error: error.message })
   }
 }
