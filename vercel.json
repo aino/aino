@@ -20,6 +20,10 @@
       {
         "protocol": "https",
         "hostname": "aino.agency"
+      },
+      {
+        "protocol": "https",
+        "hostname": "jptmwnfp3yiatrcf.public.blob.vercel-storage.com"
       }
     ]
   },
