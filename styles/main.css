@@ -188,121 +188,23 @@ html.light {
     mix-blend-mode: multiply;
   }
 }
-/*
-section {
-  margin-bottom: calc(var(--line));
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--char2);
-  > div {
-    &.span-2 {
-      grid-column: span 2;
-      p {
-        padding-right: calc(var(--col) / 2 * var(--char));
-      }
-    }
-    &.span-3 {
-      grid-column: span 3;
-    }
-    &.span-4 {
-      grid-column: span 4;
-    }
-    &.sticky > div {
-      position: sticky;
-      top: calc(var(--line) * 3);
-    }
-    &.border {
-      padding-top: calc(var(--line) * 0.2);
-      border-top: 1px solid rgba(var(--black-rgb), 0.15);
-      > .big:first-child,
-      .text > .big:first-child {
-        margin-top: calc(var(--line) * -0.25);
-      }
-      margin-top: var(--line);
-    }
-  }
-  &.space {
-    padding: calc(var(--line) * 2) 0;
-  }
-  &.spacebig {
-    padding: calc(var(--line) * 3) 0;
-  }
-  &.first {
-    margin-top: calc(var(--line) * 6);
-  }
-  &.free {
-    display: flex;
-    gap: var(--char2);
-    margin-left: calc(var(--char2) * -1);
-    width: 100vw;
-    &.between {
-      justify-content: space-between;
-    }
-    &.center {
-      justify-content: center;
-    }
-    &.end {
-      justify-content: flex-end;
-    }
-    &.margin {
-      width: calc(100vw - var(--char2) * 2);
-      margin-left: 0;
-    }
-    > div {
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-    .middle {
-      justify-content: center;
-    }
-    .bottom {
-      justify-content: flex-end;
-    }
-    .w1 {
-      width: var(--s1);
-    }
-    .w2 {
-      width: var(--s2);
-    }
-    .w3 {
-      width: var(--s3);
-    }
-    .w4 {
-      width: var(--s4);
-    }
-    .w5 {
-      width: var(--s5);
-    }
-    .w6 {
-      width: var(--s6);
-    }
-    .w7 {
-      width: var(--s7);
-    }
-    .w8 {
-      width: var(--s8);
-    }
-    .w9 {
-      width: var(--s9);
-    }
-    .w10 {
-      width: var(--s10);
-    }
-    .w11 {
-      width: var(--s11);
-    }
-    .w12 {
-      width: var(--s12);
-    }
-    .full {
-      justify-content: center;
-      width: calc(100vw - var(--char2) * 2);
+
+body.login .container {
+  padding: calc(var(--line) * 6) 0;
+  margin-left: var(--fullcol);
+  input {
+    padding: 0;
+    background: none;
+    font-family: inherit;
+    font-size: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    border: none;
+    &:focus {
+      outline: none;
     }
   }
 }
-
-*/
 
 .sidegallery {
   margin-left: calc(var(--char2) * -1);

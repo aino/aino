@@ -80,6 +80,7 @@ export const themes = {
 const themesKeys = Object.keys(themes)
 
 const defaultValue = {
+  session: null,
   mode: 'image',
   appearance: window.matchMedia('(prefers-color-scheme: dark)').matches
     ? 'dark'
@@ -95,6 +96,16 @@ const store = state(defaultValue)
 store.subscribe((value) => {
   if (typeof localStorage !== 'undefined') {
     localStorage.setItem('site', JSON.stringify(value))
+  }
+})
+
+fetch('/api/session').then((response) => {
+  if (response.ok) {
+    response.json().then((session) => {
+      store.assign({ session })
+    })
+  } else {
+    store.assign({ session: null })
   }
 })
 

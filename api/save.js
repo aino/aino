@@ -14,7 +14,7 @@ export const config = {
 export default async function handler(req, res) {
   if (req.method === 'POST') {
     try {
-      const { data, slug } = req.body
+      const { data, slug, table } = req.body
       await sql`INSERT INTO work (slug, data) VALUES (${slug}, ${data}) ON CONFLICT (slug) DO UPDATE SET data = ${data}`
       return res.status(200).json({ success: true })
     } catch (err) {

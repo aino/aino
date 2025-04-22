@@ -2,7 +2,7 @@
   padding: calc(var(--line) * 4) var(--char2) 0;
   cursor: default;
   .shortcuts {
-    margin-top: calc(var(--line) * -2);
+    margin-top: calc(var(--line) * -3);
     z-index: 2;
     position: relative;
   }
@@ -11,7 +11,7 @@
   }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1400px) {
   #footer .shortcuts {
     margin-top: calc(var(--line) * -2);
   }

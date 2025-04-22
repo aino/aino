@@ -9,7 +9,6 @@ export const path = /^\/work\/[^/]+$/
 export default async function showcase(app) {
   const destroyers = []
   const [sectionsNode] = q('.sections', app)
-  let data = getRenderData(sectionsNode)
   const slug = sectionsNode.dataset.slug
 
   let imageDestroyers = []
@@ -40,43 +39,47 @@ export default async function showcase(app) {
     })
   )
 
-  const { default: columns } = await import('partials/columns')
-  const render = () => {
-    let html = ''
-    for (const section of data.sections) {
-      html += `<section class="section ${section.className}"${
-        section.margin
-          ? ' style="margin-top:calc(var(--line) * ' + section.margin + ')"'
-          : ''
-      }>${columns(section.columns)}</section>`
+  if (site.value.session) {
+    const { default: columns } = await import('partials/columns')
+    const response = await fetch(`/api/get?table=work&slug=${slug}`)
+    let data = await response.json()
+    const render = () => {
+      let html = ''
+      for (const section of data.sections) {
+        html += `<section class="section ${section.className}"${
+          section.margin
+            ? ' style="margin-top:calc(var(--line) * ' + section.margin + ')"'
+            : ''
+        }>${columns(section.columns)}</section>`
+      }
+      sectionsNode.innerHTML = html
+      parseMedia()
     }
-    sectionsNode.innerHTML = html
-    parseMedia()
-  }
-  render()
-
-  const admin = create('div', { id: 'admin' })
-  sectionsNode.before(admin)
-
-  const setData = (newData) => {
-    data = newData
     render()
-  }
 
-  Promise.all([
-    import('react'),
-    import('react-dom/client'),
-    import('../admin/App'),
-  ]).then(([React, ReactDOM, AdminApp]) => {
-    ReactDOM.createRoot(admin).render(
-      React.createElement(AdminApp.default, {
-        data,
-        setData,
-        sections: sectionsNode,
-        slug,
-      })
-    )
-  })
+    const admin = create('div', { id: 'admin' })
+    sectionsNode.before(admin)
+
+    const setData = (newData) => {
+      data = newData
+      render()
+    }
+
+    Promise.all([
+      import('react'),
+      import('react-dom/client'),
+      import('../admin/App'),
+    ]).then(([React, ReactDOM, AdminApp]) => {
+      ReactDOM.createRoot(admin).render(
+        React.createElement(AdminApp.default, {
+          data,
+          setData,
+          sections: sectionsNode,
+          slug,
+        })
+      )
+    })
+  }
 
   for (const d of q('.link, .services li, .technologies li', app)) {
     fadein(d)

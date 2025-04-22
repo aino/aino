@@ -163,7 +163,7 @@ const Admin = ({ data, setData, sections, slug, revert }) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ data, slug }),
+      body: JSON.stringify({ data, slug, table: 'work' }),
     })
     setSaving(false)
   }
