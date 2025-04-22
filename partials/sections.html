@@ -1,5 +1,7 @@
-<div class="sections" {{data data}}>
+<div class="sections" {{data data}} data-slug="{{slug}}">
   {{# each data.sections}}
-  <section class="section {{ className }}">{{> columns columns }}</section>
+  <section class="section {{ className }}" {{#if margin}}style="margin-top:calc(var(--line) * {{ margin }})"{{/if}}>
+    {{> columns columns }}
+  </section>
   {{/ each }}
 </div>

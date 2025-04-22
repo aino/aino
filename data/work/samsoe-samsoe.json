@@ -1,77 +1,66 @@
 {
-  "name": "Samsøe Samsøe",
-  "slug": "samsoe-samsoe",
-  "link": {
-    "url": "https://www.samsoe.com/",
-    "title": "samsoe.com"
-  },
-  "services": [
-    "E-commerce",
-    "Architecture",
-    "Design",
-    "Development",
-    "Replatforming"
-  ],
-  "technologies": [
-    "Centra",
-    "Storyblok",
-    "Aino Commerce Engine",
-    "Voyado Elevate",
-    "Voyado Engage"
-  ],
-  "reel": {
-    "url": "/assets/work/samsoe-samsoe/samsoe.mp4",
-    "width": 1920,
-    "height": 1080
-  },
+  "year": "2023",
+  "name": "Samsoe Samsoe",
   "sections": [
     {
-      "className": "space",
-      "columns": []
+      "className": "0",
+      "columns": [
+        {
+          "className": "link",
+          "html": "<a href=\"https://samsoe.com\" target=\"_blank\">samsoe.com</a>"
+        },
+        {
+          "className": "",
+          "html": "<ul>\n<li>E-commerce</li>\n<li>Architecture</li>\n<li>Design</li>\n<li>Development</li>\n<li>Replatforming</li></ul>"
+        },
+        {
+          "className": "",
+          "html": "<ul>\n<li>Centra</li>\n<li>Storyblok</li>\n<li>Aino Commerce Engine</li>\n<li>Voyado Elevate</li>\n<li>Voyado Engage</li>\n</ul>"
+        },
+        {
+          "className": "watch",
+          "html": "    <a href=\"/assets/work/samsoe-samsoe/samsoe.mp4\"\n      target=\"_blank\"\n      class=\"reel\"\n      data-preventclick=\"true\"\n      title=\"{{data.name}} reel\"\n      ><span>▶︎</span> Play reel</a>"
+        }
+      ]
+    },
+    {
+      "className": "",
+      "columns": [
+        {
+          "className": "middle",
+          "image": null,
+          "video": {
+            "url": "https://jptmwnfp3yiatrcf.public.blob.vercel-storage.com/sandisk2-FWbEJBEc3j8qp6dmgdhQcdm1Ry1J7y.mp4",
+            "width": 1920,
+            "height": 1080
+          },
+          "left": "0",
+          "top": "0",
+          "width": "4",
+          "html": ""
+        }
+      ],
+      "margin": "3"
     },
     {
       "className": "between",
       "columns": [
         {
-          "width": "2",
-          "image": null,
-          "left": "0",
-          "html": "<div class=\"text\">\n<h2 class=\"big\">Nudie Jeans provides more than just jeans. With an emphasis on reuse and repair, Nudie Jeans Co. delivers and upholds a tradition that is loyal to the history and properties of the fabric.</h2>\n</div>",
-          "video": null
+          "className": ""
         },
         {
-          "className": "middle",
-          "width": "4",
-          "left": "0",
+          "className": "",
           "image": {
-            "url": "/assets/work/samsoe-samsoe/samsoe_4.png",
-            "width": 1920,
-            "height": 1080
+            "url": "https://jptmwnfp3yiatrcf.public.blob.vercel-storage.com/IMG_3891-5l9xDAuRfWGNGgtqIfT3s89SWqcvIs.jpg",
+            "width": 3024,
+            "height": 4032
           },
-          "top": "0"
+          "video": null,
+          "width": "5",
+          "left": "0"
         }
-      ]
-    },
-    {
-      "className": "space",
-      "columns": []
-    },
-    {
-      "className": "center",
-      "columns": [
-        {
-          "width": "7",
-          "image": {
-            "url": "/assets/work/samsoe-samsoe/samsoe_5.png",
-            "width": 1920,
-            "height": 1080
-          }
-        }
-      ]
-    },
-    {
-      "className": "space",
-      "columns": []
+      ],
+      "margin": "4"
     },
     {
       "className": "between",
@@ -92,9 +81,12 @@
             "width": 1920,
             "height": 1080
           },
-          "left": "1"
+          "left": "0",
+          "className": "bottom"
         }
-      ]
+      ],
+      "margin": "3"
     }
-  ]
+  ],
+  "slug": "samsoe-samsoe"
 }

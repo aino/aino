@@ -18,6 +18,8 @@
   --white-rgb: var(--light);
   --black: rgb(var(--black-rgb));
   --white: rgb(var(--white-rgb));
+  --pure-white: rgb(255, 255, 255);
+  --pure-black: rgb(0, 0, 0);
   --char: calc(var(--ch) * 1px);
   --char2: calc(var(--char) * 2);
   --fullcol: calc((var(--col) + 2) * var(--char));
@@ -41,6 +43,8 @@
 }
 
 html.dark {
+  --pure-white: rgb(0, 0, 0);
+  --pure-black: rgb(255, 255, 255);
   --black-rgb: var(--light);
   --white-rgb: var(--dark);
 }
@@ -117,6 +121,11 @@ hr {
     opacity: 1;
     width: 100%;
   }
+}
+
+.image + .html,
+.video + .html {
+  margin-top: var(--line);
 }
 
 .image,
@@ -537,6 +546,7 @@ html.grid {
     height: 100vh;
     z-index: 100;
     pointer-events: none;
+    opacity: 0.5;
     background-image: repeating-linear-gradient(
         to right,
         rgba(255, 0, 0, 0.3),
@@ -548,28 +558,28 @@ html.grid {
         to right,
 
         transparent var(--char2),
-        white calc(var(--char2)),
+        var(--black) calc(var(--char2)),
         transparent calc(var(--char2) + 1px),
         transparent var(--step),
-        white var(--step),
+        var(--black) var(--step),
         transparent calc(var(--step) * 1 + 1px),
         transparent calc(var(--char2) + var(--step) * 1),
-        white calc(var(--char2) + var(--step) * 1),
+        var(--black) calc(var(--char2) + var(--step) * 1),
         transparent calc(var(--char2) + var(--step) * 1 + 1px),
         transparent calc(var(--step) * 2),
-        white calc(var(--step) * 2),
+        var(--black) calc(var(--step) * 2),
         transparent calc(var(--step) * 2 + 1px),
         transparent calc(var(--char2) + var(--step) * 2),
-        white calc(var(--char2) + var(--step) * 2),
+        var(--black) calc(var(--char2) + var(--step) * 2),
         transparent calc(var(--char2) + var(--step) * 2 + 1px),
         transparent calc(var(--step) * 3),
-        white calc(var(--step) * 3),
+        var(--black) calc(var(--step) * 3),
         transparent calc(var(--step) * 3 + 1px),
         transparent calc(var(--char2) + var(--step) * 3),
-        white calc(var(--char2) + var(--step) * 3),
+        var(--black) calc(var(--char2) + var(--step) * 3),
         transparent calc(var(--char2) + var(--step) * 3 + 1px),
         transparent calc(var(--step) * 4),
-        white calc(var(--step) * 4),
+        var(--black) calc(var(--step) * 4),
         transparent calc(var(--step) * 4 + 1px)
       );
   }

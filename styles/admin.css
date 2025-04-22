@@ -4,6 +4,7 @@
     top: calc(var(--line) * 6);
     left: calc(var(--char2) * 2);
     z-index: 1000;
+    color: rgb(245, 245, 240);
     background: #000;
     padding: 3px;
     width: calc(var(--char) * 28);
@@ -18,14 +19,18 @@
       > div {
         display: flex;
         gap: 0.5rem;
-        margin-top: -0.2rem;
+        margin-top: -0.25rem;
       }
       button {
-        background: #222;
+        background: #141414;
         line-height: 1;
-        padding: 0.3rem 0.4rem;
-        color: #888;
+        padding: 0.4rem 0.5rem;
+        color: #666;
         border-radius: var(--border-radius);
+        &:hover {
+          color: #fff;
+          background: #222;
+        }
       }
     }
   }
@@ -33,7 +38,8 @@
     width: 100%;
     text-align: left;
     border-radius: 0;
-    padding: 1.2rem 0.5rem 1rem;
+    padding: 1rem;
+    height: auto;
     background: #181818;
     display: flex;
     gap: 0.5rem;
@@ -66,8 +72,9 @@
       bottom: 0;
       left: 0;
       border-radius: 0;
-      padding: 1.2rem 1rem 1rem;
+      padding: 1rem 1rem;
       background: #181818;
+      height: auto;
     }
   }
   .controls {
@@ -85,6 +92,10 @@
       border-radius: var(--border-radius);
       width: 100%;
       height: auto;
+      cursor: text;
+      &.placeholder {
+        color: #777;
+      }
 
       &:focus {
         outline: none;
@@ -102,7 +113,9 @@
       position: relative;
       display: block;
       margin-bottom: 0.5rem;
-
+      &.placeholder {
+        color: #777;
+      }
       div {
         white-space: nowrap;
         cursor: pointer;
@@ -208,7 +221,12 @@
       }
     }
     .sectionclass {
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .minis {
+      margin-bottom: 0.5rem;
+      display: flex;
+      gap: 0.5rem;
     }
     .column {
       padding-bottom: 0.5rem;
@@ -220,17 +238,12 @@
       &.open > .content {
         display: block;
         padding-bottom: 0.5rem;
-        .minis {
-          margin-bottom: 0.5rem;
-          display: flex;
-          gap: 0.5rem;
-        }
       }
     }
   }
 }
 
 html.grid #admin .container .maintitle button.grid {
-  color: #fff;
-  background: #444;
+  color: #000;
+  background: #555;
 }

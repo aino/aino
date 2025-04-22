@@ -1,5 +1,5 @@
 .section {
-  margin-bottom: calc(var(--line));
+  padding-bottom: calc(var(--line));
   display: flex;
   gap: var(--char2);
   &.space {
@@ -60,4 +60,8 @@
       width: var(--s8);
     }
   }
+}
+
+html.grid .section.outline {
+  outline: 1px dashed rgba(var(--black-rgb), 0.3);
 }

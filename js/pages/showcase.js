@@ -10,6 +10,7 @@ export default async function showcase(app) {
   const destroyers = []
   const [sectionsNode] = q('.sections', app)
   let data = getRenderData(sectionsNode)
+  const slug = sectionsNode.dataset.slug
 
   let imageDestroyers = []
   const resetImages = () => {
@@ -43,9 +44,11 @@ export default async function showcase(app) {
   const render = () => {
     let html = ''
     for (const section of data.sections) {
-      html += `<section class="section ${section.className}">${columns(
-        section.columns
-      )}</section>`
+      html += `<section class="section ${section.className}"${
+        section.margin
+          ? ' style="margin-top:calc(var(--line) * ' + section.margin + ')"'
+          : ''
+      }>${columns(section.columns)}</section>`
     }
     sectionsNode.innerHTML = html
     parseMedia()
@@ -70,6 +73,7 @@ export default async function showcase(app) {
         data,
         setData,
         sections: sectionsNode,
+        slug,
       })
     )
   })

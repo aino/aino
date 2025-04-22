@@ -40,7 +40,12 @@ export default function Section({ section, onChange, toggleOpen, open }) {
   }
 
   useEffect(() => {
-    if (open && classInput.current && classInput.current.value === '') {
+    if (
+      open &&
+      classInput.current &&
+      classInput.current.value === '' &&
+      !section.columns?.length
+    ) {
       classInput.current.focus()
       classInput.current.select()
     }
@@ -66,26 +71,50 @@ export default function Section({ section, onChange, toggleOpen, open }) {
         </button>
       </div>
       <div className="content">
-        <label>
-          <input
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.target.blur()
-              }
-            }}
-            ref={classInput}
-            className="sectionclass"
-            type="text"
-            placeholder="class"
-            value={section.className}
-            onChange={(e) => {
-              onChange({
-                ...section,
-                className: e.target.value,
-              })
-            }}
-          />
-        </label>
+        <div className="minis">
+          <label>
+            <input
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.target.blur()
+                }
+              }}
+              ref={classInput}
+              className="sectionclass"
+              type="text"
+              placeholder="class"
+              value={section.className}
+              onChange={(e) => {
+                onChange({
+                  ...section,
+                  className: e.target.value,
+                })
+              }}
+            />
+          </label>
+          <label className="mini" style={{ minWidth: '4rem' }}>
+            <span>M</span>
+            <input
+              onFocus={(e) => e.target.select()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.target.blur()
+                }
+              }}
+              type="number"
+              min={-10}
+              max={10}
+              defaultValue="0"
+              value={section.margin}
+              onChange={(e) => {
+                onChange({
+                  ...section,
+                  margin: e.target.value,
+                })
+              }}
+            />
+          </label>
+        </div>
         {section.columns?.map((column, i) => {
           return (
             <div

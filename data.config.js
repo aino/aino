@@ -1,18 +1,31 @@
+import { config } from 'dotenv'
+config()
 import { readFileSync, readdirSync } from 'fs'
 import { join } from 'path'
-import work from './data/work.js'
+import { neon } from '@neondatabase/serverless'
+
+const sql = neon(process.env.DATABASE_URL)
 
 export const locales = ['en']
 
-export const globalData = async () => {
+export const prefetch = async () => {
+  const work = await sql`SELECT * FROM work`
   return {
     work,
   }
 }
 
+let work = null
+
+export const globalData = async (prefetched) => {
+  return {
+    work: prefetched.work.map(({ slug, data }) => ({ ...data, slug })),
+  }
+}
+
 const positions = readJsonFilesSync('data/positions')
 
-const workSlugs = work.map((w) => w.slug)
+const workSlugs = []
 
 function readJsonFilesSync(directory) {
   return readdirSync(directory) // Get all file names in the directory
@@ -58,26 +71,21 @@ export const routes = {
     },
   },
   '/work/[slug]': {
-    slugs: () => {
-      return workSlugs.filter(Boolean)
+    slugs: (prefetched) => {
+      return prefetched.work.map((w) => w.slug)
     },
-    data: async ({ lang, slug }) => {
-      let data = null
-      const index = workSlugs.indexOf(slug)
-      const entry = work.find((w) => w.slug === slug)
-      const intro = entry?.intro
-      const year = entry?.year
-      try {
-        data = JSON.parse(readFileSync(`data/work/${slug}.json`, 'utf-8'))
-      } catch (error) {
-        console.error(`Failed to load file: work/${slug}.json`)
-      }
+    data: async ({ lang, slug, prefetched }) => {
+      const index = prefetched.work.findIndex((w) => w.slug === slug)
+      const results = await sql`SELECT * FROM work WHERE slug = ${slug}`
+      const { data } = results[0]
+      const year = data?.year
+      const name = data?.name
       return {
         data,
         slug,
         index,
-        intro,
-        title: data?.name,
+        title: name,
+        name,
         year,
       }
     },

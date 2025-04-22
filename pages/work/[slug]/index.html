@@ -4,40 +4,9 @@
   style="padding-top: calc(var(--line) * {{index}})"
 >
   <div class="position col">{{ zeropad index }}</div>
-  <div class="title col"><h1>{{data.name}}</h1></div>
+  <div class="title col"><h1>{{name}}</h1></div>
   <div class="col"></div>
   <div class="year col">{{year}}</div>
-</section>
-<section class="section meta">
-  <div class="col link">
-    <a href="{{ data.link.url }}" target="_blank">{{ data.link.title }}</a>
-  </div>
-  <div class="col services">
-    <ul>
-      {{#each data.services }}
-      <li>{{ this }}</li>
-      {{/each }}
-    </ul>
-  </div>
-  <div class="col technologies">
-    <ul>
-      {{#each data.technologies }}
-      <li>{{ this }}</li>
-      {{/each }}
-    </ul>
-  </div>
-  <div class="col watch">
-    {{#if data.reel}}
-    <a
-      href="{{data.reel.url}}"
-      target="_blank"
-      class="reel"
-      data-preventclick="true"
-      title="{{data.name}} reel"
-      ><span>▶︎</span> Play reel</a
-    >
-    {{/if}}
-  </div>
 </section>
 
 {{> sections}}

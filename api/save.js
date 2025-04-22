@@ -1,5 +1,8 @@
-import fs from 'fs'
-import path from 'path'
+import { config as env } from 'dotenv'
+env()
+import { neon } from '@neondatabase/serverless'
+
+const sql = neon(process.env.DATABASE_URL)
 
 // Custom handler to work with Vercel
 export const config = {
@@ -9,19 +12,11 @@ export const config = {
 }
 
 export default async function handler(req, res) {
-  req.on('data', () => {})
   if (req.method === 'POST') {
     try {
-      const data = req.body
-      console.log(data)
-      const filePath = path.join(
-        process.cwd(),
-        'data',
-        'work',
-        `${data.slug}.json`
-      )
-      fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
-      return res.status(200).json({ success: true, filePath })
+      const { data, slug } = req.body
+      await sql`INSERT INTO work (slug, data) VALUES (${slug}, ${data}) ON CONFLICT (slug) DO UPDATE SET data = ${data}`
+      return res.status(200).json({ success: true })
     } catch (err) {
       return res.status(500).json({ success: false, message: err.message })
     }

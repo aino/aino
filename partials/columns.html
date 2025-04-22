@@ -1,9 +1,7 @@
 {{#each this }} {{#column className=className top=top left=left width=width}}
 {{#if image }}
 <div class="image"><img {{ img image }} /></div>
-{{/if}} {{#if html}}
-<div class="html">{{{ html }}}</div>
-{{/if }} {{#if video }}
+{{/if}}{{#if video }}
 <div class="video">
   <video
     autoplay
@@ -17,4 +15,6 @@
     <source type="video/mp4" src="{{video.url}}" />
   </video>
 </div>
+{{/if }} {{#if html}}
+<div class="html">{{{ html }}}</div>
 {{/if }} {{/column }} {{/each}}

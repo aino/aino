@@ -1,6 +1,5 @@
 body.case {
   .worktitle {
-    margin-bottom: var(--line);
     > div {
       display: block;
       &:last-child {
@@ -12,11 +11,6 @@ body.case {
     a span {
       animation: blinker 0.2s linear infinite;
     }
-  }
-  .link,
-  .technologies li,
-  .services li {
-    opacity: 0;
   }
 
   .videoframe {
@@ -83,9 +77,6 @@ body.case {
   }
   .casefooter {
     padding-top: calc(var(--line) * 3);
-  }
-  .meta {
-    margin-bottom: calc(var(--line) * 2);
   }
 }
 

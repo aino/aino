@@ -1,6 +1,12 @@
 import React, { useState, useMemo, useRef } from 'react'
 import { stripHtml } from '../utils/string'
 
+function cleanHTML(dirtyHTML) {
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(dirtyHTML, 'text/html')
+  return doc.body.innerHTML.trim() // cleaned and normalized
+}
+
 export default function Column({ column, onChange }) {
   const [open, setData] = useState(false)
   const file = useRef(null)
@@ -16,12 +22,24 @@ export default function Column({ column, onChange }) {
 
       if (file.type.startsWith('video/')) {
         // Video upload
-        onChange({
-          ...column,
-          video: {
-            url: dataURL,
-          },
-        })
+        const video = document.createElement('video')
+        video.preload = 'metadata'
+
+        video.onloadedmetadata = function () {
+          const width = video.videoWidth
+          const height = video.videoHeight
+          onChange({
+            ...column,
+            video: {
+              file,
+              url: dataURL,
+              width,
+              height,
+            },
+            image: null,
+          })
+        }
+        video.src = dataURL
       } else if (file.type.startsWith('image/')) {
         // Image upload
         const img = new Image()
@@ -30,10 +48,12 @@ export default function Column({ column, onChange }) {
           onChange({
             ...column,
             image: {
+              file,
               url,
               width,
               height,
             },
+            video: null,
           })
         }
         img.src = dataURL
@@ -47,7 +67,7 @@ export default function Column({ column, onChange }) {
 
   const fileName = useMemo(() => {
     const name = column.image || column.video
-    if (!name) return 'Click to upload'
+    if (!name) return 'image or video'
     return name.url.slice(0, 17).toLowerCase() + '...'
   }, [column.image, column.video])
 
@@ -55,29 +75,8 @@ export default function Column({ column, onChange }) {
     if (column.html) {
       return stripHtml(column.html).slice(0, 17) + '...'
     }
-    return 'Click to add html'
+    return 'html'
   })
-
-  if (edit) {
-    return (
-      <div className="texteditor">
-        <textarea
-          autoFocus
-          onChange={(e) => {
-            const value = e.target.value
-            onChange({
-              ...column,
-              html: value,
-            })
-          }}
-          defaultValue={column.html}
-        ></textarea>
-        <button onClick={() => setEdit(false)}>
-          <span>Done</span>
-        </button>
-      </div>
-    )
-  }
 
   return (
     <div className={['column', open ? 'open' : ''].join(' ')}>
@@ -100,7 +99,73 @@ export default function Column({ column, onChange }) {
         </button>
       </div>
       <div className="content">
-        <label className="file">
+        <div className="minis">
+          <label className="mini">
+            <span>W</span>
+            <input
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.target.blur()
+                }
+              }}
+              onFocus={(e) => e.target.select()}
+              type="number"
+              min={1}
+              max={8}
+              value={column.width}
+              onChange={(e) => {
+                onChange({
+                  ...column,
+                  width: e.target.value,
+                })
+              }}
+            />
+          </label>
+          <label className="mini">
+            <span>X</span>
+            <input
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.target.blur()
+                }
+              }}
+              onFocus={(e) => e.target.select()}
+              type="number"
+              value={column.left}
+              onChange={(e) => {
+                onChange({
+                  ...column,
+                  left: e.target.value,
+                })
+              }}
+            />
+          </label>
+          <label className="mini">
+            <span>Y</span>
+            <input
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.target.blur()
+                }
+              }}
+              onFocus={(e) => e.target.select()}
+              type="number"
+              value={column.top}
+              onChange={(e) => {
+                onChange({
+                  ...column,
+                  top: e.target.value,
+                })
+              }}
+            />
+          </label>
+        </div>
+        <label
+          className={[
+            'file',
+            !(column.image || column.video) ? 'placeholder' : '',
+          ].join(' ')}
+        >
           <div>{fileName}</div>
           <input type="file" ref={file} value="" onChange={onFileUpload} />
           {column.image || column.video ? (
@@ -120,55 +185,13 @@ export default function Column({ column, onChange }) {
             </button>
           ) : null}
         </label>
-        <button className="edit" onClick={() => setEdit(true)}>
+        <button
+          className={['edit', !column.html ? 'placeholder' : ''].join(' ')}
+          onClick={() => setEdit(true)}
+        >
           {text}
         </button>
-        <div className="minis">
-          <label className="mini">
-            <span>W</span>
-            <input
-              onFocus={(e) => e.target.select()}
-              type="number"
-              min={1}
-              max={8}
-              value={column.width}
-              onChange={(e) => {
-                onChange({
-                  ...column,
-                  width: e.target.value,
-                })
-              }}
-            />
-          </label>
-          <label className="mini">
-            <span>X</span>
-            <input
-              onFocus={(e) => e.target.select()}
-              type="number"
-              value={column.left}
-              onChange={(e) => {
-                onChange({
-                  ...column,
-                  left: e.target.value,
-                })
-              }}
-            />
-          </label>
-          <label className="mini">
-            <span>Y</span>
-            <input
-              onFocus={(e) => e.target.select()}
-              type="number"
-              value={column.top}
-              onChange={(e) => {
-                onChange({
-                  ...column,
-                  top: e.target.value,
-                })
-              }}
-            />
-          </label>
-        </div>
+
         <label>
           <input
             placeholder="class"
@@ -188,6 +211,24 @@ export default function Column({ column, onChange }) {
           />
         </label>
       </div>
+      {edit ? (
+        <div className="texteditor">
+          <textarea
+            autoFocus
+            onChange={(e) => {
+              const value = e.target.value
+              onChange({
+                ...column,
+                html: cleanHTML(value),
+              })
+            }}
+            defaultValue={column.html}
+          ></textarea>
+          <button onClick={() => setEdit(false)}>
+            <span>Done</span>
+          </button>
+        </div>
+      ) : null}
     </div>
   )
 }

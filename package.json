@@ -31,7 +31,10 @@
     "vite-plugin-minify": "^2.0.1"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.0",
+    "@vercel/blob": "^1.0.0",
     "dateformat": "^5.0.3",
+    "dotenv": "^16.5.0",
     "embla-carousel": "^8.5.2",
     "embla-carousel-auto-scroll": "^8.5.2",
     "lottie-web": "^5.12.2",

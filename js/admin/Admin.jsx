@@ -1,12 +1,13 @@
 import React, { useRef, useState, useEffect } from 'react'
 import Section from './Section.jsx'
 
-const Admin = ({ data, setData, sections, slug }) => {
+const Admin = ({ data, setData, sections, slug, revert }) => {
   const html = document.documentElement
   const [position, setPosition] = useState({
     x: localStorage.getItem('admin-x') || 100,
     y: localStorage.getItem('admin-y') || 100,
   }) // initial position
+  const [saving, setSaving] = useState(false)
   const [draggingAdmin, setDraggingAdmin] = useState(false)
   const [dragIndex, setDragIndex] = useState(null)
   const offset = useRef({ x: 0, y: 0 })
@@ -41,12 +42,12 @@ const Admin = ({ data, setData, sections, slug }) => {
     const onMouseOver = (e) => {
       const target = e.target.closest('section')
       if (!target) return
-      target.style.outline = '1px dashed #aaa'
+      target.classList.add('outline')
     }
     const onMouseOut = (e) => {
       const target = e.target.closest('section')
       if (!target) return
-      target.style.outline = 'none'
+      target.classList.remove('outline')
     }
 
     sections.addEventListener('click', onClick)
@@ -124,15 +125,47 @@ const Admin = ({ data, setData, sections, slug }) => {
     setData({ ...data, sections: updated })
   }
 
-  const save = (e) => {
+  const save = async (e) => {
     e.preventDefault()
-    fetch('/api/save', {
+    setSaving(true)
+    const uploads = []
+    for (const section of data.sections) {
+      for (const column of section.columns || []) {
+        if (column.image?.file) {
+          uploads.push({
+            file: column.image.file,
+            destination: column.image,
+          })
+        }
+        if (column.video?.file) {
+          uploads.push({
+            file: column.video.file,
+            destination: column.video,
+          })
+        }
+      }
+    }
+    for (const { file, destination } of uploads) {
+      const filename = file.name
+      const res = await fetch(
+        `/api/upload?filename=${encodeURIComponent(filename)}`,
+        {
+          method: 'POST',
+          body: file,
+        }
+      )
+      const blob = await res.json()
+      destination.url = blob.url
+      delete destination.file
+    }
+    await fetch('/api/save', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify({ data, slug }),
     })
+    setSaving(false)
   }
 
   return (
@@ -146,15 +179,32 @@ const Admin = ({ data, setData, sections, slug }) => {
       }}
     >
       <h2 className="maintitle" onMouseDown={startDrag}>
-        <span>Admin</span>
+        <span>{saving ? 'Saving...' : 'Admin'}</span>
         <div>
-          <button className="ghost grid" onClick={() => setGrid(!grid)}>
+          <button
+            className="ghost grid"
+            title="Show grid"
+            onClick={() => setGrid(!grid)}
+          >
             G
           </button>
-          <button className="ghost grsaveid" onClick={save}>
+          <button
+            className="ghost revert"
+            title="Revert"
+            onClick={() => {
+              confirm('Revert?') && revert()
+            }}
+          >
+            R
+          </button>
+          <button className="ghost save" title="Save" onClick={save}>
             S
           </button>
-          <button className="ghost open" onClick={() => setControls(!controls)}>
+          <button
+            className="ghost open"
+            title="Toggle"
+            onClick={() => setControls(!controls)}
+          >
             {controls ? '–' : '+'}
           </button>
         </div>

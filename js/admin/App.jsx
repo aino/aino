@@ -1,5 +1,6 @@
 import React from 'react'
 import Admin from './Admin.jsx'
+import { clone } from '../utils/object.js'
 
 const clean = (data) => {
   data.sections = data.sections.filter(Boolean).map((section) => {
@@ -13,12 +14,18 @@ const clean = (data) => {
 
 const App = ({ data, setData, sections, slug }) => {
   const [internal, setInternal] = React.useState(data)
+  const originalData = React.useRef(clone(data))
   React.useEffect(() => {
     setInternal(data)
   }, [data])
+  const revert = () => {
+    setInternal(originalData.current)
+    setData(originalData.current)
+  }
   return (
     <Admin
       data={internal}
+      revert={revert}
       setData={(newData) => {
         setInternal(clean(newData))
         setData(clean(newData))
