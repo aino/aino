@@ -1,7 +1,7 @@
 <ul class="worktable">
   {{# each work }}
   <li data-index="{{@index}}">
-    {{#if slug}}
+    {{#if sections.length }}
     <a href="/work/{{slug}}" class="line">
     {{else}}
     <div class="line inactive">

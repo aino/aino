@@ -168,6 +168,17 @@ const Admin = ({ data, setData, sections, slug, revert }) => {
     setSaving(false)
   }
 
+  const deploy = async (e) => {
+    if (confirm('Deploy? (takes about 1 minute)')) {
+      await fetch(
+        'https://api.vercel.com/v1/integrations/deploy/prj_EOe92vX7WcH6G4sK0y7WZfzTC75K/XuHEn5Vb6S',
+        {
+          method: 'POST',
+        }
+      )
+    }
+  }
+
   return (
     <div
       className={['container', controls ? 'show' : ''].join(' ')}
@@ -199,6 +210,9 @@ const Admin = ({ data, setData, sections, slug, revert }) => {
           </button>
           <button className="ghost save" title="Save" onClick={save}>
             S
+          </button>
+          <button className="ghost deploy" title="Deploy" onClick={deploy}>
+            D
           </button>
           <button
             className="ghost open"

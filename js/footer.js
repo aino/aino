@@ -24,8 +24,9 @@ export default async function footer() {
     }, 200)
   }
   tick()
-  site.subscribe((newValue) => {
-    if (newValue.session) {
+  const render = (session) => {
+    loc.innerHTML = 'GBG/OSL'
+    if (session) {
       const btn = create('button', {
         innerHTML: '&nbsp;Logout',
         className: 'ghost',
@@ -41,11 +42,19 @@ export default async function footer() {
         }
       })
       loc.appendChild(btn)
-    } else {
-      loc.innerHTML = 'GBG/OSL'
+    }
+  }
+
+  console.log('subscribing to site')
+  site.subscribe((newValue, oldValue) => {
+    if (newValue.session !== oldValue.session) {
+      render(newValue.session)
     }
   })
+
+  render(site.value.session)
   destroyers.push(clearTimeout(timer.current))
+
   return () => {
     destroyers.forEach((destroy) => destroy())
   }

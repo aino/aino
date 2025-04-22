@@ -9,23 +9,20 @@ const sql = neon(process.env.DATABASE_URL)
 export const locales = ['en']
 
 export const prefetch = async () => {
-  const work = await sql`SELECT * FROM work`
+  const work = await sql`SELECT * FROM work ORDER BY "order" DESC`
   return {
     work,
   }
 }
 
-let work = null
-
-export const globalData = async (prefetched) => {
+export const globalData = async () => {
+  const work = await sql`SELECT * FROM work ORDER BY "order" DESC`
   return {
-    work: prefetched.work.map(({ slug, data }) => ({ ...data, slug })),
+    work: work.map(({ slug, data }) => ({ ...data, slug })),
   }
 }
 
 const positions = readJsonFilesSync('data/positions')
-
-const workSlugs = []
 
 function readJsonFilesSync(directory) {
   return readdirSync(directory) // Get all file names in the directory
