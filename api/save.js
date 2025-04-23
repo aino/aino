@@ -1,6 +1,7 @@
 import { config as env } from 'dotenv'
 env()
 import { neon } from '@neondatabase/serverless'
+import { getSession } from './session.js'
 
 const sql = neon(process.env.DATABASE_URL)
 
@@ -12,6 +13,9 @@ export const config = {
 }
 
 export default async function handler(req, res) {
+  if (!getSession(req)) {
+    return res.status(401).json({ error: 'Unauthorized' })
+  }
   if (req.method === 'POST') {
     try {
       const { data, slug, table } = req.body

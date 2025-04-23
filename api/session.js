@@ -16,18 +16,17 @@ function parseCookies(req) {
   )
 }
 
-export default function handler(req, res) {
+export const getSession = (req) => {
   const cookies = parseCookies(req)
   const token = cookies.token
-
-  if (!token) {
-    return res.status(200).json(null)
-  }
-
+  if (!token) return null
   try {
-    const session = jwt.verify(token, JWT_SECRET)
-    res.status(200).json(session)
-  } catch {
-    res.status(200).json(null)
+    return jwt.verify(token, JWT_SECRET)
+  } catch (err) {
+    return null
   }
+}
+
+export default function handler(req, res) {
+  res.status(200).json(getSession(req))
 }

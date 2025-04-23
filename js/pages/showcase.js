@@ -1,4 +1,4 @@
-import { q, create, observe, getRenderData } from '../utils/dom'
+import { q, create, observe, getRenderData, update } from '../utils/dom'
 import fadein from '@/js/fadein'
 import pixelate from '../pixelate'
 import ascii from '../ascii'
@@ -52,7 +52,10 @@ export default async function showcase(app) {
             : ''
         }>${columns(section.columns)}</section>`
       }
-      sectionsNode.innerHTML = html
+      const clone = sectionsNode.cloneNode(true)
+      clone.innerHTML = html
+      update(sectionsNode, clone)
+      // ectionsNode.innerHTML = html
       for (const fadeNode of q('.fadein', sectionsNode)) {
         fadeNode.style.opacity = 1
       }
