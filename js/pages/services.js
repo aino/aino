@@ -2,10 +2,11 @@ import grid from '../grid/grid3'
 import { lerp } from '../utils/animate'
 import { create, q } from '../utils/dom'
 import { grayRamp } from '../ascii'
+import admin from '../admin/admin'
 
 export const path = /^\/services$/
 
-export default function about(app) {
+export default async function about(app) {
   const [gridNode] = q('.grid', app)
   const { listen, createPoint, destroy, render, applyPhysics, dimensions } =
     grid(gridNode)
@@ -15,8 +16,8 @@ export default function about(app) {
     const t = (timestamp % duration) / duration
     return (1 - Math.cos(2 * Math.PI * t)) / 2
   }
-  let fadeIndex = 1
-  listen('frame', ({ timestamp, delta }) => {
+  destroyers.push(await admin(app, 'pages'))
+  listen('frame', ({ timestamp }) => {
     let animation = []
     for (let r = 0; r < dimensions.rows; r++) {
       for (let i = 0; i < 2; i++) {

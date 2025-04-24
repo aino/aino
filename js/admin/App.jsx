@@ -12,7 +12,7 @@ const clean = (data) => {
   return data
 }
 
-const App = ({ data, setData, sections, slug }) => {
+const App = ({ data, setData, sections, slug, table }) => {
   const [internal, setInternal] = React.useState(data)
   const originalData = React.useRef(clone(data))
   React.useEffect(() => {
@@ -32,6 +32,7 @@ const App = ({ data, setData, sections, slug }) => {
       }}
       sections={sections}
       slug={slug}
+      table={table}
     />
   )
 }

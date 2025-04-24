@@ -1,9 +1,10 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, useMemo } from 'react'
 import Section from './Section.jsx'
 import { upload } from '@vercel/blob/client'
 import Input from './Input'
+import { clone } from '../utils/object.js'
 
-const Admin = ({ data, setData, sections, slug, revert }) => {
+const Admin = ({ data, setData, sections, slug, revert, table }) => {
   const html = document.documentElement
   const [position, setPosition] = useState({
     x: localStorage.getItem('admin-x') || 100,
@@ -161,7 +162,7 @@ const Admin = ({ data, setData, sections, slug, revert }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ data, slug, table: 'work' }),
+        body: JSON.stringify({ data, slug, table }),
       })
     } catch (error) {
       alert('Error saving data: ' + error.message)
@@ -181,6 +182,12 @@ const Admin = ({ data, setData, sections, slug, revert }) => {
     }
   }
 
+  const fieldInputs = useMemo(() => {
+    const d = clone(data)
+    delete d.sections
+    return Object.keys(d)
+  }, [data])
+
   return (
     <div
       className={['container', controls ? 'show' : ''].join(' ')}
@@ -195,7 +202,7 @@ const Admin = ({ data, setData, sections, slug, revert }) => {
         <span>{saving ? 'Saving...' : 'Admin'}</span>
         <div>
           <button
-            className="ghost grid"
+            className="ghost grid-btn"
             title="Show grid"
             onClick={() => setGrid(!grid)}
           >
@@ -226,35 +233,28 @@ const Admin = ({ data, setData, sections, slug, revert }) => {
         </div>
       </h2>
       <div className="controls">
-        <div className="inputs">
-          <label>
-            <Input
-              value={data.name}
-              onChange={(e) => {
-                setData({
-                  ...data,
-                  name: e.target.value,
-                })
-              }}
-              className="name"
-              type="text"
-              placeholder="Name"
-            />
-            <Input
-              value={data.year}
-              onChange={(e) => {
-                setData({
-                  ...data,
-                  year: e.target.value,
-                })
-              }}
-              className="year"
-              type="text"
-              maxLength={4}
-              placeholder="Year"
-            />
-          </label>
-        </div>
+        {fieldInputs.length ? (
+          <div className="inputs">
+            {fieldInputs.map((field) => {
+              return (
+                <label key={field}>
+                  <Input
+                    value={data[field]}
+                    onChange={(e) => {
+                      setData({
+                        ...data,
+                        [field]: e.target.value,
+                      })
+                    }}
+                    className={field}
+                    type="text"
+                    placeholder={field}
+                  />
+                </label>
+              )
+            })}
+          </div>
+        ) : null}
         {data.sections.map((section, i) => {
           return (
             <div

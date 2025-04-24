@@ -19,7 +19,16 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     try {
       const { data, slug, table } = req.body
-      await sql`INSERT INTO work (slug, data) VALUES (${slug}, ${data}) ON CONFLICT (slug) DO UPDATE SET data = ${data}`
+      if (!data || !slug || !table) {
+        return res.status(400).json({ error: 'Missing data, slug or table' })
+      }
+      if (table === 'work') {
+        await sql`INSERT INTO work (slug, data) VALUES (${slug}, ${data}) ON CONFLICT (slug) DO UPDATE SET data = ${data}`
+      } else if (table === 'pages') {
+        await sql`INSERT INTO pages (slug, data) VALUES (${slug}, ${data}) ON CONFLICT (slug) DO UPDATE SET data = ${data}`
+      } else {
+        return res.status(400).json({ error: 'Invalid table' })
+      }
       return res.status(200).json({ success: true })
     } catch (err) {
       return res.status(500).json({ success: false, message: err.message })

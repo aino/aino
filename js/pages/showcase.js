@@ -3,102 +3,21 @@ import fadein from '@/js/fadein'
 import pixelate from '../pixelate'
 import ascii from '../ascii'
 import site from '@/js/stores/site'
+import admin from '../admin/admin'
 
 export const path = /^\/work\/[^/]+$/
 
 export default async function showcase(app) {
   const destroyers = []
-  const [sectionsNode] = q('.sections', app)
   const [yearNode] = q('.year', app)
   const [titleNode] = q('.title', app)
-  const slug = sectionsNode.dataset.slug
-
-  let imageDestroyers = []
-  const resetImages = () => {
-    for (const destroy of imageDestroyers) {
-      destroy()
-    }
-    imageDestroyers = []
-  }
-
-  const parseMedia = () => {
-    const mode = site.value.mode
-    resetImages()
-    for (const source of q('img, video', app)) {
-      if (mode === 'text') {
-        imageDestroyers.push(ascii(source))
-      } else if (mode === 'pixel') {
-        imageDestroyers.push(pixelate(source))
-      }
-    }
-  }
 
   destroyers.push(
-    site.subscribe((newValue, oldValue) => {
-      if (newValue.mode !== oldValue.mode) {
-        parseMedia()
-      }
+    await admin(app, 'work', (data) => {
+      titleNode.textContent = data.title
+      yearNode.textContent = data.year
     })
   )
-
-  if (site.value.session) {
-    const { default: columns } = await import('partials/columns')
-    const response = await fetch(`/api/get?table=work&slug=${slug}`)
-    let data = await response.json()
-    const render = () => {
-      let html = ''
-      for (const section of data.sections) {
-        html += `<section class="section ${section.className}"${
-          section.margin
-            ? ' style="margin-top:calc(var(--line) * ' + section.margin + ')"'
-            : ''
-        }>${columns(section.columns)}</section>`
-      }
-      const clone = sectionsNode.cloneNode(true)
-      clone.innerHTML = html
-      update(sectionsNode, clone)
-      yearNode.innerText = data.year
-      titleNode.innerText = data.name
-      // ectionsNode.innerHTML = html
-      for (const fadeNode of q('.fadein', sectionsNode)) {
-        fadeNode.style.opacity = 1
-      }
-      parseMedia()
-    }
-    render()
-
-    const admin = create('div', { id: 'admin' })
-    sectionsNode.before(admin)
-
-    const setData = (newData) => {
-      data = newData
-      render()
-    }
-
-    Promise.all([
-      import('react'),
-      import('react-dom/client'),
-      import('../admin/App'),
-    ]).then(([React, ReactDOM, AdminApp]) => {
-      ReactDOM.createRoot(admin).render(
-        React.createElement(AdminApp.default, {
-          data,
-          setData,
-          sections: sectionsNode,
-          slug,
-        })
-      )
-    })
-  }
-
-  site.subscribe((newValue, oldValue) => {
-    if (!newValue.session && oldValue.session) {
-      const admin = document.getElementById('admin')
-      if (admin) {
-        admin.remove()
-      }
-    }
-  })
 
   for (const d of q('.link, .services li, .technologies li', app)) {
     fadein(d)
@@ -180,7 +99,7 @@ export default async function showcase(app) {
   }
 
   return () => {
-    for (const destroy of [...destroyers, ...imageDestroyers]) {
+    for (const destroy of destroyers) {
       destroy()
     }
   }

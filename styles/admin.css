@@ -249,7 +249,7 @@
   }
 }
 
-html.grid #admin .container .maintitle button.grid {
+html.grid #admin .container .maintitle button.grid-btn {
   color: #000;
   background: #555;
 }
