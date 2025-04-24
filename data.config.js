@@ -112,6 +112,15 @@ export const routes = {
     },
   },
   '/contact': {
-    title: 'Contact',
+    data: async ({ lang }) => {
+      const slug = 'contact'
+      const results = await sql`SELECT * FROM pages WHERE slug = ${slug}`
+      const { data } = results[0]
+      return {
+        title: 'Contact',
+        data,
+        slug,
+      }
+    },
   },
 }
