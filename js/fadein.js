@@ -72,7 +72,6 @@ function loop() {
   })
 
   if (!nodeAnimations.size) {
-    console.log('DONE')
     onComplete()
   } else {
     requestAnimationFrame(loop)

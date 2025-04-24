@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react'
 import Section from './Section.jsx'
 import { upload } from '@vercel/blob/client'
+import Input from './Input'
 
 const Admin = ({ data, setData, sections, slug, revert }) => {
   const html = document.documentElement
@@ -225,6 +226,35 @@ const Admin = ({ data, setData, sections, slug, revert }) => {
         </div>
       </h2>
       <div className="controls">
+        <div className="inputs">
+          <label>
+            <Input
+              value={data.name}
+              onChange={(e) => {
+                setData({
+                  ...data,
+                  name: e.target.value,
+                })
+              }}
+              className="name"
+              type="text"
+              placeholder="Name"
+            />
+            <Input
+              value={data.year}
+              onChange={(e) => {
+                setData({
+                  ...data,
+                  year: e.target.value,
+                })
+              }}
+              className="year"
+              type="text"
+              maxLength={4}
+              placeholder="Year"
+            />
+          </label>
+        </div>
         {data.sections.map((section, i) => {
           return (
             <div

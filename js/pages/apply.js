@@ -1,5 +1,3 @@
-import { create, getCssVariable, q, resize } from '../utils/dom'
-
 export const path = /^\/careers\/apply$/
 
 export default async function apply(app) {

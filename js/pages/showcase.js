@@ -9,6 +9,8 @@ export const path = /^\/work\/[^/]+$/
 export default async function showcase(app) {
   const destroyers = []
   const [sectionsNode] = q('.sections', app)
+  const [yearNode] = q('.year', app)
+  const [titleNode] = q('.title', app)
   const slug = sectionsNode.dataset.slug
 
   let imageDestroyers = []
@@ -55,6 +57,8 @@ export default async function showcase(app) {
       const clone = sectionsNode.cloneNode(true)
       clone.innerHTML = html
       update(sectionsNode, clone)
+      yearNode.innerText = data.year
+      titleNode.innerText = data.name
       // ectionsNode.innerHTML = html
       for (const fadeNode of q('.fadein', sectionsNode)) {
         fadeNode.style.opacity = 1
@@ -86,6 +90,15 @@ export default async function showcase(app) {
       )
     })
   }
+
+  site.subscribe((newValue, oldValue) => {
+    if (!newValue.session && oldValue.session) {
+      const admin = document.getElementById('admin')
+      if (admin) {
+        admin.remove()
+      }
+    }
+  })
 
   for (const d of q('.link, .services li, .technologies li', app)) {
     fadein(d)

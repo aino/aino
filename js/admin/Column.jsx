@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useRef } from 'react'
 import { stripHtml } from '../utils/string'
+import Input from './Input'
 
 function cleanHTML(dirtyHTML) {
   const parser = new DOMParser()
@@ -102,16 +103,11 @@ export default function Column({ column, onChange }) {
         <div className="minis">
           <label className="mini">
             <span>W</span>
-            <input
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.target.blur()
-                }
-              }}
-              onFocus={(e) => e.target.select()}
+            <Input
               type="number"
               min={1}
               max={8}
+              select={true}
               value={column.width}
               onChange={(e) => {
                 onChange({
@@ -123,15 +119,10 @@ export default function Column({ column, onChange }) {
           </label>
           <label className="mini">
             <span>X</span>
-            <input
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.target.blur()
-                }
-              }}
-              onFocus={(e) => e.target.select()}
+            <Input
               type="number"
               value={column.left}
+              select={true}
               onChange={(e) => {
                 onChange({
                   ...column,
@@ -142,15 +133,10 @@ export default function Column({ column, onChange }) {
           </label>
           <label className="mini">
             <span>Y</span>
-            <input
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.target.blur()
-                }
-              }}
-              onFocus={(e) => e.target.select()}
+            <Input
               type="number"
               value={column.top}
+              select={true}
               onChange={(e) => {
                 onChange({
                   ...column,
@@ -193,15 +179,10 @@ export default function Column({ column, onChange }) {
         </button>
 
         <label>
-          <input
+          <Input
             placeholder="class"
             type="text"
             value={column.className}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.target.blur()
-              }
-            }}
             onChange={(e) => {
               onChange({
                 ...column,

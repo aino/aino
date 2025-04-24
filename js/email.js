@@ -34,7 +34,6 @@ export default async function email(link) {
     }
     for (const closer of q('button.close, .backdrop', container)) {
       closer.addEventListener('click', (e) => {
-        console.log(e.target, e.currentTarget)
         e.preventDefault()
         container.remove()
       })

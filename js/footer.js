@@ -45,7 +45,6 @@ export default async function footer() {
     }
   }
 
-  console.log('subscribing to site')
   site.subscribe((newValue, oldValue) => {
     if (newValue.session !== oldValue.session) {
       render(newValue.session)

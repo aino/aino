@@ -57,7 +57,6 @@ export default function sidegallery(app) {
       prevVelocity = velocity
     })
     instances.push(embla)
-    console.log(embla)
   })
   return () => {
     for (const instance of instances) {

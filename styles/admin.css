@@ -82,6 +82,12 @@
     background: #222;
     border-radius: var(--border-radius);
     position: relative;
+    .inputs {
+      padding: 1rem 1rem 0.5rem;
+      input {
+        margin-bottom: 0.5rem;
+      }
+    }
     input,
     label.file,
     button.edit {

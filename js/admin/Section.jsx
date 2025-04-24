@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import Column from './Column'
+import Input from './Input'
 
 export default function Section({ section, onChange, toggleOpen, open }) {
   const [dragColumnIndex, setDragColumnIndex] = useState(null)
@@ -15,7 +16,6 @@ export default function Section({ section, onChange, toggleOpen, open }) {
       e.preventDefault()
       return
     }
-
     e.stopPropagation()
     setDragColumnIndex(index)
   }
@@ -73,12 +73,7 @@ export default function Section({ section, onChange, toggleOpen, open }) {
       <div className="content">
         <div className="minis">
           <label>
-            <input
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.target.blur()
-                }
-              }}
+            <Input
               ref={classInput}
               className="sectionclass"
               type="text"
@@ -94,17 +89,11 @@ export default function Section({ section, onChange, toggleOpen, open }) {
           </label>
           <label className="mini" style={{ minWidth: '4rem' }}>
             <span>M</span>
-            <input
-              onFocus={(e) => e.target.select()}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.target.blur()
-                }
-              }}
+            <Input
               type="number"
               min={-10}
               max={10}
-              defaultValue="0"
+              select={true}
               value={section.margin}
               onChange={(e) => {
                 onChange({
