@@ -54,6 +54,18 @@ export const routes = {
       }
     },
   },
+  '/about': {
+    data: async ({ lang }) => {
+      const slug = 'about'
+      const results = await sql`SELECT * FROM pages WHERE slug = ${slug}`
+      const { data } = results[0]
+      return {
+        title: 'About',
+        data,
+        slug,
+      }
+    },
+  },
   '/careers': {
     data: async ({ lang }) => {
       return {
@@ -101,15 +113,5 @@ export const routes = {
   },
   '/contact': {
     title: 'Contact',
-  },
-  '/about': {
-    data: async ({ lang }) => {
-      return {
-        title: {
-          en: 'About',
-          sv: 'Om oss',
-        }[lang],
-      }
-    },
   },
 }
