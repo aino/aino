@@ -10,13 +10,10 @@ export default async function position(app) {
   const [sectionsNode] = q('.sections', app)
   const slug = sectionsNode.dataset.slug
 
-  destroyers.push(
-    await admin(app, 'positions', (data) => {
-      titleNode.textContent = data.title
-      subtitleNode.textContent = data.subtitle
-      const [applyNode] = q('.apply', app)
-      if (applyNode) {
-        const html = `
+  const render = () => {
+    const [applyNode] = q('.apply', app)
+    if (applyNode) {
+      const html = `
         <div>
           <div>
             <br />
@@ -45,10 +42,18 @@ export default async function position(app) {
               </li>
             </ul>
           </div></div>`
-        applyNode.innerHTML = html
-      }
+      applyNode.innerHTML = html
+    }
+  }
+
+  destroyers.push(
+    await admin(app, 'positions', (data) => {
+      titleNode.textContent = data.title
+      subtitleNode.textContent = data.subtitle
+      render()
     })
   )
+  render()
   return () => {
     destroyers.forEach((destroy) => destroy())
   }
