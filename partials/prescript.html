@@ -1,5 +1,9 @@
 <script type="text/javascript">
   ;((html) => {
+    const site = localStorage.getItem('site')
+    if (site?.appearance === 'dark') {
+      html.classList.add('dark')
+    }
     html.classList.add('js')
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
     const setVariables = () => {
