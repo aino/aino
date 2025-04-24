@@ -73,7 +73,12 @@ html.grid .section.outline {
   .section {
     flex-direction: column;
     gap: var(--line);
-    margin-top: 0 !important;
+    &:not(.first) {
+      margin-top: 0 !important;
+    }
+    &.first {
+      margin-top: calc(var(--line) * 4);
+    }
     .col {
       width: 100% !important;
       left: 0 !important;
