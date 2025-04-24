@@ -6,7 +6,6 @@ import site from '@/js/stores/site'
 import ascii from '../ascii'
 import email from '../email'
 import pixelate from '../pixelate'
-import sidegallery from '../sidegallery'
 
 export const path = /.*/
 
@@ -93,8 +92,6 @@ export default async function global(app) {
   q('a[href^="mailto:"]').forEach(async (a) => {
     destroyers.push(await email(a))
   })
-
-  destroyers.push(sidegallery(app))
 
   for (const copy of q('a.copy')) {
     const onClick = (e) => {
