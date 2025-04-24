@@ -19,8 +19,9 @@ export default async function handler(req, res) {
       if (table === 'work') {
         results = await sql`SELECT * FROM work WHERE slug = ${slug}`
       } else if (table === 'pages') {
-        console.log('getting page', slug)
         results = await sql`SELECT * FROM pages WHERE slug = ${slug}`
+      } else if (table === 'positions') {
+        results = await sql`SELECT * FROM positions WHERE slug = ${slug}`
       } else {
         return res.status(400).json({ error: 'Invalid table' })
       }

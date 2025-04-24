@@ -59,6 +59,9 @@
     &.w8 {
       width: var(--s8);
     }
+    p {
+      padding-right: var(--char2);
+    }
   }
 }
 

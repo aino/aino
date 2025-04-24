@@ -1,98 +1,11 @@
 {{#> layout bodyclass="careers" }}
-<section class="first">
-  <div></div>
-  <div class="text mega">
-    <h1>
-      {{ position.title }}{{#if position.subtitle}}<br /><span class="light"
-        >{{ position.subtitle }}</span{{/if}}
-      >
-    </h1>
+<section class="section first">
+  <div class="col"></div>
+  <div class="col text">
+    <h1 class="mega"><span class="data-title">{{data.title}}</span><br><span class="light data-subtitle">{{data.subtitle}}</span></h1>
   </div>
 </section>
-<section class="space"></section>
-<section>
-  <div class="sticky">
-    <div>
-      <div>
-        <div>{{#if position.hiring}}
-        <span class="blink-fast">●</span> Hiring Now
-        {{else}}
-        Open Application
-        {{/if}}
-      </div>
-      </div>
-      <div>
-        <br />
-        <a class="button outline" href="/careers/apply">Apply for this position</a>
-      </div>
-      <br />
-      <div>
-        <h2>Share</h2>
-        <br />
-        <ul>
-          <li>
-            <a
-              data-preventclick="true"
-              data-message="→ Link copied"
-              href="/careers/{{position.slug}}"
-              class="copy"
-              >→ Copy link</a
-            >
-          </li>
-          <li>
-            <a
-              href="https://www.linkedin.com/sharing/share-offsite/?url=https://aino.agency/careers/{{position.slug}}"
-              target="_blank"
-              >→ Share on LinkedIn</a
-            >
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-  <div class="text">
-    <h3>Welcome to Aino</h3>
-    {{{position.description}}}
-  </div>
-  <div class="text">
-    {{#if position.responsibilities}}
-    <h3>Main responsibilities</h3>
-    <ul>
-      {{#each position.responsibilities}}
-      <li>{{this}}</li>
-      {{/each}}
-    </ul>
-    {{/if}}
-    <h3>Position details</h3>
-    <ul>
-      {{#each position.details}}
-      <li>{{this}}</li>
-      {{/each}}
-    </ul>
-    {{#if position.mustHave}}
-    <h3>You should know this</h3>
-    <ul>
-      {{#each position.mustHave}}
-      <li>{{this}}</li>
-      {{/each}}
-    </ul>
-    {{/if}}
-    {{#if position.niceToHave}}
-    <h3>Nice if you also know this</h3>
-    <ul>
-      {{#each position.niceToHave}}
-      <li>{{this}}</li>
-      {{/each}}
-    </ul>
-    {{/if}}
-  </div>
-  <div>
-    <div class="image">
-      <img {{ img url=position.image.url width=position.image.width height=position.image.height }} />
-    </div>
-  </div>
-</section>
-<section class="space"></section>
+{{> sections }}
 {{> careers}}
 <section class="space">
   <div></div>

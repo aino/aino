@@ -26,6 +26,8 @@ export default async function handler(req, res) {
         await sql`INSERT INTO work (slug, data) VALUES (${slug}, ${data}) ON CONFLICT (slug) DO UPDATE SET data = ${data}`
       } else if (table === 'pages') {
         await sql`INSERT INTO pages (slug, data) VALUES (${slug}, ${data}) ON CONFLICT (slug) DO UPDATE SET data = ${data}`
+      } else if (table === 'positions') {
+        await sql`INSERT INTO positions (slug, data) VALUES (${slug}, ${data}) ON CONFLICT (slug) DO UPDATE SET data = ${data}`
       } else {
         return res.status(400).json({ error: 'Invalid table' })
       }

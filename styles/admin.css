@@ -84,11 +84,13 @@
     position: relative;
     .inputs {
       padding: 1rem 1rem 0.5rem;
-      input {
+      input[type='text'],
+      input[type='number'] {
         margin-bottom: 0.5rem;
       }
     }
-    input,
+    input[type='text'],
+    input[type='number'],
     label.file,
     button.edit {
       appearance: none;
@@ -114,6 +116,11 @@
     }
     button.edit {
       margin-bottom: 0.5rem;
+    }
+    label.checkbox {
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
     }
     label.file {
       position: relative;

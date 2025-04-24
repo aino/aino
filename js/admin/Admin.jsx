@@ -185,7 +185,15 @@ const Admin = ({ data, setData, sections, slug, revert, table }) => {
   const fieldInputs = useMemo(() => {
     const d = clone(data)
     delete d.sections
-    return Object.keys(d)
+    const order = ['title', 'subtitle', 'location', 'active']
+    return Object.keys(d).sort((a, b) => {
+      const aIndex = order.indexOf(a)
+      const bIndex = order.indexOf(b)
+      if (aIndex === -1 && bIndex === -1) return 0
+      if (aIndex === -1) return 1
+      if (bIndex === -1) return -1
+      return aIndex - bIndex
+    })
   }, [data])
 
   return (
@@ -236,6 +244,23 @@ const Admin = ({ data, setData, sections, slug, revert, table }) => {
         {fieldInputs.length ? (
           <div className="inputs">
             {fieldInputs.map((field) => {
+              if (typeof data[field] === 'boolean') {
+                return (
+                  <label key={field} className="checkbox">
+                    <input
+                      type="checkbox"
+                      checked={data[field]}
+                      onChange={(e) => {
+                        setData({
+                          ...data,
+                          [field]: e.target.checked,
+                        })
+                      }}
+                    />
+                    <span>{field}</span>
+                  </label>
+                )
+              }
               return (
                 <label key={field}>
                   <Input
