@@ -65,3 +65,22 @@
 html.grid .section.outline {
   outline: 1px dashed rgba(var(--black-rgb), 0.3);
 }
+
+@media (max-width: 768px) {
+  .section {
+    flex-direction: column;
+    gap: var(--line);
+    margin-top: 0 !important;
+    .col {
+      width: 100% !important;
+      left: 0 !important;
+      top: 0 !important;
+      &:empty {
+        display: none;
+      }
+    }
+    &.space {
+      padding: calc(var(--line) * 2) 0;
+    }
+  }
+}

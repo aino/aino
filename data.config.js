@@ -10,15 +10,20 @@ export const locales = ['en']
 
 export const prefetch = async () => {
   const work = await sql`SELECT * FROM work ORDER BY "order" DESC`
+  const positions = await sql`SELECT * FROM positions ORDER BY "order" DESC`
   return {
+    positions,
     work,
   }
 }
 
-export const globalData = async () => {
-  const work = await sql`SELECT * FROM work ORDER BY "order" DESC`
+export const globalData = async (prefetched) => {
   return {
-    work: work.map(({ slug, data }) => ({ ...data, slug })),
+    work: prefetched.work.map(({ slug, data }) => ({ ...data, slug })),
+    positions: prefetched.positions.map(({ slug, data }) => ({
+      ...data,
+      slug,
+    })),
   }
 }
 
@@ -67,20 +72,26 @@ export const routes = {
     },
   },
   '/careers': {
-    data: async ({ lang }) => {
+    data: async ({ prefetched }) => {
+      const slug = 'careers'
+      const results = await sql`SELECT * FROM pages WHERE slug = ${slug}`
+      const { data } = results[0]
       return {
-        positions,
+        data,
+        slug,
+        title: 'Careers',
       }
     },
   },
   '/careers/[slug]': {
-    slugs: () => positions.map((p) => p.slug),
-    data: async ({ slug }) => {
-      const position = positions.find((p) => p.slug === slug)
+    slugs: (prefetched) => prefetched.positions.map((p) => p.slug),
+    data: async ({ slug, prefetched }) => {
+      const results = await sql`SELECT * FROM positions WHERE slug = ${slug}`
+      const { data } = results[0]
       return {
-        positions,
-        position,
-        title: position?.title,
+        data,
+        slug,
+        title: data?.title,
       }
     },
   },

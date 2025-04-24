@@ -1,4 +1,10 @@
 {
   "eslint.format.enable": true,
-  "typescript.preferences.importModuleSpecifier": "non-relative"
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "files.associations": {
+    "*.html": "handlebars"
+  },
+  "[handlebars]": {
+    "editor.defaultFormatter": null
+  }
 }
