@@ -2,6 +2,11 @@ import React, { useState, useMemo, useRef } from 'react'
 import { stripHtml } from '../utils/string'
 import Input from './Input'
 
+import AceEditor from 'react-ace'
+import 'ace-builds/src-noconflict/mode-html'
+import 'ace-builds/src-noconflict/theme-monokai'
+import 'ace-builds/src-noconflict/ext-language_tools'
+
 function cleanHTML(dirtyHTML) {
   const parser = new DOMParser()
   const doc = parser.parseFromString(dirtyHTML, 'text/html')
@@ -194,6 +199,7 @@ export default function Column({ column, onChange }) {
       </div>
       {edit ? (
         <div className="texteditor">
+          {/*}
           <textarea
             autoFocus
             onChange={(e) => {
@@ -205,6 +211,35 @@ export default function Column({ column, onChange }) {
             }}
             defaultValue={column.html}
           ></textarea>
+          */}
+          <AceEditor
+            placeholder="HTML"
+            mode="html"
+            theme="monokai"
+            name="blah2"
+            fontSize={12}
+            lineHeight={16}
+            showPrintMargin={false}
+            showGutter={false}
+            highlightActiveLine={false}
+            wrapEnabled={true}
+            onChange={(value) => {
+              onChange({
+                ...column,
+                html: cleanHTML(value),
+              })
+            }}
+            value={column.html}
+            setOptions={{
+              enableBasicAutocompletion: true,
+              enableLiveAutocompletion: false,
+              enableSnippets: true,
+              enableMobileMenu: false,
+              showLineNumbers: false,
+              tabSize: 2,
+            }}
+          />
+
           <button onClick={() => setEdit(false)}>
             <span>Done</span>
           </button>

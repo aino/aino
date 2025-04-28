@@ -73,7 +73,7 @@ export default async function admin(app, table, onRender) {
       import('react'),
       import('react-dom/client'),
       import('./App'),
-    ]).then(([React, ReactDOM, AdminApp]) => {
+    ]).then(([React, ReactDOM, AdminApp, AceEditor, _]) => {
       ReactDOM.createRoot(admin).render(
         React.createElement(AdminApp.default, {
           data,

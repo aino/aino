@@ -7,18 +7,24 @@ import { clone } from '../utils/object.js'
 const Admin = ({ data, setData, sections, slug, revert, table }) => {
   const html = document.documentElement
   const [position, setPosition] = useState({
-    x: localStorage.getItem('admin-x') || 100,
-    y: localStorage.getItem('admin-y') || 100,
-  }) // initial position
+    x: parseInt(localStorage.getItem('admin-x')) || 100,
+    y: parseInt(localStorage.getItem('admin-y')) || 100,
+  })
+  const [width, setWidth] = useState(
+    parseInt(localStorage.getItem('admin-width')) || 300
+  )
   const [saving, setSaving] = useState(false)
   const [draggingAdmin, setDraggingAdmin] = useState(false)
-  const [dragIndex, setDragIndex] = useState(null)
   const offset = useRef({ x: 0, y: 0 })
   const adminRef = useRef(null)
   const mouseDownTargetRef = useRef(null)
   const [open, setOpen] = useState([])
   const [controls, setControls] = useState(true)
   const [grid, setGrid] = useState(localStorage.getItem('grid') === 'true')
+  const resizing = useRef(false)
+  const mode = useRef(null) // 'drag' or 'resize'
+  const [dragIndex, setDragIndex] = useState(null)
+
   const toggleOpen = (index, force) => {
     const nextOpen = [...open]
     const i = open.indexOf(index)
@@ -35,31 +41,35 @@ const Admin = ({ data, setData, sections, slug, revert, table }) => {
   }, [grid])
 
   useEffect(() => {
-    const onClick = (e) => {
-      const target = e.target.closest('section')
-      if (!target) return
-      const index = [...target.parentNode.children].indexOf(target)
-      setControls(true)
-      toggleOpen(index)
-    }
-    const onMouseOver = (e) => {
-      const target = e.target.closest('section')
-      if (!target) return
-      target.classList.add('outline')
-    }
-    const onMouseOut = (e) => {
-      const target = e.target.closest('section')
-      if (!target) return
-      target.classList.remove('outline')
-    }
-
     sections.addEventListener('click', onClick)
     sections.addEventListener('mouseover', onMouseOver)
     sections.addEventListener('mouseout', onMouseOut)
     return () => {
       sections.removeEventListener('click', onClick)
+      sections.removeEventListener('mouseover', onMouseOver)
+      sections.removeEventListener('mouseout', onMouseOut)
     }
   }, [])
+
+  const onClick = (e) => {
+    const target = e.target.closest('section')
+    if (!target) return
+    const index = [...target.parentNode.children].indexOf(target)
+    setControls(true)
+    toggleOpen(index)
+  }
+
+  const onMouseOver = (e) => {
+    const target = e.target.closest('section')
+    if (!target) return
+    target.classList.add('outline')
+  }
+
+  const onMouseOut = (e) => {
+    const target = e.target.closest('section')
+    if (!target) return
+    target.classList.remove('outline')
+  }
 
   useEffect(() => {
     localStorage.setItem('admin-x', position.x)
@@ -67,24 +77,38 @@ const Admin = ({ data, setData, sections, slug, revert, table }) => {
   }, [position])
 
   useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (!draggingAdmin) return
+    localStorage.setItem('admin-width', width)
+  }, [width])
 
-      const newX = e.clientX - offset.current.x
-      const newY = e.clientY - offset.current.y
-      const adminEl = adminRef.current
-      const { offsetWidth, offsetHeight } = adminEl
-      const maxX = window.innerWidth - offsetWidth
-      const maxY = window.innerHeight - offsetHeight
-      setPosition({
-        x: Math.max(0, Math.min(newX, maxX)),
-        y: Math.max(0, Math.min(newY, maxY)),
-      })
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (mode.current === 'drag') {
+        const newX = e.clientX - offset.current.x
+        const newY = e.clientY - offset.current.y
+        const adminEl = adminRef.current
+        const { offsetWidth, offsetHeight } = adminEl
+        const maxX = window.innerWidth - offsetWidth
+        const maxY = window.innerHeight - offsetHeight
+        setPosition({
+          x: Math.max(0, Math.min(newX, maxX)),
+          y: Math.max(0, Math.min(newY, maxY)),
+        })
+      } else if (mode.current === 'resize') {
+        const adminEl = adminRef.current
+        if (!adminEl) return
+        const rect = adminEl.getBoundingClientRect()
+        const newWidth = Math.max(200, e.clientX - rect.left)
+        setWidth(newWidth)
+      }
     }
 
     const handleMouseUp = () => {
-      setDraggingAdmin(false)
-      setDragIndex(null)
+      if (mode.current === 'drag') {
+        setDraggingAdmin(false)
+      } else if (mode.current === 'resize') {
+        resizing.current = false
+      }
+      mode.current = null
     }
 
     window.addEventListener('mousemove', handleMouseMove)
@@ -93,7 +117,7 @@ const Admin = ({ data, setData, sections, slug, revert, table }) => {
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [draggingAdmin])
+  }, [])
 
   const startDrag = (e) => {
     const rect = adminRef.current.getBoundingClientRect()
@@ -102,6 +126,7 @@ const Admin = ({ data, setData, sections, slug, revert, table }) => {
       y: e.clientY - rect.top,
     }
     setDraggingAdmin(true)
+    mode.current = 'drag'
   }
 
   // Section sorting
@@ -114,7 +139,6 @@ const Admin = ({ data, setData, sections, slug, revert, table }) => {
       e.preventDefault()
       return
     }
-
     e.stopPropagation()
     setDragIndex(index)
   }
@@ -136,16 +160,10 @@ const Admin = ({ data, setData, sections, slug, revert, table }) => {
       for (const section of data.sections) {
         for (const column of section.columns || []) {
           if (column.image?.file) {
-            uploads.push({
-              file: column.image.file,
-              destination: column.image,
-            })
+            uploads.push({ file: column.image.file, destination: column.image })
           }
           if (column.video?.file) {
-            uploads.push({
-              file: column.video.file,
-              destination: column.video,
-            })
+            uploads.push({ file: column.video.file, destination: column.video })
           }
         }
       }
@@ -204,6 +222,7 @@ const Admin = ({ data, setData, sections, slug, revert, table }) => {
         position: 'fixed',
         top: `${position.y}px`,
         left: `${position.x}px`,
+        width: `${width}px`,
       }}
     >
       <h2 className="maintitle" onMouseDown={startDrag}>
@@ -280,44 +299,39 @@ const Admin = ({ data, setData, sections, slug, revert, table }) => {
             })}
           </div>
         ) : null}
-        {data.sections.map((section, i) => {
-          return (
-            <div
-              key={i}
-              draggable
-              onMouseDown={(e) => {
-                mouseDownTargetRef.current = e.target
+        {data.sections.map((section, i) => (
+          <div
+            key={i}
+            draggable
+            onMouseDown={(e) => {
+              mouseDownTargetRef.current = e.target
+            }}
+            onDragStart={(e) => handleSectionDragStart(i, e)}
+            onDragEnter={() => handleSectionDragEnter(i)}
+            onDragOver={(e) => e.preventDefault()}
+            onDragEnd={() => setDragIndex(null)}
+            style={{
+              opacity: dragIndex === i ? 0.3 : 1,
+              cursor: 'move',
+            }}
+            className="sectioncontainer"
+          >
+            <Section
+              toggleOpen={() => toggleOpen(i)}
+              open={open.includes(i)}
+              section={section}
+              onChange={(newSection) => {
+                const newData = data.sections.map((s) =>
+                  s === section ? newSection : s
+                )
+                setData({
+                  ...data,
+                  sections: newData,
+                })
               }}
-              onDragStart={(e) => handleSectionDragStart(i, e)}
-              onDragEnter={() => handleSectionDragEnter(i)}
-              onDragOver={(e) => e.preventDefault()}
-              onDragEnd={() => setDragIndex(null)}
-              style={{
-                opacity: dragIndex === i ? 0.3 : 1,
-                cursor: 'move',
-              }}
-              className="sectioncontainer"
-            >
-              <Section
-                toggleOpen={() => toggleOpen(i)}
-                open={open.includes(i)}
-                section={section}
-                onChange={(newSection) => {
-                  const newData = data.sections.map((s) => {
-                    if (s === section) {
-                      return newSection
-                    }
-                    return s
-                  })
-                  setData({
-                    ...data,
-                    sections: newData,
-                  })
-                }}
-              />
-            </div>
-          )
-        })}
+            />
+          </div>
+        ))}
         <button
           className="addsection"
           onClick={() => {
@@ -339,6 +353,24 @@ const Admin = ({ data, setData, sections, slug, revert, table }) => {
           <span>Add Section</span>
         </button>
       </div>
+
+      {/* Resize handle */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          width: '10px',
+          height: '100%',
+          cursor: 'ew-resize',
+          zIndex: 10,
+        }}
+        onMouseDown={(e) => {
+          e.stopPropagation()
+          resizing.current = true
+          mode.current = 'resize'
+        }}
+      />
     </div>
   )
 }
