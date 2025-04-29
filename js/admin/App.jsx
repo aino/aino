@@ -1,6 +1,7 @@
 import React from 'react'
 import Admin from './Admin.jsx'
 import { clone } from '../utils/object.js'
+import AdminWrapper from './Wrapper.jsx'
 
 const clean = (data) => {
   data.sections = data.sections.filter(Boolean).map((section) => {
@@ -23,7 +24,7 @@ const App = ({ data, setData, sections, slug, table }) => {
     setData(originalData.current)
   }
   return (
-    <Admin
+    <AdminWrapper
       data={internal}
       revert={revert}
       setData={(newData) => {

@@ -1,12 +1,7 @@
-import { create, style, q } from '@/js/utils/dom'
-import fadeout from '@/js/fadeout'
-import fadein from '@/js/fadein'
+import { q } from '@/js/utils/dom'
 import { stopHoverChar } from '../hoverchar'
-import { smoothScroll } from '../utils/scroll'
-import site from '@/js/stores/site'
 import wait from '@/js/utils/wait'
-import animate, { lerp } from '../utils/animate'
-import { getCssVariable } from '../utils/dom'
+import { disableAdmin } from '../admin/admin'
 
 export const path = /^\/work$/
 
@@ -22,6 +17,7 @@ export default async function about(app) {
   }
   renderLines()
   const items = q('li', worktable)
+  destroyers.push(disableAdmin())
 
   for (let i = 0; i < items.length; i++) {
     const [a] = q('a', items[i])

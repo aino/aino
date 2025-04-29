@@ -84,8 +84,14 @@ export default function Column({ column, onChange }) {
     return 'html'
   })
 
+  const getWindow = () => window.adminPopoutWindow || window
+
   return (
-    <div className={['column', open ? 'open' : ''].join(' ')}>
+    <div
+      className={['column', open ? 'open' : '', edit ? 'coledit' : ''].join(
+        ' '
+      )}
+    >
       <div className="title">
         <button className="ghost" onClick={() => setData(!open)}>
           <span>›</span>
@@ -95,7 +101,7 @@ export default function Column({ column, onChange }) {
           title="Delete column"
           className="delete small ghost"
           onClick={(e) => {
-            if (window.confirm('Delete column?')) {
+            if (getWindow().confirm('Delete column?')) {
               e.stopPropagation()
               onChange(null)
             }
@@ -217,8 +223,8 @@ export default function Column({ column, onChange }) {
             mode="html"
             theme="monokai"
             name="blah2"
-            fontSize={12}
-            lineHeight={16}
+            fontSize={11}
+            lineHeight={14}
             showPrintMargin={false}
             showGutter={false}
             highlightActiveLine={false}
@@ -229,7 +235,7 @@ export default function Column({ column, onChange }) {
                 html: cleanHTML(value),
               })
             }}
-            value={column.html}
+            defaultValue={column.html}
             setOptions={{
               enableBasicAutocompletion: true,
               enableLiveAutocompletion: false,

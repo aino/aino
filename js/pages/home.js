@@ -7,18 +7,10 @@ import animate, { lerp } from '@/js/utils/animate'
 import loadimage from '@/js/utils/loadimage'
 import { grayRamp as asciiChars } from '@/js/ascii'
 import * as detect from '../utils/detect'
-import { fadeChar, interpolateChar } from '../grid/grid3'
-import {
-  inCirc,
-  inOutCubic,
-  inOutQuad,
-  inOutQuint,
-  inQuint,
-  linear,
-  outQuad,
-} from '../utils/easing'
+import { fadeChar } from '../grid/grid3'
+import { inOutCubic, inQuint, outQuad } from '../utils/easing'
 import { getCssVariable, id } from '../utils/dom'
-import hoverchar from '../hoverchar'
+import { disableAdmin } from '../admin/admin'
 
 export const path = /^\/$/
 
@@ -34,6 +26,8 @@ export default async function home(app) {
       timers.forEach((timer) => clearTimeout(timer))
     },
   ]
+
+  destroyers.push(disableAdmin())
 
   const {
     createPoint,

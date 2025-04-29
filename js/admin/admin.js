@@ -3,6 +3,19 @@ import { q, create, update } from '@/js/utils/dom'
 import ascii from '../ascii'
 import pixelate from '../pixelate'
 
+export const disableAdmin = () => {
+  if (window.adminPopoutWindow) {
+    window.adminPopoutWindow.document.documentElement.classList.add('disabled')
+  }
+  return () => {
+    if (window.adminPopoutWindow) {
+      window.adminPopoutWindow.document.documentElement.classList.remove(
+        'disabled'
+      )
+    }
+  }
+}
+
 export default async function admin(app, table, onRender) {
   const [sectionsNode] = q('.sections', app)
   if (!sectionsNode) {

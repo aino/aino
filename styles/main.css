@@ -279,9 +279,9 @@ html.js .fadein {
   font-family: abc, helvetica, sans-serif;
   text-transform: none;
   font-feature-settings: 'ss05';
-  font-size: calc(var(--font-size) * 1.3);
+  font-size: calc(var(--font-size) * 1.25);
   letter-spacing: 0;
-  line-height: calc(var(--line) * 1.3);
+  line-height: calc(var(--line) * 1.25);
   letter-spacing: -0.01em;
   .mono {
     font-size: var(--font-size);
@@ -343,7 +343,7 @@ hr + .big {
 
 .big h2 + p,
 h2.big + p {
-  margin-top: calc(var(--line) * 1.3);
+  margin-top: calc(var(--line) * 1.25);
 }
 
 body .light {
@@ -360,12 +360,12 @@ html.js .fadein {
   ul + h2,
   p + h3,
   ul + h3 {
-    margin-top: calc(var(--line) * 1.3);
+    margin-top: calc(var(--line) * 1.25);
   }
   h3 {
-    line-height: calc(var(--line) * 1.3);
+    line-height: calc(var(--line) * 1.25);
     transform: translateY(2px);
-    padding-bottom: calc(var(--line) * 1.3);
+    padding-bottom: calc(var(--line) * 1.25);
     &:first-child {
       margin-top: -2px;
     }

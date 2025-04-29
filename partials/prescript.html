@@ -11,22 +11,32 @@
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
     const setVariables = () => {
       const width = innerWidth
+      const tablet = width < 1025 && width > 768
       const mobile = width < 769
-      let ch = mobile ? 8 : 7.5
+      let ch = mobile ? 8 : tablet ? 7 : 7.3
       let cols = Math.round(width / ch)
       let col = 0
       let halfCol = 0
       const light = [245, 245, 240]
       const dark = [24, 24, 24]
-      if (!mobile) {
-        cols -= 18 // 2 gutter, 2 margin
-        // Snap down to multiple of 8
-        cols -= cols % 16
-        cols += 18
+      const calc = (newcols) => {
+        newcols -= 18 // 2 gutter, 2 margin
+        // Snap down to multiple
+        newcols -= newcols % 16
+        newcols += 18
         // Recalculate charWidth
-        ch = width / cols
+        ch = width / newcols
         halfCol = Math.ceil((width / ch - 18) / 8)
         col = halfCol * 2 + 2
+        cols = newcols
+      }
+      if (!mobile) {
+        calc(Math.round(width / ch))
+        console.log(ch)
+        if (ch > 7.8) {
+          ch = 7
+          calc(Math.round(width / ch))
+        }
       } else {
         cols -= 6
         cols -= cols % 2

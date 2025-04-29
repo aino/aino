@@ -14,7 +14,8 @@ export default async function showcase(app) {
 
   destroyers.push(
     await admin(app, 'work', (data) => {
-      titleNode.textContent = data.title
+      console.log(data, titleNode, yearNode)
+      titleNode.textContent = data.name
       yearNode.textContent = data.year
     })
   )

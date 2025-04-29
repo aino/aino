@@ -27,6 +27,9 @@
       cursor: move;
       display: flex;
       justify-content: space-between;
+      > span {
+        padding-right: 1rem;
+      }
       > div {
         display: flex;
         gap: 0.5rem;

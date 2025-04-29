@@ -4,7 +4,16 @@ import { upload } from '@vercel/blob/client'
 import Input from './Input'
 import { clone } from '../utils/object.js'
 
-const Admin = ({ data, setData, sections, slug, revert, table }) => {
+const Admin = ({
+  data,
+  setData,
+  sections,
+  slug,
+  revert,
+  table,
+  isPopup,
+  setPoppedOut,
+}) => {
   const html = document.documentElement
   const [position, setPosition] = useState({
     x: parseInt(localStorage.getItem('admin-x')) || 100,
@@ -81,6 +90,9 @@ const Admin = ({ data, setData, sections, slug, revert, table }) => {
   }, [width])
 
   useEffect(() => {
+    if (isPopup) {
+      return
+    }
     const handleMouseMove = (e) => {
       if (mode.current === 'drag') {
         const newX = e.clientX - offset.current.x
@@ -189,8 +201,10 @@ const Admin = ({ data, setData, sections, slug, revert, table }) => {
     }
   }
 
+  const getWindow = () => window.adminPopoutWindow || window
+
   const deploy = async (e) => {
-    if (confirm('Deploy? (takes about 1 minute)')) {
+    if (getWindow().confirm('Deploy? (takes about 1 minute)')) {
       await fetch(
         'https://api.vercel.com/v1/integrations/deploy/prj_EOe92vX7WcH6G4sK0y7WZfzTC75K/XuHEn5Vb6S',
         {
@@ -239,7 +253,7 @@ const Admin = ({ data, setData, sections, slug, revert, table }) => {
             className="ghost revert"
             title="Revert"
             onClick={() => {
-              confirm('Revert?') && revert()
+              getWindow().confirm('Revert?') && revert()
             }}
           >
             R
@@ -250,13 +264,27 @@ const Admin = ({ data, setData, sections, slug, revert, table }) => {
           <button className="ghost deploy" title="Deploy" onClick={deploy}>
             D
           </button>
-          <button
-            className="ghost open"
-            title="Toggle"
-            onClick={() => setControls(!controls)}
-          >
-            {controls ? '–' : '+'}
-          </button>
+          {!isPopup && (
+            <>
+              <button
+                className="ghost open"
+                title="Toggle"
+                onClick={() => setControls(!controls)}
+              >
+                {controls ? '–' : '+'}
+              </button>
+              <button
+                className="ghost popout"
+                title="Pop out"
+                onClick={() => {
+                  setPoppedOut(true)
+                  setControls(false)
+                }}
+              >
+                <span style={{ position: 'relative', top: 2 }}>↗</span>
+              </button>
+            </>
+          )}
         </div>
       </h2>
       <div className="controls">

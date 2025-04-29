@@ -51,6 +51,8 @@ export default function Section({ section, onChange, toggleOpen, open }) {
     }
   }, [open])
 
+  const getWindow = () => window.adminPopoutWindow || window
+
   return (
     <div className={['section', open ? 'open' : ''].join(' ')}>
       <div className="title">
@@ -64,7 +66,7 @@ export default function Section({ section, onChange, toggleOpen, open }) {
           title="Delete section"
           className="delete small ghost"
           onClick={(e) => {
-            window.confirm('Delete section?') && onChange(null)
+            getWindow().confirm('Delete section?') && onChange(null)
           }}
         >
           ×

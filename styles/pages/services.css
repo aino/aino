@@ -10,3 +10,13 @@ body.services {
     }
   }
 }
+
+@media (max-width: 768px) {
+  body.services {
+    .container {
+      .grid {
+        display: none;
+      }
+    }
+  }
+}
