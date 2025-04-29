@@ -104,7 +104,7 @@ export default async function home(app) {
             col: col + 4,
             row: 1,
             context: 'text',
-            text: 'Work  About',
+            text: 'Work  Services',
           })
         : []),
       ...(!detect.mobile()
@@ -113,7 +113,7 @@ export default async function home(app) {
               col: col * 2 + 6,
               row: 1,
               context: 'text',
-              text: 'Services  Careers',
+              text: 'About  Careers',
             }),
             ...createText({
               col: col * 3 + 8,
