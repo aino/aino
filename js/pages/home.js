@@ -99,6 +99,7 @@ export default async function home(app) {
         context: 'text',
         text: 'Aino',
       }),
+      /*
       ...(!detect.mobile()
         ? createText({
             col: col + 4,
@@ -107,6 +108,7 @@ export default async function home(app) {
             text: 'Work  lab',
           })
         : []),
+        */
       ...(!detect.mobile()
         ? [
             ...createText({
