@@ -33,7 +33,21 @@
 
 @media (max-width: 800px) {
   #footer .shortcuts {
-    margin-top: calc(var(--line) * -1);
+    justify-content: space-between;
+    .halfwidth {
+      flex: 0.4;
+    }
+  }
+  #footer .loctime {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  #footer .shortcuts {
+    .halfwidth {
+      flex: 0.45;
+    }
   }
 }
 
