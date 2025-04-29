@@ -98,7 +98,7 @@ export const parseLinks = (parent = document.body) => {
     if (link.getAttribute('rel') === 'prefetch') {
       prefetchLink(link)
     }
-    if (link.href) {
+    if (link.href && link.hostname === location.hostname) {
       link.removeEventListener('click', onLinkClick)
       link.removeEventListener('mouseover', onLinkHover)
       link.addEventListener('click', onLinkClick)
