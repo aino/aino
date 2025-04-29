@@ -2,10 +2,33 @@ import React, { useState, useRef, useEffect } from 'react'
 import Column from './Column'
 import Input from './Input'
 
-export default function Section({ section, onChange, toggleOpen, open }) {
+export default function Section({
+  section,
+  onChange,
+  toggleOpen,
+  open,
+  confirmDialog,
+}) {
   const [dragColumnIndex, setDragColumnIndex] = useState(null)
   const mouseDownTargetRef = useRef(null)
   const classInput = useRef(null)
+  const [columnOpen, setColumnOpen] = useState([])
+
+  const toggleColumnOpen = (index, force) => {
+    const nextOpen = [...columnOpen]
+    const i = columnOpen.indexOf(index)
+    const shouldBeOpen = force === undefined ? i === -1 : force
+
+    if (shouldBeOpen && i === -1) nextOpen.push(index)
+    if (!shouldBeOpen && i > -1) nextOpen.splice(i, 1)
+    setColumnOpen(nextOpen)
+  }
+
+  useEffect(() => {
+    if (!open) {
+      setColumnOpen([])
+    }
+  }, [open])
 
   const handleColumnDragStart = (index, e) => {
     const target = mouseDownTargetRef.current
@@ -51,8 +74,6 @@ export default function Section({ section, onChange, toggleOpen, open }) {
     }
   }, [open])
 
-  const getWindow = () => window.adminPopoutWindow || window
-
   return (
     <div className={['section', open ? 'open' : ''].join(' ')}>
       <div className="title">
@@ -66,7 +87,7 @@ export default function Section({ section, onChange, toggleOpen, open }) {
           title="Delete section"
           className="delete small ghost"
           onClick={(e) => {
-            getWindow().confirm('Delete section?') && onChange(null)
+            confirmDialog('Delete section?', () => onChange(null))
           }}
         >
           ×
@@ -123,7 +144,10 @@ export default function Section({ section, onChange, toggleOpen, open }) {
               }}
             >
               <Column
+                toggleOpen={() => toggleColumnOpen(i)}
+                open={columnOpen.includes(i)}
                 column={column}
+                confirmDialog={confirmDialog}
                 onChange={(e) => {
                   const newColumns = section.columns.map((c, j) => {
                     if (i === j) {

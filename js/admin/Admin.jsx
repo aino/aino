@@ -22,8 +22,8 @@ const Admin = ({
   const [width, setWidth] = useState(
     parseInt(localStorage.getItem('admin-width')) || 300
   )
+  const [confirmProps, setConfirmProps] = useState(null)
   const [saving, setSaving] = useState(false)
-  const [draggingAdmin, setDraggingAdmin] = useState(false)
   const offset = useRef({ x: 0, y: 0 })
   const adminRef = useRef(null)
   const mouseDownTargetRef = useRef(null)
@@ -116,7 +116,6 @@ const Admin = ({
 
     const handleMouseUp = () => {
       if (mode.current === 'drag') {
-        setDraggingAdmin(false)
       } else if (mode.current === 'resize') {
         resizing.current = false
       }
@@ -137,8 +136,15 @@ const Admin = ({
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
     }
-    setDraggingAdmin(true)
     mode.current = 'drag'
+  }
+
+  const confirmDialog = (text, onSuccess, onCancel) => {
+    setConfirmProps({
+      text,
+      onSuccess,
+      onCancel,
+    })
   }
 
   // Section sorting
@@ -200,18 +206,15 @@ const Admin = ({
       setSaving(false)
     }
   }
-
-  const getWindow = () => window.adminPopoutWindow || window
-
   const deploy = async (e) => {
-    if (getWindow().confirm('Deploy? (takes about 1 minute)')) {
+    confirmDialog('Deploy? (takes about 1 minute)', async () => {
       await fetch(
         'https://api.vercel.com/v1/integrations/deploy/prj_EOe92vX7WcH6G4sK0y7WZfzTC75K/XuHEn5Vb6S',
         {
           method: 'POST',
         }
       )
-    }
+    })
   }
 
   const fieldInputs = useMemo(() => {
@@ -253,7 +256,7 @@ const Admin = ({
             className="ghost revert"
             title="Revert"
             onClick={() => {
-              getWindow().confirm('Revert?') && revert()
+              confirmDialog('Revert?', revert)
             }}
           >
             R
@@ -346,6 +349,7 @@ const Admin = ({
           >
             <Section
               toggleOpen={() => toggleOpen(i)}
+              confirmDialog={confirmDialog}
               open={open.includes(i)}
               section={section}
               onChange={(newSection) => {
@@ -380,6 +384,32 @@ const Admin = ({
           <span>+</span>
           <span>Add Section</span>
         </button>
+        {confirmProps ? (
+          <div className="confirm-dialog">
+            <div>
+              <p>{confirmProps.text}</p>
+              <div class="confirm-buttons">
+                <button
+                  onClick={() => {
+                    confirmProps.onCancel?.()
+                    setConfirmProps(null)
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  class="success"
+                  onClick={() => {
+                    confirmProps.onSuccess()
+                    setConfirmProps(null)
+                  }}
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
 
       {/* Resize handle */}

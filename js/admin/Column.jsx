@@ -13,8 +13,13 @@ function cleanHTML(dirtyHTML) {
   return doc.body.innerHTML.trim() // cleaned and normalized
 }
 
-export default function Column({ column, onChange }) {
-  const [open, setData] = useState(false)
+export default function Column({
+  confirmDialog,
+  column,
+  onChange,
+  open,
+  toggleOpen,
+}) {
   const file = useRef(null)
   const [edit, setEdit] = useState(false)
   const onFileUpload = (e) => {
@@ -84,8 +89,6 @@ export default function Column({ column, onChange }) {
     return 'html'
   })
 
-  const getWindow = () => window.adminPopoutWindow || window
-
   return (
     <div
       className={['column', open ? 'open' : '', edit ? 'coledit' : ''].join(
@@ -93,7 +96,7 @@ export default function Column({ column, onChange }) {
       )}
     >
       <div className="title">
-        <button className="ghost" onClick={() => setData(!open)}>
+        <button className="ghost" onClick={toggleOpen}>
           <span>›</span>
           <span>Column</span>
         </button>
@@ -101,10 +104,10 @@ export default function Column({ column, onChange }) {
           title="Delete column"
           className="delete small ghost"
           onClick={(e) => {
-            if (getWindow().confirm('Delete column?')) {
+            confirmDialog('Delete column?', () => {
               e.stopPropagation()
               onChange(null)
-            }
+            })
           }}
         >
           ×
