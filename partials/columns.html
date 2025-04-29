@@ -1,6 +1,6 @@
-{{#each this }} {{#column className=className top=top left=left width=width}}
+{{#each this }} {{#column className=className top=top left=left width=width title=../title}}
 {{#if image }}
-<div class="image"><img {{ img url=image.url width=image.width height=image.height colWidth=width }} /></div>
+<div class="image"><img {{ img url=image.url width=image.width height=image.height colWidth=width alt=title }} /></div>
 {{/if}}{{#if video }}
 <div class="video">
   <video

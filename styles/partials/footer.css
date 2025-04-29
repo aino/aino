@@ -5,6 +5,20 @@
     margin-top: calc(var(--line) * -3);
     z-index: 2;
     position: relative;
+
+    a {
+      position: relative;
+    }
+
+    a::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      bottom: -8px;
+      left: -8px;
+      pointer-events: none;
+    }
   }
   .logo {
     background: transparent;
@@ -34,23 +48,6 @@ html.dark {
   html.pixelmode {
     #footer .logo img {
       opacity: 0;
-    }
-  }
-}
-
-@media (pointer: coarse) {
-  #footer {
-    a {
-      position: relative;
-    }
-
-    a::before {
-      content: '';
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      bottom: -8px;
-      left: -8px;
     }
   }
 }
