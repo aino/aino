@@ -41,10 +41,6 @@ export default async function global(app) {
     })
   })
 
-  for (const node of q('.fadein')) {
-    fadein(node)
-  }
-
   const setMode = (mode) => {
     html.classList.toggle('textmode', mode === 'text')
     html.classList.toggle('pixelmode', mode === 'pixel')
