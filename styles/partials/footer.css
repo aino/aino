@@ -5,11 +5,19 @@
     margin-top: calc(var(--line) * -3);
     z-index: 2;
     position: relative;
-
     a {
-      display: inline-block;
-      border: 8px solid yellow;
-      margin: -8px;
+      position: relative;
+      span {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        min-width: 48px;
+        height: 48px;
+        transform: translateY(-50%);
+        pointer-events: none;
+      }
     }
   }
   .logo {

@@ -99,23 +99,21 @@ export default async function home(app) {
         context: 'text',
         text: 'Aino',
       }),
-      /*
       ...(!detect.mobile()
         ? createText({
             col: col + 4,
             row: 1,
             context: 'text',
-            text: 'Work  lab',
+            text: 'Work  About',
           })
         : []),
-        */
       ...(!detect.mobile()
         ? [
             ...createText({
               col: col * 2 + 6,
               row: 1,
               context: 'text',
-              text: 'About  services  careers',
+              text: 'Services  Careers',
             }),
             ...createText({
               col: col * 3 + 8,
