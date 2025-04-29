@@ -7,7 +7,7 @@
     position: relative;
     a {
       position: relative;
-      &::after {
+      span {
         content: '';
         position: absolute;
         top: 50%;

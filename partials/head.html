@@ -6,6 +6,11 @@
   {{#if description}}
   <meta name="description" content="{{description}}"/>
   <meta property="og:description" content="{{description}}"/>
+  {{ else}}
+  <meta name="description" content="'Scandinavian design and technology agency committed to innovation and collaboration. We transform our clients into brands that are impossible to ignore."/>
+  <meta property="og:description" content="'Scandinavian design and technology agency committed to innovation and collaboration. We transform our clients into brands that are impossible to ignore."/>
+  {{/if}}
+  {{#if image}}
   {{/if}}
   {{#if image}}
   <meta property="og:image" content="{{image.url}}"/>
