@@ -47,3 +47,15 @@
     }
   }
 }
+
+@media (max-width: 800px) {
+  .modal {
+    .content {
+      flex-direction: column;
+      margin: var(--char2);
+      .buttons {
+        margin-top: var(--line);
+      }
+    }
+  }
+}

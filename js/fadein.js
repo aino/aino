@@ -123,9 +123,9 @@ export default function fadein(
       }
     }
     loop()
-    requestAnimationFrame(() => {
+    setTimeout(() => {
       node.style.opacity = 1
-    })
+    }, 50)
   }
   start()
 }

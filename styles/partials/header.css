@@ -88,6 +88,7 @@
       top: calc(var(--line) * 21);
       left: calc(var(--char2) * -1);
       padding-top: 0;
+      opacity: 0;
       ul {
         margin-top: calc(var(--line));
         &.themes {

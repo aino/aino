@@ -103,6 +103,7 @@ html.pixelmode {
       > div:empty {
         display: none;
       }
+      flex-direction: row;
     }
     .meta {
       grid-template-columns: 1fr 1fr;

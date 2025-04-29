@@ -2,6 +2,9 @@
   padding-bottom: calc(var(--line));
   display: flex;
   gap: var(--char2);
+  &.spacesmall {
+    padding: calc(var(--line) * 1) 0;
+  }
   &.space {
     padding: calc(var(--line) * 2) 0;
   }
@@ -79,6 +82,10 @@ html.grid .section.outline {
     &.first {
       margin-top: calc(var(--line) * 4);
     }
+    &.wrap {
+      flex-wrap: wrap;
+      flex-direction: row !important;
+    }
     .col {
       width: 100% !important;
       left: 0 !important;
@@ -86,9 +93,15 @@ html.grid .section.outline {
       &:empty {
         display: none;
       }
+      &.halfwidth {
+        flex: 0.5;
+      }
     }
     &.space {
-      padding: calc(var(--line) * 2) 0;
+      padding: calc(var(--line) * 1) 0;
+    }
+    &.spacesmall {
+      padding: calc(var(--line) * 0.5) 0;
     }
   }
 }

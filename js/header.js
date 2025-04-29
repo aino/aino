@@ -15,9 +15,12 @@ export default async function header() {
     if (isOpen) {
       toggler.innerText = 'Close'
       nav.classList.add('open-settings')
+      settings.container.style.opacity = 0
+      fadein(settings.container)
     } else {
       toggler.innerText = 'Settings'
       nav.classList.remove('open-settings')
+      settings.container.style.opacity = 0
     }
   })
   const open = state(false, (isOpen) => {
@@ -33,6 +36,10 @@ export default async function header() {
         }, i * 60)
         return l
       })
+      setTimeout(() => {
+        fadein(settings.container)
+        settings.container.style.opacity = 1
+      }, links.length * 60)
       container = create('div', { className: 'mobile-container' }, nav)
       const mnav = create('div', { className: 'mobile-nav text' })
       mnav.append(...links)
@@ -44,6 +51,7 @@ export default async function header() {
       container.appendChild(nb)
       fadein(nb)
     } else {
+      settings.container.style.opacity = 0
       container?.remove()
     }
   })
