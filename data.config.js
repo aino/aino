@@ -1,7 +1,5 @@
 import { config } from 'dotenv'
 config()
-import { readFileSync, readdirSync } from 'fs'
-import { join } from 'path'
 import { neon } from '@neondatabase/serverless'
 
 const sql = neon(process.env.DATABASE_URL)
@@ -27,23 +25,11 @@ export const globalData = async (prefetched) => {
   }
 }
 
-const positions = readJsonFilesSync('data/positions')
-
-function readJsonFilesSync(directory) {
-  return readdirSync(directory) // Get all file names in the directory
-    .filter((file) => file.endsWith('.json')) // Keep only .json files
-    .map((file) => {
-      const filePath = join(directory, file)
-      const fileContents = readFileSync(filePath, 'utf-8') // Read file
-      return JSON.parse(fileContents)
-    })
-}
-
 export const routes = {
   '/': {
     data: async ({ lang }) => {
       return {
-        title: `Aino`,
+        path: '',
       }
     },
   },
@@ -53,9 +39,10 @@ export const routes = {
       const results = await sql`SELECT * FROM pages WHERE slug = ${slug}`
       const { data } = results[0]
       return {
-        title: 'Services',
+        title: 'Our Services',
         data,
         slug,
+        path: `/${slug}`,
       }
     },
   },
@@ -68,6 +55,7 @@ export const routes = {
         title: 'About',
         data,
         slug,
+        path: `/${slug}`,
       }
     },
   },
@@ -80,6 +68,7 @@ export const routes = {
         data,
         slug,
         title: 'Careers',
+        path: `/${slug}`,
       }
     },
   },
@@ -92,13 +81,16 @@ export const routes = {
         data,
         slug,
         title: data?.title,
+        path: `/careers/${slug}`,
       }
     },
   },
   '/work': {
     data: async ({ lang }) => {
       return {
-        title: 'Work',
+        title: 'Our Work',
+        slug: 'work',
+        path: `/work`,
       }
     },
   },
@@ -119,6 +111,7 @@ export const routes = {
         title: name,
         name,
         year,
+        path: `/work/${slug}`,
       }
     },
   },
@@ -131,6 +124,7 @@ export const routes = {
         title: 'Contact',
         data,
         slug,
+        path: `/${slug}`,
       }
     },
   },

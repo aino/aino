@@ -37,3 +37,20 @@ html.dark {
     }
   }
 }
+
+@media (pointer: coarse) {
+  #footer {
+    a {
+      position: relative;
+    }
+
+    a::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      bottom: -8px;
+      left: -8px;
+    }
+  }
+}
