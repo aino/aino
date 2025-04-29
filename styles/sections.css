@@ -38,6 +38,10 @@
       position: sticky;
       top: calc(var(--line) * 3);
     }
+    &.border {
+      border-top: 1px solid rgba(var(--black-rgb), 0.1);
+      padding-top: var(--line);
+    }
     &.w1 {
       width: var(--s1);
     }
