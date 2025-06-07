@@ -352,10 +352,10 @@ export default async function home(app) {
         const col = getCssVariable('col')
 
         const finalText1 = createText({
-          col: col + 4,
           row: Math.floor(dimensions.rows / 2) - 2,
           context: 'text',
           text: 'Aino.agency',
+          align: 'center',
         })
 
         const finalText2 = createText({
@@ -409,7 +409,7 @@ export default async function home(app) {
         })
       }
 
-      addEventListener('mousedown', onLastClick, { once: true })
+      gridNode.addEventListener('mousedown', onLastClick, { once: true })
 
       video.video.addEventListener('ended', onVideoEnd)
       destroyers.push(() => {
@@ -435,20 +435,6 @@ export default async function home(app) {
           }
         }
       })
-
-      // listen('frame', ({ delta }) => {
-      //   applyPhysics(logo, delta)
-      // })
-      // await wait(1200)
-      // gravitate(main, {
-      //   gravity: 1.8,
-      //   damping: 1.005,
-      // })
-      // await wait(2000)
-
-      // main.length = 0
-      // main.push(...video.points)
-      // explode(main)
     },
     { once: true }
   )
